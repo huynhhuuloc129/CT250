@@ -1,8 +1,8 @@
 <template>
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
+<nav id="AppHeader" class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
       <div class="container">
-        <a class="navbar-brand" href="#">Web Zone</a>
+        <a class="navbar-brand" href="#">IStay</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -19,19 +19,22 @@
           <div class="mx-auto"></div>
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Home</a>
+              <a class="nav-link text-white" href="#">Thông tin</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">About</a>
+              <a class="nav-link text-white" href="#">Liên hệ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Blog</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="#">Pricing</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="#">Contact</a>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <font-awesome-icon icon="user"/>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
+                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
+                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
+                </ul>
+              </div>
             </li>
           </ul>
         </div>
@@ -46,6 +49,12 @@
 
 
 <style>
-
-    
+#AppHeader{
+  font-size: 25px;
+}
+#AppHeader-user{
+  padding: 5px 10px;
+  background-color: transparent;
+  border-radius: 10px;
+}
 </style>

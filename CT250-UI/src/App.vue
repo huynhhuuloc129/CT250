@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div>
-      <app-header/>
-      <router-view />
-      <app-footer/>
+      <app-header v-if="visible" />
+      <router-view @isShowHeaderAndFooter="handleHeaderAndFooter"/>
+      <app-footer v-if="visible" />
     </div>
   </div>
 </template>
@@ -18,27 +18,30 @@ export default {
     AppFooter,
   },
   data() {
-
+    return {
+      isShowHeaderAndFooter: false,
+    };
   },
   computed: {
+    visible() {
+      return this.isShowHeaderAndFooter;
+    },
   },
 
   methods: {
+    handleHeaderAndFooter(status) {
+      this.isShowHeaderAndFooter = status;
+    },
   },
 }
 </script>
 
 
 <style> 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;700&family=Lalezar&display=swap');
+
 body {
-  width: 100vw;
   height: 100vh;
 }
-#app {
-  height: 100%;
-  background-image: url("./assets/Wallpaper.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
+
 </style>

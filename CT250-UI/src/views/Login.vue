@@ -40,23 +40,23 @@ export default {
 
     },
     methods: {
-
+        hideHeaderAndFooter() {
+            this.$emit("isShowHeaderAndFooter", false);
+        },
     },
     mounted(){
-
+        hideHeaderAndFooter();
     }
 }
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;700&family=Lalezar&display=swap');
-
-#login-session{
-  /* height: 100%;
-  background-image: url("./assets/Wallpaper.png");
+#app {
+  height: 100%;
+  background-image: url("../assets/Wallpaper.png");
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover; */
+  background-size: cover;
 }
 
 #title{
@@ -64,11 +64,13 @@ export default {
     font-family: 'Lalezar'; 
     font-size: 60px;
 }
+
 #quote{
     font-family: 'inter'; 
     font-style: italic;
     font-size: 30px;
 }
+
 .login-title{
     
     color: #FFF0DC;
@@ -76,6 +78,7 @@ export default {
     top: 35%;
     left: 10%;
 }
+
 .login-button{
     color: #FFF0DC;
     font-size: 30px;
@@ -83,6 +86,7 @@ export default {
     padding: 15px 30px;
     background-color: #0F2C59;
 }
+
 .login-button:hover{
     background-color: #1b3f75;
 }
