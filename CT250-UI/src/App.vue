@@ -38,10 +38,11 @@ export default {
 
 
 <style> 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;700&family=Lalezar&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;700&family=Lalezar&family=Tilt+Neon&display=swap');
 body {
   height: 100vh;
 }
-
+#app{
+  font-family: 'Tilt Neon';
+}
 </style>

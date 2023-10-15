@@ -60,13 +60,13 @@
             Các trang
           </h6>
           <p>
-            <a href="#!" class="text-reset">Trang chủ</a>
+            <a href="http://localhost:3001" class="text-reset">Trang chủ</a>
           </p>
           <p>
             <a href="#!" class="text-reset">Thông tin cá nhân</a>
           </p>
           <p>
-            <a href="#!" class="text-reset">Phòng của tôi</a>
+            <a href="http://localhost:3001/myroom" class="text-reset">Phòng của tôi</a>
           </p>
           <p>
             <a href="#!" class="text-reset">Hỗ trợ</a>
@@ -93,7 +93,16 @@
 </template>
 
 <script>
-
+export default{
+  methods: {
+    goToMainPage() {
+      this.$router.push({ name: "home page" });
+    },
+    goToMyRoom() {
+      this.$router.push({ name: "myroom" });
+    },
+  }
+}
 </script>
 
 

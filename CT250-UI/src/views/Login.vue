@@ -62,7 +62,7 @@ export default {
         },
     },
     mounted(){
-        hideHeaderAndFooter();
+        this.hideHeaderAndFooter();
     }
 }
 </script>
