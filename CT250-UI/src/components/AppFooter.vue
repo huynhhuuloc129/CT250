@@ -76,12 +76,10 @@
         <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
           <!-- Links -->
           <h6 class="text-uppercase fw-bold mb-4">Liên hệ</h6>
-          <p><i class="fas fa-home me-3 text-secondary"></i>Đường Nguyễn Văn Linh, quận Ninh Kiều, thành phố Cần Thơ</p>
+          <p><i class="fas fa-home me-3 text-secondary"></i><font-awesome-icon icon="building"/> Nguyễn Văn Linh, Ninh Kiều, Cần Thơ</p>
           <p>
-            <i class="fas fa-envelope me-3 text-secondary"></i>
-            support@istay.com
-          </p>
-          <p><i class="fas fa-phone me-3 text-secondary"></i> + 84 939 169 592</p>
+            <i class="fas fa-envelope me-3 text-secondary"></i><font-awesome-icon icon="envelope"/> support@istay.com</p>
+          <p><i class="fas fa-phone me-3 text-secondary"></i><font-awesome-icon icon="phone"/> + 84 939 169 592</p>
         </div>
       </div>
     </div>

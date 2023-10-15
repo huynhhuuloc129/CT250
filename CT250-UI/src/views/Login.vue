@@ -3,16 +3,17 @@
     <div class="login-title container align-self-center">
         <p id="title">IStay</p>
         <p id="quote">Find your comfort</p>
-        <button type="button" class="login-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
             Đăng nhập
         </button>
+        <div id="login-register">Không phải thành viên? <span id="login-register-button" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</span></div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-backdrop="false">
         <div class="modal-dialog-centered modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title " id="exampleModalLabel">Đăng nhập</h5>
+                    <h5 class="modal-title" id="loginTitle">Đăng nhập</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -21,11 +22,26 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog-centered modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginTitle">Đăng ký</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <registerForm/>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
-import loginForm from "../components/LoginForm.vue"    
+import loginForm from "../components/LoginForm.vue"   
+import registerForm from "../components/RegisterForm.vue" 
 export default {
     
     data() {
@@ -35,6 +51,7 @@ export default {
     },
     components: {
         loginForm,
+        registerForm
     },
     computed: {
 
@@ -64,7 +81,21 @@ export default {
     font-family: 'Lalezar'; 
     font-size: 60px;
 }
-
+#loginTitle{
+    position: relative;
+    left: 39%;
+}
+#login-register-button{
+    cursor: pointer;
+    text-decoration: underline;
+}
+#login-register-button:hover{
+    color: #0F2C59;
+}
+#login-register{
+    font-family: 'inter'; 
+    font-style: italic;
+}
 #quote{
     font-family: 'inter'; 
     font-style: italic;

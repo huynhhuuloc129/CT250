@@ -1,7 +1,7 @@
 <template>
 
 <nav id="AppHeader" class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
-      <div class="container">
+      <div class="container" id="AppHeaderContainer">
         <a class="navbar-brand" href="#">IStay</a>
         <button
           class="navbar-toggler"
@@ -49,6 +49,10 @@
 
 
 <style>
+.dropdown{
+  margin: 0 0 0 20px;
+}
+
 #AppHeader{
   font-size: 25px;
 }

@@ -2,7 +2,7 @@
 <form id="login-form">
   <div class="form-outline mb-4">
     <input id="form2Example1" class="form-control" />
-    <label class="form-label" for="form2Example1">Tải khoản</label>
+    <label class="form-label" for="form2Example1">Tài khoản</label>
   </div>
 
   <div class="form-outline mb-4">
@@ -38,6 +38,7 @@
 
 <style>
 #login-form{
+  margin: 20px;
 }
 .loginForm-button{
   color: #FFF0DC;

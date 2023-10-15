@@ -9,59 +9,62 @@
 </div>
 
 <div id="UserHomePage-category">
-  <div><font-awesome-icon icon="house-user"/> Nhà trọ</div>
-  <div><font-awesome-icon icon="house"/> Khu trọ</div>
+  <div class="category-icon"><font-awesome-icon icon="house-user"/> Phòng trọ</div>
+  <div class="category-icon"><font-awesome-icon icon="house"/> Khu trọ</div>
 </div>
 
 <hr>
 
 <div id="UserHomePage-listRoom">
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
-  <roomCard/>
+  <roomCard :rooms="listRooms"/>
 </div>
 </template>
 
 <script>
-import roomCard from "../components/RoomCard.vue"    
+import roomCard from "@/components/RoomCard.vue"    
+import roomService from "@/services/room.service";
 export default {
-    
     data() {
         return {
-            
+            rooms: [],
         };
     },
     components: {
         roomCard,
     },
     computed: {
-
+      listRooms() {
+        return this.rooms;
+      },
     },
     methods: {
+      async retrieveRooms() {
+        try {
+          this.rooms = await roomService.getAll();
+        } catch (err) {
+          console.log(err);
+        }
+      },
       showHeaderAndFooter() {
         this.$emit("isShowHeaderAndFooter", true);
       },
     },
     mounted(){
       this.showHeaderAndFooter();
+      this.retrieveRooms();
     }
 }
 </script>
 
 <style>
-
+.category-icon{
+  text-align: center;
+  width: 190px;
+  cursor: pointer;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 20px 20px 0px 0px;
+}
 #UserHomePage-listRoom, #UserHomePage-category{
   display: flex;
   align-items: center;
