@@ -42,6 +42,9 @@ export default {
 body {
   height: 100vh;
 }
+label{
+  color: rgb(175, 175, 175);
+}
 #app{
   font-family: 'Tilt Neon';
 }

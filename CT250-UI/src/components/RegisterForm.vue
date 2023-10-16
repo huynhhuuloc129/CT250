@@ -1,46 +1,47 @@
 <template>
   <form id="registerForm">
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="text" class="form-control" id="registerInputUsername" placeholder="" required>
     <label for="registerInputUsername" >Tài khoản</label>
-    <input type="text" class="form-control" id="registerInputUsername"  placeholder="Username" required>
   </div>
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="email" class="form-control" id="registerInputEmail1" aria-describedby="emailHelp" placeholder="" required>
     <label for="registerInputEmail1" >Địa chỉ email</label>
-    <input type="email" class="form-control" id="registerInputEmail1" aria-describedby="emailHelp" placeholder="Email" required>
     <small id="emailHelp" class="form-text text-muted">Email của bạn sẽ không được chia sẻ với bất cứ ai</small>
   </div>
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="password" class="form-control" id="registerInputPassword1" placeholder="" required>
     <label for="registerInputPassword1" >Mật khẩu</label>
-    <input type="password" class="form-control" id="registerInputPassword1" placeholder="Password" required>
   </div>
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="text" class="form-control" id="registerInputFirstname"  placeholder="" required>
     <label for="registerInputFirstname" >Họ</label>
-    <input type="text" class="form-control" id="registerInputFirstname"  placeholder="First name" required>
   </div>
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="text" class="form-control" id="registerInputLastname" placeholder="" required>
     <label for="registerInputLastname" >Tên</label>
-    <input type="text" class="form-control" id="registerInputLastname"  placeholder="Last name" required>
   </div>
 
-  <div class="form-group">
+  <div class="form-floating">
+    <input type="text" class="form-control" id="registerInputCitizenID" placeholder="" required>
     <label for="registerInputCitizenID" >Căn cước công dân</label>
-    <input type="text" class="form-control" id="registerInputCitizenID"  placeholder="Citizen ID" required>
   </div>
 
+  <div class="form-floating">
+    <select class="form-select form-select-sm" id="floatingSelect" aria-label=".form-select-sm role"  required>
+      <option value="1">Chủ trọ</option>
+      <option value="2">Người thuê trọ</option>
+    </select>
+    <label for="floatingSelect">Chọn vai trò cần đăng ký</label>
 
-  <select class="form-select form-select-sm" aria-label=".form-select-sm role" required>
-    <option selected>Chọn role cần đăng ký</option>
-    <option value="1">Chủ trọ</option>
-    <option value="2">Người thuê trọ</option>
-  </select>
-
+  </div>
   <div style="display:flex; align-items:center; justify-content: center; padding: 10px 0 0 0;">
-    <button type="submit" id="registerButton" class="btn btn-secondary">Đăng ký</button>
+    <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button">Đăng ký</button>
   </div>
 </form>
 </template>
@@ -55,10 +56,14 @@
   justify-content: center;
   padding: 10px;
 }
-.form-group{
-  padding: 10px;
+.form-floating{
+  margin-bottom: 20px;
 }
 #registerButton{
   text-align: center;
+}
+.registerForm-button{
+  color: #FFF0DC;
+  background-color: #0F2C59;
 }
   </style>

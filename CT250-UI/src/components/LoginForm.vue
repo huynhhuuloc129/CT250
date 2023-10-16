@@ -1,12 +1,12 @@
 <template>
 <form id="login-form">
-  <div class="form-outline mb-4">
-    <input id="form2Example1" class="form-control" />
+  <div class="form-floating mb-4">
+    <input id="form2Example1" class="form-control" placeholder=""/>
     <label class="form-label" for="form2Example1">Tài khoản</label>
   </div>
 
-  <div class="form-outline mb-4">
-    <input type="password" id="form2Example2" class="form-control" />
+  <div class="form-floating mb-4">
+    <input type="password" id="form2Example2" class="form-control" placeholder=""/>
     <label class="form-label" for="form2Example2">Mật khẩu</label>
   </div>
 
@@ -27,9 +27,6 @@
     <button type="button" class=" btn btn-primary btn-block mb-4 loginForm-button">Đăng nhập</button>
   </div>
 
-  <div class="text-center">
-    <p>Không phải thành viên? <a href="#!">Đăng ký</a></p>
-  </div>
 </form>
 </template>
 

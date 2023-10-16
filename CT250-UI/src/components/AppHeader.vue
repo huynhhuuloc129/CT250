@@ -2,7 +2,7 @@
 
 <nav id="AppHeader" class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
       <div class="container" id="AppHeaderContainer">
-        <a class="navbar-brand" href="#">IStay</a>
+        <a class="navbar-brand" href="http://localhost:3001">IStay</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -30,8 +30,8 @@
                   <font-awesome-icon icon="user"/>
                 </button>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
-                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
+                  <li><a class="dropdown-item" href="http://localhost:3001/personal-information"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
+                  <li><a class="dropdown-item" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
                   <li><a class="dropdown-item" href="#"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
                 </ul>
               </div>
