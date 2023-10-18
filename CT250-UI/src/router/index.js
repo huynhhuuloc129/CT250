@@ -8,6 +8,11 @@ const routes = [
         component: () => import("@/views/UserHomePage.vue"),
     },
     {
+        path: "/tenant",
+        name: "tenant home page",
+        component: () => import("@/views/TenantHomePage.vue"),
+    },
+    {
         path: "/login",
         name: "login",
         component: () => import("@/views/Login.vue"),
@@ -21,6 +26,11 @@ const routes = [
         path: "/personal-information",
         name: "personal information",
         component: () => import("@/views/PersonalInformation.vue"),
+    },
+    {
+        path: "/tenant-personal-information",
+        name: "tenant personal information",
+        component: () => import("@/views/TenantPersonalInformation.vue"),
     },
 ];
 

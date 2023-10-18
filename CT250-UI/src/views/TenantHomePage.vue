@@ -2,7 +2,7 @@
 <img id="UserHomePage-wallpaper" src="../assets/home-page-background.jpg" alt="">
 
 <div class="input-group rounded" id="homePage-search-bar">
-  <input type="search" class="form-control rounded" v-model="search" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+  <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
   <button class="input-group-text border-0" id="search-addon">
     <font-awesome-icon icon="search" />
   </button>
@@ -14,7 +14,7 @@
 </div>
 
 <div id="UserHomePage-listRoom">
-  <roomCard :rooms="filteredRooms"/>
+  <roomCard :rooms="listRooms"/>
 </div>
 </template>
 
@@ -27,19 +27,12 @@ export default {
     data() {
         return {
             rooms: [],
-            search: "",
-            filteredRoom: [],
-        }
+        };
     },
     components: {
         roomCard,
     },
     computed: {
-      filteredRooms() {
-        return this.rooms.filter(p => {
-          return p.name.toLowerCase().indexOf(this.search.toLowerCase()) != -1;
-        });
-      },
       listRooms() {
         return this.rooms;
       },
@@ -49,6 +42,8 @@ export default {
         try {
           var tokenBearer = this.$cookies.get("Token");
           let user = await userService.getCurrentUser(tokenBearer);
+
+          if (user.role != "tenant") this.$router.push("home page");
         } catch (error) {
             alert(error);
             this.$router.push({ name: "login" });
@@ -107,10 +102,6 @@ export default {
   width: 100%;
   height: auto;
   z-index: -5;
-}
-
-#AppHeader{
-  :style="{ background: backgroundColor }"
 }
 
 #homePage-search-bar{

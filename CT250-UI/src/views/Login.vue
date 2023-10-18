@@ -14,10 +14,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="loginTitle">Đăng nhập</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <loginForm/>
+                    <loginForm @submit="onLogin"/>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <registerForm/>
+                    <registerForm @submit="onSignup"/>
                 </div>
             </div>
         </div>
@@ -42,11 +42,17 @@
 <script>
 import loginForm from "../components/LoginForm.vue"   
 import registerForm from "../components/RegisterForm.vue" 
+import userService from "../services/user.service"
+import { useCookies } from "vue3-cookies";
+
 export default {
-    
+    setup() {
+        const { cookies } = useCookies();
+        return { cookies };
+    },
     data() {
         return {
-            
+            user: {}
         };
     },
     components: {
@@ -57,6 +63,32 @@ export default {
 
     },
     methods: {
+        async onLogin(user) {
+            try {
+                const loginData = await userService.login(user);
+                this.$cookies.set("Token", 'Bearer ' + loginData.accessToken);
+                document.getElementById("login-form-close-btn").click();
+
+                let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
+                if (currentUser.role == "lessor" ) 
+                    this.$router.push({ name: "home page" });
+                else this.$router.push({name: "tenant home page"});
+            } catch (err) {
+                alert(err)
+           }
+        },
+        async onSignup(user, role) {
+            try {
+                if (role == "lessor") {
+                    await userService.signUpLessor(user);
+                } else {
+                    await userService.signUpTenant(user);
+                }
+                this.$router.go();
+            } catch (err) {
+                alert(err)
+            }
+        },
         hideHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", false);
         },
@@ -75,7 +107,6 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
 }
-
 #title{
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
     font-family: 'Lalezar'; 

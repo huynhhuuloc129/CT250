@@ -31,7 +31,9 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="http://localhost:3001/personal-information"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
+                  <hr>
                   <li><a class="dropdown-item" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
+                  <hr>
                   <li><a class="dropdown-item" href="#"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
                 </ul>
               </div>
@@ -53,12 +55,17 @@
   margin: 0 0 0 20px;
 }
 
+.dropdown-item, hr{
+  padding: 0px;
+  margin: 0px;
+}
+
 #AppHeader{
   font-size: 25px;
-}
-#AppHeader-user{
+}#AppHeader-user{
   padding: 5px 10px;
   background-color: transparent;
   border-radius: 10px;
 }
+/*  */
 </style>

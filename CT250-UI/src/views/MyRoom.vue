@@ -26,13 +26,14 @@
 <script>
 import room from "@/services/room.service";
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
-
+import userService from "../services/user.service";
 export default {
   data() {
       return {
           roomingSubscriptionArr: [],
           roomingSubscription: {},
           room: {},
+          user: {}
       };
   },
 
@@ -50,9 +51,20 @@ export default {
   },
 
   methods: {
+    async checkLogin(){
+        try {
+          var tokenBearer = this.$cookies.get("Token");
+          this.user = await userService.getCurrentUser(tokenBearer);
+          console.log(this.user.id)
+        } catch (error) {
+            alert(error);
+            this.$router.push({ name: "login" });
+        }
+      },
     async retrieveRoom() {
       try {
-        this.roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(2);
+        this.roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(this.user.id);
+        console.log(this.roomingSubscriptionArr[0])
         this.roomingSubscription = this.roomingSubscriptionArr[0];
         this.room = await room.getOne(this.roomingSubscription.roomId);
       } catch (err) {
@@ -65,6 +77,7 @@ export default {
   },
 
   mounted(){
+    this.checkLogin();
     this.showHeaderAndFooter();
     this.retrieveRoom();
   }

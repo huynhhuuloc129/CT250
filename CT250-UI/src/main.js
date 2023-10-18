@@ -1,6 +1,8 @@
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import VueCookies from 'vue3-cookies'
+
 import router from "./router";
 
 import 'bootstrap'; 
@@ -17,4 +19,5 @@ library.add(fas, far, fab);
 createApp(App)
     .component("font-awesome-icon", FontAwesomeIcon)
   .use(router)
+  .use(VueCookies)
   .mount("#app");
