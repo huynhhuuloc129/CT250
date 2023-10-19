@@ -96,46 +96,46 @@
                 <div class="modal-body">
                     <form id="registerForm">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registerInputFirstname" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="text" class="form-control" id="registerInputFirstname" placeholder="" v-model="user.lastName"  @focus="buttonDisabled = false" required>
                             <label for="registerInputFirstname" >Họ</label>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registerInputLastname" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="text" class="form-control" id="registerInputLastname" placeholder="" v-model="user.firstName"  @focus="buttonDisabled = false" required>
                             <label for="registerInputLastname" >Tên</label>
                         </div>
 
                         <div class="form-floating">
-                            <input type="email" class="form-control" id="registerInputEmail1" aria-describedby="emailHelp" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="email" class="form-control" id="registerInputEmail1" aria-describedby="emailHelp" placeholder="" v-model="user.email" @focus="buttonDisabled = false" required>
                             <label for="registerInputEmail1" >Email</label>
                         </div>
                         <small id="emailHelp" class="form-text text-muted"></small>
 
                         <div class="form-floating">
-                            <input type="password" class="form-control" id="registerInputPhonenumber" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="text" class="form-control" id="registerInputPhonenumber" placeholder="" v-model="user.tel" @focus="buttonDisabled = false" required>
                             <label for="registerInputPhonenumber" >Số điện thoại</label>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registerInputCitizenID" placeholder=""   @focus="buttonDisabled = false" required>
+                            <input type="text" class="form-control" id="registerInputCitizenID" placeholder="" v-model="user.citizenID"  @focus="buttonDisabled = false" required>
                             <label for="registerInputCitizenID" >Căn cước công dân</label>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registerInputdob" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="date" class="form-control" id="registerInputdob" placeholder="" v-model="dobString" @focus="buttonDisabled = false" required>
                             <label for="registerInputdob" >Ngày sinh</label>
                         </div>
 
                         <div class="form-floating">
-                            <select class="form-select form-select-sm" id="floatingSelect" aria-label=".form-select-sm role"  @focus="buttonDisabled = false" required>
-                                <option value="1">Nam</option>
-                                <option value="2">Nữ</option>
+                            <select class="form-select form-select-sm" id="floatingSelect" aria-label=".form-select-sm role" v-model="user.gender"  @focus="buttonDisabled = false" required>
+                                <option value="Nam">Nam</option>
+                                <option value="Nu">Nữ</option>
                             </select>
                             <label for="floatingSelect">Giới tính</label>
                         </div>
 
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="registerInputAddress" placeholder=""  @focus="buttonDisabled = false" required>
+                            <input type="text" class="form-control" id="registerInputAddress" placeholder="" v-model="user.address" @focus="buttonDisabled = false" required>
                             <label for="registerInputAddress" >Địa chỉ hiện tại</label>
                         </div>
                         
@@ -157,7 +157,8 @@ export default {
         return {
             user: {},
             buttonDisabled: false,
-            token: ""
+            token: "",
+            dobString: ""
         };
     },
     components: {
@@ -165,7 +166,9 @@ export default {
     computed: {
     },
     methods: {
-
+        formatDate(date) {
+            return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+        },
         async onUpdateSummary() {
             try {
                 if (this.user.gender == "Nam") this.user.gender = "male";
@@ -215,6 +218,8 @@ export default {
                 else this.user.gender = "Nữ";
 
                 this.user.dob =  new Date(this.user.dob);
+                this.user.dob = this.formatDate(this.user.dob);
+                this.dobString = this.user.dob.toString();
             } catch (error) {
                 alert(error);
                 this.$router.push({ name: "login" });
@@ -254,9 +259,10 @@ export default {
   background-color: #0F2C59;
 }
 #PersonalInformation-avatar{
+    border-radius: 50%;
     margin-right: 100px;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
 }
 #PersonalInformation-sessions{
     justify-content: center;

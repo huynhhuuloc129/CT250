@@ -74,6 +74,12 @@ export default {
 </script>
 
 <style>
+#AppHeader{
+  background-color: rgb(138, 137, 135);
+}
+#app {
+  background-image: none;
+}
 .category-icon{
   text-align: center;
   width: 190px;
@@ -107,10 +113,6 @@ export default {
   width: 100%;
   height: auto;
   z-index: -5;
-}
-
-#AppHeader{
-  :style="{ background: backgroundColor }"
 }
 
 #homePage-search-bar{

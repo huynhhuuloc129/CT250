@@ -63,6 +63,17 @@ export default {
 
     },
     methods: {
+        async checkLogin(){
+            try {
+            var tokenBearer = this.$cookies.get("Token");
+            let user = await userService.getCurrentUser(tokenBearer);
+            if (user.role == "lessor" ) 
+                    this.$router.push({ name: "home page" });
+                else this.$router.push({name: "tenant home page"});
+            } catch (error) {
+                // this.$router.push({ name: "login" });
+            }
+        },
         async onLogin(user) {
             try {
                 const loginData = await userService.login(user);
@@ -95,6 +106,7 @@ export default {
     },
     mounted(){
         this.hideHeaderAndFooter();
+        this.checkLogin();
     }
 }
 </script>
