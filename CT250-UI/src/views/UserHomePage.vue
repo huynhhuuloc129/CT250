@@ -2,10 +2,7 @@
 <img id="UserHomePage-wallpaper" src="../assets/home-page-background.jpg" alt="">
 
 <div class="input-group rounded" id="homePage-search-bar">
-  <input type="search" class="form-control rounded" v-model="search" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-  <button class="input-group-text border-0" id="search-addon">
-    <font-awesome-icon icon="search" />
-  </button>
+  <input type="search" id="search-bar" class="form-control rounded" v-model="search" placeholder="Tìm kiếm trên IStay" aria-label="Search" aria-describedby="search-addon" />
 </div>
 
 <div id="UserHomePage-category">
@@ -49,9 +46,10 @@ export default {
         try {
           var tokenBearer = this.$cookies.get("Token");
           let user = await userService.getCurrentUser(tokenBearer);
+          if (tokenBearer == null) throw new Error('Not login');
         } catch (error) {
-            alert(error);
             this.$router.push({ name: "login" });
+            alert(error);
         }
       },
       async retrieveRooms() {
@@ -64,6 +62,9 @@ export default {
       showHeaderAndFooter() {
         this.$emit("isShowHeaderAndFooter", true);
       },
+      delete_cookie(name) {
+        document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
     },
     mounted(){
       this.showHeaderAndFooter();
@@ -74,6 +75,9 @@ export default {
 </script>
 
 <style>
+#search-bar{
+  border-radius: 50%;
+}
 #AppHeader{
   background-color: rgb(138, 137, 135);
 }

@@ -6,7 +6,7 @@
         <div class="card-body">
           <h5 class="card-title">Card title</h5>
           <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Chi tiết</a>
+          <a class="btn btn-primary" @click="goToRoomInfo(room.id)">Chi tiết</a>
         </div>
       </div>
     </li>
@@ -18,6 +18,11 @@ export default {
   props: {
     rooms: { type: Array, default: [] },
   },
+  methods: {
+    async goToRoomInfo(id){
+      this.$router.push({name: "room info", params: {id: id}})
+    }
+  }
 }
 </script>
 

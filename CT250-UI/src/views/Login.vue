@@ -67,9 +67,9 @@ export default {
             try {
             var tokenBearer = this.$cookies.get("Token");
             let user = await userService.getCurrentUser(tokenBearer);
-            if (user.role == "lessor" ) 
-                    this.$router.push({ name: "home page" });
-                else this.$router.push({name: "tenant home page"});
+            if (user.role == "tenant" ) 
+                    this.$router.push({ name: "home_page" });
+            else if (user.role == "lessor" )  this.$router.push({name: "lessor home page"});
             } catch (error) {
                 // this.$router.push({ name: "login" });
             }
@@ -81,9 +81,9 @@ export default {
                 document.getElementById("login-form-close-btn").click();
 
                 let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
-                if (currentUser.role == "lessor" ) 
-                    this.$router.push({ name: "home page" });
-                else this.$router.push({name: "tenant home page"});
+                if (currentUser.role == "tenant" ) 
+                    this.$router.push({ name: "home_page" });
+                else this.$router.push({name: "lessor home page"});
             } catch (err) {
                 alert(err)
            }

@@ -4,13 +4,13 @@ import { createWebHistory, createRouter } from "vue-router";
 const routes = [
     {
         path: "/",
-        name: "home page",
+        name: "home_page",
         component: () => import("@/views/UserHomePage.vue"),
     },
     {
-        path: "/tenant",
-        name: "tenant home page",
-        component: () => import("@/views/TenantHomePage.vue"),
+        path: "/lessor",
+        name: "lessor home page",
+        component: () => import("@/views/LessorHomePage.vue"),
     },
     {
         path: "/login",
@@ -23,9 +23,19 @@ const routes = [
         component: () => import("@/views/MyRoom.vue"),
     },
     {
-        path: "/room-info",
+        path: "/roomingHouse",
+        name: "my rooming house",
+        component: () => import("@/views/MyRoomingHouse.vue"),
+    },
+    {
+        path: "/rooms/:id",
         name: "room info",
         component: () => import("@/views/RoomInfo.vue"),
+    },
+    {
+        path: "/rooming-house-info",
+        name: "rooming house info",
+        component: () => import("@/views/RoomingHouseInfo.vue"),
     },
     {
         path: "/personal-information",
@@ -33,9 +43,9 @@ const routes = [
         component: () => import("@/views/PersonalInformation.vue"),
     },
     {
-        path: "/tenant-personal-information",
-        name: "tenant personal information",
-        component: () => import("@/views/TenantPersonalInformation.vue"),
+        path: "/lessor-personal-information",
+        name: "lessor personal information",
+        component: () => import("@/views/LessorPersonalInformation.vue"),
     },
 ];
 

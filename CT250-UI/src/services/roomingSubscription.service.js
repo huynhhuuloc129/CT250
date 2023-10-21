@@ -6,7 +6,7 @@ class RoomingSubscriptionService {
   }
   async getByLessorId(id) {
     try {
-      const room = (await this.api.get("/rooming-subcriptions?lessorId="+id)).data;
+      const room = (await this.api.get("/rooming-subscriptions?lessorId="+id)).data;
       return room.data;
     } catch (err) {
       console.log(err);

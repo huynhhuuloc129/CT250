@@ -43,7 +43,7 @@ export default {
           var tokenBearer = this.$cookies.get("Token");
           let user = await userService.getCurrentUser(tokenBearer);
 
-          if (user.role != "tenant") this.$router.push("home page");
+          if (user.role != "lessor") this.$router.push("home page");
         } catch (error) {
             alert(error);
             this.$router.push({ name: "login" });

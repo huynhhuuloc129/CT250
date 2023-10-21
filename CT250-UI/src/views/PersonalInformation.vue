@@ -201,7 +201,7 @@ export default {
             try {
                 if (role == "lessor") {
                     await userService.signUpLessor(user);
-                } else {
+                } else  if (role == "tenant") {
                     await userService.signUpTenant(user);
                 }
                 this.$router.go();

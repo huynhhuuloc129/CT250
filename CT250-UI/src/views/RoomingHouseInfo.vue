@@ -1,16 +1,16 @@
 <template>
 <div id="MyRoom-Information">
-  <div id="MyRoom-Information1">
+    <div id="MyRoom-Information1">
     <h1 >{{ room.name }}</h1>
     <hr>
     <div>
-      Description: 
-      {{ room.summary }} wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+        Description: 
+        {{ room.summary }} wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
     </div>
     
-  </div>
+    </div>
 
-  <div id="MyRoom-Information2">
+    <div id="MyRoom-Information2">
     <div class="myroom-fee">Trạng thái phòng: <div>{{ roomingSubscription.state }}</div></div>
     <div class="myroom-fee">Giá điện:  <div>{{ room.electricityPrice }}</div></div>
     <div class="myroom-fee">Giá nước: <div>{{ room.waterPrice }}</div></div>
@@ -22,19 +22,19 @@
     <div class="myroom-fee" style="text-decoration: underline;">Phụ thu tháng này: <div></div></div>
     <hr>
     <div class="myroom-fee" style="font-weight: bold;">Tổng tiền hàng tháng: <div></div></div>
-    <div class="myroom-fee" style="font-weight: bold;">Trạng thái đóng phí tháng 10: <div></div></div>
-  </div>
+
+    </div>
 </div>
 <div id="MyRoom-Information3">
-  <hr>
-  <div>
+    <hr>
+    <div>
     <h3>Đánh giá</h3>
-  </div>
-  <hr>
-  <div>
+    </div>
+    <hr>
+    <div>
     <h3>Chủ nhà</h3>
 
-  </div>
+    </div>
 </div>
 </template>
 
@@ -43,95 +43,95 @@ import room from "@/services/room.service";
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
 import userService from "../services/user.service";
 export default {
-  data() {
-      return {
-          roomingSubscriptionArr: [],
-          roomingSubscription: {},
-          room: {},
-          user: {}
-      };
-  },
+    data() {
+        return {
+            roomingSubscriptionArr: [],
+            roomingSubscription: {},
+            room: {},
+            user: {}
+        };
+    },
 
-  components: {
+    components: {
 
-  },
+    },
 
-  computed: {
+    computed: {
     getRoom() {
-      return this.room;
+        return this.room;
     },
     getRoomingSubscription() {
-      return this.roomingSubscription;
+        return this.roomingSubscription;
     }
-  },
+    },
 
-  methods: {
+    methods: {
     async checkLogin(){
         try {
-          var tokenBearer = this.$cookies.get("Token");
-          this.user = await userService.getCurrentUser(tokenBearer);
-          console.log(this.user.id)
+            var tokenBearer = this.$cookies.get("Token");
+            this.user = await userService.getCurrentUser(tokenBearer);
+            console.log(this.user.id)
         } catch (error) {
             alert(error);
             this.$router.push({ name: "login" });
         }
-      },
+        },
     async retrieveRoom() {
-      try {
+        try {
         this.roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(this.user.id);
         console.log(this.roomingSubscriptionArr[0])
         this.roomingSubscription = this.roomingSubscriptionArr[0];
         this.room = await room.getOne(this.roomingSubscription.roomId);
-      } catch (err) {
+        } catch (err) {
         console.log(err);
-      }
+        }
     },
     showHeaderAndFooter() {
-      this.$emit("isShowHeaderAndFooter", true);
+        this.$emit("isShowHeaderAndFooter", true);
     },
-  },
+    },
 
-  mounted(){
+    mounted(){
     this.checkLogin();
     this.showHeaderAndFooter();
     this.retrieveRoom();
-  }
+    }
 }
 </script>
 
 <style>
 .myroom-fee{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 #MyRoom-Information, #MyRoom-Information2, #MyRoom-Information3 {
-  margin: 50px 0 0 50px;
+    margin: 100px;
 }
 #MyRoom-Information {
-  justify-content: space-around;
-  font-size: large;
-  display: flex;
-  width: calc(100% - 100px);
+    justify-content: space-around;
+    font-size: large;
+    display: flex;
+    width: calc(100% - 100px);
 }
 #MyRoom-Information1 {
-  word-wrap: break-word;
-  width: 50%;
+    word-wrap: break-word;
+    width: 50%;
 }
 #MyRoom-Information2 {
-  word-wrap: break-word;
-  display: flex;
-  flex-direction: column;
-  width: 40%;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    word-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 #app{
-  overflow: hidden;
+    overflow: hidden;
 }
 #AppHeader {
-  position: static;
-  background-color: #0F2C59;
+    position: static;
+    background-color: #0F2C59;
 }
 </style>

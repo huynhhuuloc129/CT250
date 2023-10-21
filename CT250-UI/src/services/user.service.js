@@ -13,16 +13,23 @@ class UserService {
       alert(err);
     }
   }
-  async getOneLessor(token) {
-    return await axios.get("http://localhost:3000/api/lessors/me", {
-      headers: {
-        Authorization: token
-      }
-      }).then((res) => {
-          return res.data;
-    }).catch ((err) => {
-      console.log(err)
-    })
+  async getOneTenant(token) {
+    // return await axios.get("http://localhost:3000/api/tenants/me", {
+    //   headers: {
+    //     Authorization: token
+    //   }
+    //   }).then((res) => {
+    //       return res.data;
+    // }).catch ((err) => {
+    //   console.log(err)
+    // })
+  }
+  async getOneLessor(id) {
+    try {
+      return (await this.api.get(`/lessors/:${id}`)).data;
+    } catch (error) {
+      alert(err);
+    }
   }
   async getCurrentUser(token) {
     return await axios.get("http://localhost:3000/api/users/me", {
@@ -32,7 +39,7 @@ class UserService {
       }).then((res) => {
           return res.data;
     }).catch ((err) => {
-      console.log(err)
+     return err
     })
   }
   async signUpLessor(data) {
