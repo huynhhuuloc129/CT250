@@ -23,20 +23,20 @@ const routes = [
         component: () => import("@/views/MyRoom.vue"),
     },
     {
-        path: "/roomingHouse",
+        path: "/my-rooming-house", //TODO: fix this 
         name: "my rooming house",
-        component: () => import("@/views/MyRoomingHouse.vue"),
+        component: () => import("@/views/RoomingHouseInfo.vue"),
     },
     {
         path: "/rooms/:id",
         name: "room info",
         component: () => import("@/views/RoomInfo.vue"),
     },
-    {
-        path: "/rooming-house-info",
-        name: "rooming house info",
-        component: () => import("@/views/RoomingHouseInfo.vue"),
-    },
+    // {
+    //     path: "/rooming-house-info",
+    //     name: "rooming house info",
+    //     // component: () => import("@/views/RoomingHouseInfo.vue"),
+    // },
     {
         path: "/personal-information",
         name: "personal information",

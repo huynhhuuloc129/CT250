@@ -32,9 +32,10 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="http://localhost:3001/personal-information"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
                   <hr>
-                  <li><a class="dropdown-item" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
-                  <hr>
-                  <li><a class="dropdown-item" href="#"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
+                  <!-- <li><a class="dropdown-item" v-if="user.role == 'tenant'" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li> -->
+                  <li><a class="dropdown-item"  href="http://localhost:3001/my-rooming-house"><font-awesome-icon icon="building-user"/> Trọ của tôi</a></li>
+                  <hr> <!--TODO: Add this to above and also add 1 more line about other role v-if="user.role == 'lessor'"-->
+                  <li><a class="dropdown-item" ><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
                 </ul>
               </div>
             </li>
@@ -46,7 +47,28 @@
 </template>
 
 <script>
-
+import userService from '@/services/user.service';
+export default {
+  data() {
+    return {
+      user: {}
+    }
+  },
+  methods: {
+    async checkLogin(){
+        try {
+            var tokenBearer = this.$cookies.get("Token");
+            this.user = await userService.getCurrentUser(tokenBearer);
+        } catch (error) {
+            alert(error);
+            this.$router.push({ name: "login" });
+        }
+    },
+  },
+  mounted(){
+    this.checkLogin()
+  }
+}
 </script>
 
 

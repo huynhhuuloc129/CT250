@@ -18,14 +18,15 @@
 <script>
 import roomCard from "@/components/RoomCard.vue"    
 import roomService from "@/services/room.service";
-import userService from "../services/user.service"
-
+import userService from "@/services/user.service"
+import roomingHouseService from "@/services/roomingHouse.service";
 export default {
     data() {
         return {
             rooms: [],
             search: "",
             filteredRoom: [],
+            roomingHouses: []
         }
     },
     components: {
@@ -52,6 +53,13 @@ export default {
             alert(error);
         }
       },
+      async retrieveRoomingHouse() {
+        try {
+          this.roomingHouses = await roomingHouseService.getAll(); 
+        } catch (err) {
+          console.log(err);
+        }
+      },
       async retrieveRooms() {
         try {
           this.rooms = await roomService.getAll();
@@ -70,6 +78,7 @@ export default {
       this.showHeaderAndFooter();
       this.checkLogin();
       this.retrieveRooms();
+      this.retrieveRoomingHouse();
     }
 }
 </script>

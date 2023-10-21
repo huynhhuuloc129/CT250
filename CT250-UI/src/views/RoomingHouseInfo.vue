@@ -1,137 +1,169 @@
 <template>
-<div id="MyRoom-Information">
+<div style="width: 80%; align-items: center; margin: auto;">
+  <div id="MyRoom-Information">
     <div id="MyRoom-Information1">
-    <h1 >{{ room.name }}</h1>
-    <hr>
-    <div>
-        Description: 
-        {{ room.summary }} wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-    </div>
+      <div>
+        <h1 style="text-align: center;">{{ roomingHouse.name }}</h1>  <!--TODO: remove Room Engineer-->
     
+        <hr>
+        <div> <!--TODO: remove text-->
+          Description: 
+          {{ roomingHouse.description }} 
+        </div>
+      </div>
+      <hr>
     </div>
 
-    <div id="MyRoom-Information2">
-    <div class="myroom-fee">Trạng thái phòng: <div>{{ roomingSubscription.state }}</div></div>
-    <div class="myroom-fee">Giá điện:  <div>{{ room.electricityPrice }}</div></div>
-    <div class="myroom-fee">Giá nước: <div>{{ room.waterPrice }}</div></div>
-    <div class="myroom-fee">Giá phòng: <div>{{ room.roomPrice }} / tháng</div></div>
-    <div class="myroom-fee">Rộng x Dài: <div>{{ room.width }} x {{ room.height }}</div></div>
-    <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }}</div></div>
-    <hr>
-    <button type="button" class="btn btn-danger">Hủy đăng ký</button>
-    <div class="myroom-fee" style="text-decoration: underline;">Phụ thu tháng này: <div></div></div>
-    <hr>
-    <div class="myroom-fee" style="font-weight: bold;">Tổng tiền hàng tháng: <div></div></div>
+    <div  style=" width: 40%;">
+      <div id="MyRoom-Information2">
+        <div class="myroom-fee">Địa chỉ: <div>{{ roomingHouse.address }}</div></div>
+        <div class="myroom-fee">Số phòng: <div>{{ roomingHouse.totalRoomNumber }}</div></div>
+        <div class="myroom-fee">Số phòng còn trống: <div>{{ roomingHouse.availableRoomNumber }}</div></div>
+        <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDate }}</div></div>
+      </div>
+    </div>
+  </div>
 
-    </div>
-</div>
-<div id="MyRoom-Information3">
-    <hr>
-    <div>
-    <h3>Đánh giá</h3>
-    </div>
-    <hr>
-    <div>
-    <h3>Chủ nhà</h3>
 
+  <p>
+    <div style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+      <h4 id="listRoomsHeader">Những phòng trọ của khu trọ này:</h4>
     </div>
+  </p>
+  <div class="collapse" id="collapseExample">
+    <div class="card card-body" v-for="room in rooms">
+
+      <img class="rounded-3" style="width: 300px; margin-right: 20px;" src="@/assets/room-info.jpg" alt="">
+
+      <div>
+        <h4>{{ room.name }}</h4>
+        <div>{{ room.summary }}</div>
+        <br>
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{ room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'}) }}</div></div>
+          <button class="btn btn-primary" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+
+
 </div>
 </template>
 
 <script>
-import room from "@/services/room.service";
-import roomingSubscriptionService from "@/services/roomingSubscription.service";
+import review from "@/components/Review.vue";
+
+import roomService from "@/services/room.service";
 import userService from "../services/user.service";
+import roomingHouseService from "@/services/roomingHouse.service";
+
 export default {
-    data() {
-        return {
-            roomingSubscriptionArr: [],
-            roomingSubscription: {},
-            room: {},
-            user: {}
-        };
-    },
+  data() {
+    return {
+        roomingHouseArr: [],
+        roomingHouse: {},
+        rooms: [],
+        user: {},
+    };
+  },
 
-    components: {
+  components: {
+    review
+  },
 
-    },
+  computed: {
+  },
 
-    computed: {
-    getRoom() {
-        return this.room;
+  methods: {
+    async goToRoomInfo(id){
+      this.$router.push({name: "room info", params: {id: id}})
     },
-    getRoomingSubscription() {
-        return this.roomingSubscription;
-    }
-    },
-
-    methods: {
     async checkLogin(){
         try {
-            var tokenBearer = this.$cookies.get("Token");
-            this.user = await userService.getCurrentUser(tokenBearer);
-            console.log(this.user.id)
+          var tokenBearer = this.$cookies.get("Token");
+          this.user = await userService.getCurrentUser(tokenBearer);
         } catch (error) {
             alert(error);
             this.$router.push({ name: "login" });
         }
-        },
-    async retrieveRoom() {
-        try {
-        this.roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(this.user.id);
-        console.log(this.roomingSubscriptionArr[0])
-        this.roomingSubscription = this.roomingSubscriptionArr[0];
-        this.room = await room.getOne(this.roomingSubscription.roomId);
-        } catch (err) {
+      },
+    async retrieveRoomingHouse() {
+      try {
+        this.roomingHouseArr = await roomingHouseService.getByTenantID(3); //TODO: Using real ID
+        this.roomingHouse = this.roomingHouseArr[0] //TODO: Using array instead of 1 element
+        this.retrieveRooms(this.roomingHouse.id)
+      } catch (err) {
         console.log(err);
-        }
+      }
+    },
+    async retrieveRooms(id) {
+      try {
+        this.rooms = await roomService.getAllByRoomingHouseID(id); // TODO: Pass the current use ID NOT SOME RANDOM ID
+      } catch (err) {
+        console.log(err);
+      }
     },
     showHeaderAndFooter() {
-        this.$emit("isShowHeaderAndFooter", true);
+      this.$emit("isShowHeaderAndFooter", true);
     },
-    },
+  },
 
-    mounted(){
+  mounted(){
     this.checkLogin();
     this.showHeaderAndFooter();
-    this.retrieveRoom();
-    }
+    this.retrieveRoomingHouse();
+  }
 }
 </script>
 
 <style>
 .myroom-fee{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
-#MyRoom-Information, #MyRoom-Information2, #MyRoom-Information3 {
-    margin: 100px;
+.card-body{
+  display: flex;
+  flex-direction: row;
+}
+#listRoomsHeader{
+  text-decoration: underline;
+}
+#listRoomsHeader:hover{
+  color: rgb(200, 203, 178);
+}
+hr{
+  margin-top: 50px;
+}
+#MyRoom-Information{
+  margin: 50px 0px 0 0px;
 }
 #MyRoom-Information {
-    justify-content: space-around;
-    font-size: large;
-    display: flex;
-    width: calc(100% - 100px);
+  justify-content: space-between;
+  font-size: large;
+  display: flex;
+  width: calc(100% - 100px);
 }
 #MyRoom-Information1 {
-    word-wrap: break-word;
-    width: 50%;
+  word-wrap: break-word;
+  width: 50%;
 }
 #MyRoom-Information2 {
-    word-wrap: break-word;
-    display: flex;
-    flex-direction: column;
-    width: 40%;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 #app{
-    overflow: hidden;
+  overflow: hidden;
 }
 #AppHeader {
-    position: static;
-    background-color: #0F2C59;
+  position: static;
+  background-color: #0F2C59;
 }
 </style>

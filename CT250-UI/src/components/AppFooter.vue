@@ -32,28 +32,9 @@
             <i class="fas fa-gem me-3 text-secondary"></i>IStay
           </h6>
           <p>
-            Here you can use rows and columns to organize your footer content. Lorem ipsum
-            dolor sit amet, consectetur adipisicing elit.
+            Mọi thắc mắc về tính bản quyền và độ xác thực của trang web xin vui lòng liên hệ qua email và số điện thoại.
           </p>
         </div>
-
-        <!-- <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-          <h6 class="text-uppercase fw-bold mb-4">
-            Products
-          </h6>
-          <p>
-            <a href="#!" class="text-reset">Angular</a>
-          </p>
-          <p>
-            <a href="#!" class="text-reset">React</a>
-          </p>
-          <p>
-            <a href="#!" class="text-reset">Vue</a>
-          </p>
-          <p>
-            <a href="#!" class="text-reset">Laravel</a>
-          </p>
-        </div> -->
 
         <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
           <h6 class="text-uppercase fw-bold mb-4">
@@ -67,9 +48,6 @@
           </p>
           <p>
             <a href="http://localhost:3001/myroom" class="text-reset">Phòng của tôi</a>
-          </p>
-          <p>
-            <a href="#!" class="text-reset">Hỗ trợ</a>
           </p>
         </div>
 

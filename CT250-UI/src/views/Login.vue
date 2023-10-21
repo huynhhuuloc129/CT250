@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import loginForm from "../components/LoginForm.vue"   
-import registerForm from "../components/RegisterForm.vue" 
-import userService from "../services/user.service"
+import loginForm from "@/components/LoginForm.vue"   
+import registerForm from "@/components/RegisterForm.vue" 
+import userService from "@/services/user.service"
 import { useCookies } from "vue3-cookies";
 
 export default {
@@ -71,14 +71,14 @@ export default {
                     this.$router.push({ name: "home_page" });
             else if (user.role == "lessor" )  this.$router.push({name: "lessor home page"});
             } catch (error) {
-                // this.$router.push({ name: "login" });
+                this.$router.push({ name: "login" });
             }
         },
         async onLogin(user) {
             try {
+                document.getElementById("login-form-close-btn").click();
                 const loginData = await userService.login(user);
                 this.$cookies.set("Token", 'Bearer ' + loginData.accessToken);
-                document.getElementById("login-form-close-btn").click();
 
                 let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
                 if (currentUser.role == "tenant" ) 
