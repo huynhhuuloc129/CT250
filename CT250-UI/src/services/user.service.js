@@ -24,9 +24,16 @@ class UserService {
     //   console.log(err)
     // })
   }
+  async getOneTenantByUserId(userId) {
+    try {
+      return (await this.api.get(`/tenants?userId=${userId}`)).data;
+    } catch (error) {
+      alert(err);
+    }
+  }
   async getOneLessor(id) {
     try {
-      return (await this.api.get(`/lessors/:${id}`)).data;
+      return (await this.api.get(`/lessors/${id}`)).data;
     } catch (error) {
       alert(err);
     }

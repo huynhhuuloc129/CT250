@@ -32,10 +32,10 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="http://localhost:3001/personal-information"><font-awesome-icon icon="user"/> Thông tin cá nhân</a></li>
                   <hr>
-                  <!-- <li><a class="dropdown-item" v-if="user.role == 'tenant'" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li> -->
-                  <li><a class="dropdown-item"  href="http://localhost:3001/my-rooming-house"><font-awesome-icon icon="building-user"/> Trọ của tôi</a></li>
-                  <hr> <!--TODO: Add this to above and also add 1 more line about other role v-if="user.role == 'lessor'"-->
-                  <li><a class="dropdown-item" ><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
+                  <li><a class="dropdown-item" v-if="user.role == 'tenant'" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
+                  <li><a class="dropdown-item" v-if="user.role == 'lessor'" href="http://localhost:3001/my-rooming-house"><font-awesome-icon icon="building-user"/> Trọ của tôi</a></li>
+                  <hr> 
+                  <li><a class="dropdown-item" style="cursor: pointer" @click="delete_cookie()"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
                 </ul>
               </div>
             </li>
@@ -55,6 +55,11 @@ export default {
     }
   },
   methods: {
+    delete_cookie() {
+      console.log("asdfdsafsdafasdf")
+      this.$cookies.set('Token', '');
+      this.$router.push({ name: "login" });
+    },
     async checkLogin(){
         try {
             var tokenBearer = this.$cookies.get("Token");

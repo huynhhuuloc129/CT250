@@ -31,8 +31,8 @@
   <div id="MyRoom-Information">
     <div id="MyRoom-Information1">
       <div>
-        <h1 style="text-align: center;">{{ room.name }} Room Engineer</h1>  <!--TODO: remove Room Engineer-->
-        <hr>
+        <h1 style="text-align: center;">{{ room.name }}</h1> 
+        <hr class="hr">
         <div style="display: flex; flex-direction: column;">
 
           <div class="roomDes" style="display: flex;">                      <!--TODO: using for loop-->
@@ -61,13 +61,13 @@
 
           
         </div>
-        <hr>
-        <div> <!--TODO: remove text-->
+        <hr class="hr">
+        <div> 
           Description: 
-          {{ room.summary }} Trải nghiệm homestay tinh tế của chúng tôi trong một khu vườn tươi tốt với một bungalow bên hồ bơi tuyệt đẹp có sức chứa 2 người. Gia đình thân thiện của chúng tôi mời bạn đắm chìm trong khung cảnh mê hoặc này, lấy cảm hứng từ kiến trúc Việt Nam đích thực. Tận hưởng khung cảnh ngoạn mục từ sân thượng riêng nhìn ra vườn và núi. Vị trí thuận tiện, khám phá các điểm tham quan gần đó như Bái Đính, Tràng An, Hàng Mua, Tam Cốc, Thủ đô cổ Hoa Lư, Văn Long, và Vườn quốc gia Cúc Phương.
+          {{ room.summary }}
         </div>
       </div>
-      <hr>
+      <hr class="hr">
       <div>
         <h4>Nơi này có những gì cho bạn</h4>
       </div>
@@ -81,22 +81,20 @@
         <div class="myroom-fee">Giá phòng: <div>{{ room.roomPrice }} / tháng</div></div>
         <div class="myroom-fee">Rộng x Dài: <div>{{ room.width }} m x {{ room.height }} m</div></div>
         <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }} m2</div></div>
-        <hr>
+        <hr class="hr" v-if="this.user.role == 'tenant'">
         <button type="button" v-if="this.user.role == 'tenant'" class="btn btn-danger">Đăng ký</button>
-        <button type="button" v-if="this.user.role == 'lessor'" class="btn btn-danger">Đăng ký</button>
-    
-        <hr>
+        <hr class="hr">
         <div class="myroom-fee" style="font-weight: bold;">Tổng tiền hàng tháng: <div>{{  }}</div></div>
       </div>
     </div>
     </div>
   <div id="MyRoom-Information3">
-    <hr>
+    <hr class="hr">
     <div>
       <h3>Đánh giá</h3>
       <review/>
     </div>
-    <hr>
+    <hr class="hr">
     <div>
       <h3>Chủ nhà</h3>
       <div style="display: flex; justify-content: space-around; ">
@@ -111,8 +109,8 @@
           </div>
         </div>
 
-        <div style="word-break: break-all; width: 70%;"> <!--TODO: remove text-->
-          {{lessor.summary}} saddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasf
+        <div style="word-break: break-all; width: 70%;">
+          {{lessor.summary}}
         </div>
         <div>
 
@@ -172,6 +170,7 @@ export default {
       try {
         var tokenBearer = this.$cookies.get("Token");
         this.user = await userService.getCurrentUser(tokenBearer);
+
       } catch (error) {
           alert(error);
           this.$router.push({ name: "login" });
@@ -179,13 +178,16 @@ export default {
     },
     async retrieveRoom() {
       try {
-        var roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(4);  // TODO: Passing real ID
+        // var tenant = await userService.getOneTenantByUserId(this.user.id)
+        var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(1);  //TODO: Pass real ID
         var roomingSubscription = roomingSubscriptionArr[0];
-        var myroom = await roomService.getOne(1); // TODO: Passing real ID
+        console.log(roomingSubscription)
+        var myroom = await roomService.getOne(1);  //TODO: Passing real ID
 
         this.room = await roomService.getOne(this.$route.params.id);
         this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'})
-        this.lessor = this.room.tenant.user;
+        console.log(this.room)
+        this.lessor = await userService.getOneLessor(1); //TODO: passing lessor id
         if (myroom.id == roomService.id) {
           this.$router.push("myroom")
         }
@@ -198,8 +200,8 @@ export default {
     },
   },
 
-  mounted(){
-    this.checkLogin();
+  async mounted(){
+    await this.checkLogin();
     this.showHeaderAndFooter();
     this.retrieveRoom();
   }
@@ -208,7 +210,7 @@ export default {
 
 <style>
 
-hr{
+.hr{
   margin-top: 50px;
 }
 .roomDesContent, .roomDesTitle{

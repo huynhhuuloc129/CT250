@@ -23,8 +23,13 @@ const routes = [
         component: () => import("@/views/MyRoom.vue"),
     },
     {
-        path: "/my-rooming-house", //TODO: fix this 
+        path: "/my-rooming-house", 
         name: "my rooming house",
+        component: () => import("@/views/MyRoomingHouse.vue"),
+    },
+    {
+        path: "/rooming-houses/:id",
+        name: "rooming house info",
         component: () => import("@/views/RoomingHouseInfo.vue"),
     },
     {

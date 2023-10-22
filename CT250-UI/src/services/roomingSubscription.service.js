@@ -4,10 +4,18 @@ class RoomingSubscriptionService {
   constructor(baseUrl = "http://localhost:3000/api") {
     this.api = createApiClient(baseUrl);
   }
-  async getByLessorId(id) {
+  async getOne(id){
     try {
-      const room = (await this.api.get("/rooming-subscriptions?lessorId="+id)).data;
-      return room.data;
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions/"+id)).data;
+      return roomingSubscription;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+  async getByTenantId(id) {
+    try {
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?ternantId="+id)).data; //TODO: fix ternant??????
+      return roomingSubscription.data;
     } catch (err) {
       console.log(err);
     }

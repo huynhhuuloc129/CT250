@@ -12,9 +12,9 @@ class RoomingHouseService {
       console.log(err);
     }
   }
-  async getByTenantID(id) {
+  async getByLessorId(id) {
     try {
-      const roomingHouse = (await this.api.get("/rooming-houses?tenantId="+id)).data;
+      const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id)).data;
       return roomingHouse.data;
     } catch (err) {
       console.log(err);

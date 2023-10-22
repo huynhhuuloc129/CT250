@@ -81,9 +81,9 @@ export default {
                 this.$cookies.set("Token", 'Bearer ' + loginData.accessToken);
 
                 let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
-                if (currentUser.role == "tenant" ) 
+                // if (currentUser.role == "tenant" ) 
                     this.$router.push({ name: "home_page" });
-                else this.$router.push({name: "lessor home page"});
+                // else this.$router.push({name: "lessor home page"});
             } catch (err) {
                 alert(err)
            }
@@ -112,8 +112,10 @@ export default {
 </script>
 
 <style>
-#app {
-  height: 100%;
+#login-session {
+  overflow: hidden;
+  width: 1707px;
+  height: 813px;
   background-image: url("../assets/Wallpaper.png");
   background-position: center;
   background-repeat: no-repeat;

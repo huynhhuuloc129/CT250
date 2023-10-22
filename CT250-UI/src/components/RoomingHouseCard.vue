@@ -1,12 +1,12 @@
 <template>
   <ul id="RoomCard-ul">
-    <li v-for="room in rooms">
+    <li v-for="roomingHouse in roomingHouses">
       <div class="card" style="width: 18rem;">
         <img class="card-img-top" src="@/assets/room-info.jpg" alt="Card image cap"> <!--TODO: Fix url-->
         <div class="card-body">
-          <h5 class="card-title">{{ room.name }}</h5>
-          <p class="card-text" style="max-height: 10rem;">{{ room.summary }}</p>
-          <a class="btn btn-primary" @click="goToRoomInfo(room.id)">Chi tiết</a>
+          <h5 class="card-title">{{ roomingHouse.name }}</h5>
+          <p class="card-text" style="max-height: 10rem;">{{ roomingHouse.description }}</p>
+          <a class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)">Chi tiết</a>
         </div>
       </div>
     </li>
@@ -16,11 +16,11 @@
 <script>
 export default {
   props: {
-    rooms: { type: Array, default: [] },
+    roomingHouses: { type: Array, default: [] },
   },
   methods: {
-    async goToRoomInfo(id){
-      this.$router.push({name: "room info", params: {id: id}})
+    async goToRoomingHouseInfo(id){
+      this.$router.push({name: "rooming house info", params: {id: id}})
     }
   }
 }

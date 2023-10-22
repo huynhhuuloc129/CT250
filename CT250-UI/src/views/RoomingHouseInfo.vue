@@ -1,56 +1,92 @@
 <template>
-<div style="width: 80%; align-items: center; margin: auto;">
-  <div id="MyRoom-Information">
-    <div id="MyRoom-Information1">
-      <div>
-        <h1 style="text-align: center;">{{ roomingHouse.name }}</h1>  <!--TODO: remove Room Engineer-->
-    
+  <div style="width: 80%; align-items: center; margin: auto;">
+    <div id="MyRoom-Information">
+      <div id="MyRoom-Information1">
+        <div>
+          <h1 style="text-align: center;">{{ roomingHouse.name }}</h1> 
+
+          <hr>
+          <div>
+            Description:
+            {{ roomingHouse.description }}
+          </div>
+        </div>
         <hr>
-        <div> <!--TODO: remove text-->
-          Description: 
-          {{ roomingHouse.description }} 
+      </div>
+
+      <div style=" width: 40%;">
+        <div id="MyRoom-Information2">
+          <div class="myroom-fee">Địa chỉ: <div>{{ roomingHouse.address }}</div>
+          </div>
+          <div class="myroom-fee">Số phòng: <div>{{ roomingHouse.totalRoomNumber }}</div>
+          </div>
+          <div class="myroom-fee">Số phòng còn trống: <div>{{ roomingHouse.availableRoomNumber }}</div>
+          </div>
+          <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDate }}</div>
+          </div>
         </div>
       </div>
-      <hr>
     </div>
 
-    <div  style=" width: 40%;">
-      <div id="MyRoom-Information2">
-        <div class="myroom-fee">Địa chỉ: <div>{{ roomingHouse.address }}</div></div>
-        <div class="myroom-fee">Số phòng: <div>{{ roomingHouse.totalRoomNumber }}</div></div>
-        <div class="myroom-fee">Số phòng còn trống: <div>{{ roomingHouse.availableRoomNumber }}</div></div>
-        <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDate }}</div></div>
+    <div class="container mt-4">
+      <div class="accordion" id="toggleExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="toggleHeader">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent"
+              aria-expanded="true" aria-controls="toggleContent">
+              <h4 id="listRoomsHeader">Những phòng trọ của khu trọ này</h4>
+            </button>
+          </h2>
+          <div id="toggleContent" class="accordion-collapse collapse show" aria-labelledby="toggleHeader"
+            data-bs-parent="#toggleExample">
+            <div class="accordion-body">
+              <div class="card card-body room-body" v-for="room in rooms">
+
+                <img class="rounded-3" style="width: 300px; margin-right: 20px;" src="@/assets/room-info.jpg" alt="">
+
+                <div>
+                  <h4>{{ room.name }}</h4>
+                  <div>{{ room.summary }}</div>
+                  <br>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{
+                      room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
+                    </div>
+                    <button class="btn btn-primary" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- <div>
+      <h3>Chủ nhà</h3>
+      <div style="display: flex; justify-content: space-around; ">
 
-  <p>
-    <div style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-      <h4 id="listRoomsHeader">Những phòng trọ của khu trọ này:</h4>
-    </div>
-  </p>
-  <div class="collapse" id="collapseExample">
-    <div class="card card-body" v-for="room in rooms">
-
-      <img class="rounded-3" style="width: 300px; margin-right: 20px;" src="@/assets/room-info.jpg" alt="">
-
-      <div>
-        <h4>{{ room.name }}</h4>
-        <div>{{ room.summary }}</div>
-        <br>
-        <div style="display: flex; flex-direction: row; justify-content: space-between;">
-          <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{ room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'}) }}</div></div>
-          <button class="btn btn-primary" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
+        <div style="display: flex; width: 30%;" >
+          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt=""> TODO: using real avatar TODO: add onclick event
+          <div style="padding-left: 30px;">
+            <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
+            <div><font-awesome-icon :icon="[ 'far', 'envelope' ]"/> {{ lessor.email }}</div>
+            <div><font-awesome-icon :icon="[ 'fas', 'phone' ]"/> {{lessor.tel}}</div>
+            <div><font-awesome-icon :icon="[ 'fas', 'gift' ]"/> {{lessor.dob}}</div>
+          </div>
         </div>
 
+        <div style="word-break: break-all; width: 70%;"> TODO: remove text
+          {{lessor.summary}} saddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasf
+        </div>
+        <div>
+
+        </div>
       </div>
-      
-    </div>
+    </div> -->
   </div>
-
-
-</div>
 </template>
 
 <script>
@@ -63,10 +99,10 @@ import roomingHouseService from "@/services/roomingHouse.service";
 export default {
   data() {
     return {
-        roomingHouseArr: [],
-        roomingHouse: {},
-        rooms: [],
-        user: {},
+      roomingHouseArr: [],
+      roomingHouse: {},
+      rooms: [],
+      user: {},
     };
   },
 
@@ -78,22 +114,22 @@ export default {
   },
 
   methods: {
-    async goToRoomInfo(id){
-      this.$router.push({name: "room info", params: {id: id}})
+    async goToRoomInfo(id) {
+      this.$router.push({ name: "room info", params: { id: id } })
     },
-    async checkLogin(){
-        try {
-          var tokenBearer = this.$cookies.get("Token");
-          this.user = await userService.getCurrentUser(tokenBearer);
-        } catch (error) {
-            alert(error);
-            this.$router.push({ name: "login" });
-        }
-      },
+    async checkLogin() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        this.user = await userService.getCurrentUser(tokenBearer);
+      } catch (error) {
+        alert(error);
+        this.$router.push({ name: "login" });
+      }
+    },
     async retrieveRoomingHouse() {
       try {
-        this.roomingHouseArr = await roomingHouseService.getByTenantID(3); //TODO: Using real ID
-        this.roomingHouse = this.roomingHouseArr[0] //TODO: Using array instead of 1 element
+        this.roomingHouseArr = await roomingHouseService.getByLessorId(1); //TODO: Using real ID
+        this.roomingHouse = this.roomingHouseArr[0] 
         this.retrieveRooms(this.roomingHouse.id)
       } catch (err) {
         console.log(err);
@@ -101,7 +137,7 @@ export default {
     },
     async retrieveRooms(id) {
       try {
-        this.rooms = await roomService.getAllByRoomingHouseID(id); // TODO: Pass the current use ID NOT SOME RANDOM ID
+        this.rooms = await roomService.getAllByRoomingHouseID(id);
       } catch (err) {
         console.log(err);
       }
@@ -111,7 +147,7 @@ export default {
     },
   },
 
-  mounted(){
+  mounted() {
     this.checkLogin();
     this.showHeaderAndFooter();
     this.retrieveRoomingHouse();
@@ -120,37 +156,36 @@ export default {
 </script>
 
 <style>
-.myroom-fee{
+.mt-4{
+  margin: 0;
+}
+.myroom-fee {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.card-body{
+
+.room-body {
   display: flex;
   flex-direction: row;
 }
-#listRoomsHeader{
-  text-decoration: underline;
-}
-#listRoomsHeader:hover{
-  color: rgb(200, 203, 178);
-}
-hr{
-  margin-top: 50px;
-}
-#MyRoom-Information{
+
+#MyRoom-Information {
   margin: 50px 0px 0 0px;
 }
+
 #MyRoom-Information {
   justify-content: space-between;
   font-size: large;
   display: flex;
   width: calc(100% - 100px);
 }
+
 #MyRoom-Information1 {
   word-wrap: break-word;
   width: 50%;
 }
+
 #MyRoom-Information2 {
   word-wrap: break-word;
   display: flex;
@@ -159,9 +194,7 @@ hr{
   border-radius: 10px;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
-#app{
-  overflow: hidden;
-}
+
 #AppHeader {
   position: static;
   background-color: #0F2C59;

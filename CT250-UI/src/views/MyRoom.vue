@@ -31,7 +31,7 @@
   <div id="MyRoom-Information">
     <div id="MyRoom-Information1">
       <div>
-        <h1 style="text-align: center;">{{ room.name }} Room Engineer</h1>  <!--TODO: remove Room Engineer-->
+        <h1 style="text-align: center;">{{ room.name }}</h1>  
         <hr>
         <div style="display: flex; flex-direction: column;">
 
@@ -62,9 +62,9 @@
           
         </div>
         <hr>
-        <div> <!--TODO: remove text-->
-          Description: 
-          {{ room.summary }} Trải nghiệm homestay tinh tế của chúng tôi trong một khu vườn tươi tốt với một bungalow bên hồ bơi tuyệt đẹp có sức chứa 2 người. Gia đình thân thiện của chúng tôi mời bạn đắm chìm trong khung cảnh mê hoặc này, lấy cảm hứng từ kiến trúc Việt Nam đích thực. Tận hưởng khung cảnh ngoạn mục từ sân thượng riêng nhìn ra vườn và núi. Vị trí thuận tiện, khám phá các điểm tham quan gần đó như Bái Đính, Tràng An, Hàng Mua, Tam Cốc, Thủ đô cổ Hoa Lư, Văn Long, và Vườn quốc gia Cúc Phương.
+        <div>
+          Mô tả: 
+          {{ room.summary }}
         </div>
       </div>
       <hr>
@@ -78,7 +78,7 @@
         <div class="myroom-fee" style="font-weight: bold;">Trạng thái phòng: <div>{{ roomingSubscription.state }}</div></div>
         <div class="myroom-fee">Giá điện: <div>{{ room.electricityPrice }}</div></div>
         <div class="myroom-fee">Giá nước: <div>{{ room.waterPrice }}</div></div>
-        <div class="myroom-fee">Giá phòng: <div>{{ room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'}) }} / tháng</div></div>
+        <div class="myroom-fee">Giá phòng: <div>{{ room.roomPrice }} / tháng</div></div>
         <div class="myroom-fee">Rộng x Dài: <div>{{ room.width }}m x {{ room.height }}m</div></div>
         <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }}m2</div></div>
         <hr>
@@ -110,8 +110,8 @@
           </div>
         </div>
 
-        <div style="word-break: break-all; width: 70%;"> <!--TODO: remove text-->
-          {{lessor.summary}} saddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasf
+        <div style="word-break: break-all; width: 70%;">
+          {{lessor.summary}} 
         </div>
         <div>
 
@@ -177,11 +177,12 @@ export default {
       },
     async retrieveRoom() {
       try {
-        this.roomingSubscriptionArr = await roomingSubscriptionService.getByLessorId(4);
+        this.roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(1); //TODO:
         this.roomingSubscription = this.roomingSubscriptionArr[0];
         console.log(this.roomingSubscription)
         this.room = await room.getOne(1); // TODO: Pass the current use ID NOT SOME RANDOM ID
         this.lessor = this.room.tenant.user;
+        this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'})
       } catch (err) {
         console.log(err);
       }
