@@ -3,7 +3,7 @@
     <div id="MyRoom-Information">
       <div id="MyRoom-Information1">
         <div>
-          <h1 style="text-align: center;">{{ roomingHouse.name }}</h1> 
+          <h1 style="text-align: center;">{{ roomingHouse.name }}</h1>
 
           <hr>
           <div>
@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div class="container mt-4">
+    <div class="container mt-4" style="margin-bottom: 20px;">
       <div class="accordion" id="toggleExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="toggleHeader">
@@ -40,7 +40,7 @@
           <div id="toggleContent" class="accordion-collapse collapse show" aria-labelledby="toggleHeader"
             data-bs-parent="#toggleExample">
             <div class="accordion-body">
-              <div class="card card-body room-body" v-for="room in rooms">
+              <div class="card card-body room-body" style="margin-bottom: 30px;" v-for="room in rooms">
 
                 <img class="rounded-3" style="width: 300px; margin-right: 20px;" src="@/assets/room-info.jpg" alt="">
 
@@ -64,28 +64,31 @@
       </div>
     </div>
 
-    <!-- <div>
+    <div>
       <h3>Chủ nhà</h3>
       <div style="display: flex; justify-content: space-around; ">
 
-        <div style="display: flex; width: 30%;" >
-          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt=""> TODO: using real avatar TODO: add onclick event
+        <div style="display: flex; width: 30%;">
+          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt=""><!-- TODO: using real avatar -->
+          <!-- TODO: add on click event -->
           <div style="padding-left: 30px;">
             <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
-            <div><font-awesome-icon :icon="[ 'far', 'envelope' ]"/> {{ lessor.email }}</div>
-            <div><font-awesome-icon :icon="[ 'fas', 'phone' ]"/> {{lessor.tel}}</div>
-            <div><font-awesome-icon :icon="[ 'fas', 'gift' ]"/> {{lessor.dob}}</div>
+            <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
+            <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
+            <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
           </div>
         </div>
 
-        <div style="word-break: break-all; width: 70%;"> TODO: remove text
-          {{lessor.summary}} saddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasfsaddfsadfdsafsdafasdfsdafsdaasdfasdfasdfsdfdasf
-        </div>
+        <div style="word-break: normal; width: 60%;"> <!--TODO: remove text-->
+          Tôi, với tư cách là chủ trọ của khu vực này, cam kết tạo ra một môi trường sống an toàn, sạch sẽ và thoải mái
+          cho tất cả cư dân. Chúng tôi luôn lắng nghe ý kiến và phản hồi từ mọi người để cải thiện dịch vụ và điều kiện
+          sống tại đây. Chúng tôi có một đội ngũ quản lý chuyên nghiệp và thân thiện, sẵn sàng hỗ trợ trong mọi tình
+          huống, từ việc bảo trì căn hộ đến giải quyết các vấn đề liên quan đến cuộc sống hàng ngày. </div>
         <div>
 
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -99,10 +102,10 @@ import roomingHouseService from "@/services/roomingHouse.service";
 export default {
   data() {
     return {
-      roomingHouseArr: [],
       roomingHouse: {},
       rooms: [],
       user: {},
+      lessor: {}
     };
   },
 
@@ -128,8 +131,9 @@ export default {
     },
     async retrieveRoomingHouse() {
       try {
-        this.roomingHouseArr = await roomingHouseService.getByLessorId(1); //TODO: Using real ID
-        this.roomingHouse = this.roomingHouseArr[0] 
+        this.roomingHouse = await roomingHouseService.getOne(this.$route.params.id);
+        this.lessor = this.roomingHouse.lessor.user;
+        console.log(this.lessor)
         this.retrieveRooms(this.roomingHouse.id)
       } catch (err) {
         console.log(err);
@@ -156,9 +160,10 @@ export default {
 </script>
 
 <style>
-.mt-4{
+.mt-4 {
   margin: 0;
 }
+
 .myroom-fee {
   display: flex;
   flex-direction: row;
@@ -198,5 +203,4 @@ export default {
 #AppHeader {
   position: static;
   background-color: #0F2C59;
-}
-</style>
+}</style>

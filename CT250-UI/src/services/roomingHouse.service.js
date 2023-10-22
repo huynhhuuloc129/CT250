@@ -12,6 +12,14 @@ class RoomingHouseService {
       console.log(err);
     }
   }
+  async getOne(id) {
+    try {
+      const roomingHouses = (await this.api.get("/rooming-houses/" + id)).data;
+      return roomingHouses;
+    } catch (err) {
+      console.log(err);
+    }
+  }
   async getByLessorId(id) {
     try {
       const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id)).data;

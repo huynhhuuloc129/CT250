@@ -5,7 +5,6 @@
                 <a class="list-group-item list-group-item-action" v-for="roomingHouse in roomingHouses"
                     id="list-home-list {{ roomingHouse.id }}" data-bs-toggle="list" v-bind:href="'#home' + roomingHouse.id"
                     role="tab" aria-controls="home">{{ roomingHouse.name }}</a>
-                <!-- <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">asdfsafa</a> -->
             </div>
         </div>
         <div class="tab-content">
@@ -13,7 +12,7 @@
                 role="tabpanel">
                 <div style="display: flex; justify-content: space-between;">
                     <h3>{{ roomingHouse.name }}</h3>
-                    <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)">Xem chi tiết</button> 
+                    <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)">Xem chi tiết</button>
                 </div>
                 <div>
                     <p style="font-weight: bold;">Mô tả:</p> {{ roomingHouse.description }}
@@ -25,7 +24,7 @@
 
                 <p>
                     <a class="btn btn-dark" data-bs-toggle="collapse" :href="'#collapseExample' + roomingHouse.id"
-                        role="button" aria-expanded="false" :aria-controls="'collapseExample'+roomingHouse.id">
+                        role="button" aria-expanded="false" :aria-controls="'collapseExample' + roomingHouse.id">
                         Các phòng
                     </a>
                 </p>
@@ -40,12 +39,12 @@
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="toggleHeader">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#toggleContent" aria-expanded="true"
+                                                :data-bs-target="'#toggleContent' + room.id" aria-expanded="true"
                                                 aria-controls="toggleContent">
                                                 Mô tả
                                             </button>
                                         </h2>
-                                        <div id="toggleContent" class="accordion-collapse collapse show"
+                                        <div :id="'toggleContent' + room.id" class="accordion-collapse collapse show"
                                             aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
                                             <div class="accordion-body">
                                                 {{ room.summary }}
@@ -57,12 +56,15 @@
 
                         </div>
                         <div style="display: flex; justify-content: space-between;">
-                            <div style="margin: 20px;">Giá tiền: <div style="color: red;">{{ room.roomPrice.toLocaleString('vi', {style : 'currency', currency : 'VND'}) }}</div></div>
-                            <button class="btn btn-primary" style="margin: 20px;" @click="goToRoomInfo(room.id)" >Xem chi tiết phòng</button>
+                            <div style="margin: 20px;">Giá tiền: <div style="color: red;">{{
+                                room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
+                            </div>
+                            <button class="btn btn-primary" style="margin: 20px;" @click="goToRoomInfo(room.id)">Xem chi
+                                tiết phòng</button>
                         </div>
                     </div>
                 </div>
-    
+
             </div>
         </div>
     </div>
@@ -112,11 +114,11 @@ export default {
                 console.log(err);
             }
         },
-        async goToRoomInfo(id){
-            this.$router.push({name: "room info", params: {id: id}})
+        async goToRoomInfo(id) {
+            this.$router.push({ name: "room info", params: { id: id } })
         },
-        async goToRoomingHouseInfo(id){
-            this.$router.push({name: "rooming house info", params: {id: id}})
+        async goToRoomingHouseInfo(id) {
+            this.$router.push({ name: "rooming house info", params: { id: id } })
         },
         showHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", true);

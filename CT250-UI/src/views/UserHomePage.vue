@@ -7,8 +7,10 @@
   </div>
 
   <div id="UserHomePage-category">
-    <div class="category-icon" @click="searchByRoom()"><font-awesome-icon icon="house-user"/> Phòng trọ</div>
-    <div class="category-icon" @click="searchByRoomingHouse()"><font-awesome-icon icon="house" /> Khu trọ</div>
+    <div class="category-icon" id="category-room" @click="searchByRoom()"><font-awesome-icon icon="house-user" /> Phòng
+      trọ</div>
+    <div class="category-icon" id="category-rooming-house" @click="searchByRoomingHouse()"><font-awesome-icon
+        icon="house" /> Khu trọ</div>
   </div>
 
   <div id="UserHomePage-listRoom">
@@ -54,12 +56,17 @@ export default {
     },
   },
   methods: {
-    async searchByRoom(){
+    async searchByRoom() {
       this.active = 'room'
+      document.getElementById('category-room').style.backgroundColor = "rgb(138, 137, 135)"
+      document.getElementById('category-rooming-house').style.backgroundColor = ""
+
     },
-    async searchByRoomingHouse(){
+    async searchByRoomingHouse() {
       this.active = 'rooming house'
-    },  
+      document.getElementById('category-room').style.backgroundColor = ""
+      document.getElementById('category-rooming-house').style.backgroundColor = "rgb(138, 137, 135)"
+    },
     async checkLogin() {
       try {
         var tokenBearer = this.$cookies.get("Token");
@@ -92,6 +99,7 @@ export default {
     }
   },
   mounted() {
+    document.getElementById('category-room').style.backgroundColor = "rgb(138, 137, 135)"
     this.showHeaderAndFooter();
     this.checkLogin();
     this.retrieveRooms();
@@ -101,6 +109,11 @@ export default {
 </script>
 
 <style>
+#category-room,
+#category-rooming-house {
+  transition-duration: .5s;
+}
+
 #search-bar {
   border-radius: 50%;
 }

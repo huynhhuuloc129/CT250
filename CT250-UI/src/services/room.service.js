@@ -14,7 +14,7 @@ class RoomService {
   }
   async getAllByRoomingHouseID(id) {
     try {
-      const rooms = (await this.api.get("/rooms?roomingHouseId=" + id)).data;
+      const rooms = (await this.api.get("/rooming-houses/"+id+"/rooms")).data;
       return rooms.data;
     } catch (err) {
       console.log(err);
