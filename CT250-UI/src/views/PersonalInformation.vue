@@ -3,7 +3,7 @@
         <div class="PersonalInformation-session" id="first-session">
             <img id="PersonalInformation-avatar" src="../assets/home-page-background.jpg" alt="">
             <div>
-                <h2>{{ user.name }}</h2>
+                <h2>{{ user.fullName }}</h2>
                 <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ user.email }}</div>
                 <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ user.tel }}</div>
                 <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ user.dob }}</div>
@@ -53,7 +53,7 @@
             </div>
             <div>
                 <h4>Giới tính: </h4>
-                <p>{{ user.gender }}</p>
+                <p>{{ genders }}</p>
             </div>
             <div>
                 <h4>Địa chỉ hiện tại: </h4>
@@ -62,7 +62,7 @@
         </div>
 
 
-        <div class="PersonalInformation-session">
+        <div v-if="user.role == 'tenant'" class="PersonalInformation-session">
             <h4>Các phòng trọ đã và đang ở: </h4>
             <br>
             <div class="card" v-for="roomingSubscription in roomingSubscriptions">
@@ -71,7 +71,7 @@
                     <h5 class="card-title">Mô tả</h5>
                     <p class="card-text">{{ roomingSubscription.room.summary }}</p>
                     <div style="display: flex; justify-content: space-between;">
-                        <a :href="'http://localhost:3001/rooms/' + roomingSubscription.room.id" class="btn btn-primary">Xem
+                        <a :href="'http://localhost:3001/rooms/' + roomingSubscription.room.id" style="background-color: #2c5596;" class="btn btn-primary">Xem
                             chi
                             tiết</a>
                         <span>Trạng thái: <span style="color: green;">{{ roomingSubscription.state }}</span></span>
@@ -158,10 +158,10 @@
 
                             <div class="form-floating form-element">
                                 <select class="form-select form-select-sm" id="floatingSelect"
-                                    aria-label=".form-select-sm role" v-model="user.gender" @focus="buttonDisabled = false"
+                                    aria-label=".form-select-sm role" v-model="genders" @focus="buttonDisabled = false"
                                     required>
                                     <option value="Nam">Nam</option>
-                                    <option value="Nu">Nữ</option>
+                                    <option value="Nữ">Nữ</option>
                                 </select>
                                 <label for="floatingSelect">Giới tính</label>
                             </div>
@@ -174,7 +174,7 @@
 
                             <div style="display:flex; align-items:center; justify-content: center; padding: 10px 0 0 0;">
                                 <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button"
-                                    v-on:click="onUpdateSummary" :disabled="buttonDisabled">Cập nhật</button>
+                                    v-on:click="onUpdatePersonalInformation" :disabled="buttonDisabled">Cập nhật</button>
                             </div>
                         </form>
                     </div>
@@ -194,7 +194,9 @@ export default {
             buttonDisabled: false,
             token: "",
             dobString: "",
-            roomingSubscriptions: []
+            roomingSubscriptions: [],
+            userUpdateForm: {},
+            genders: "Nam"
         };
     },
     components: {
@@ -206,17 +208,17 @@ export default {
             return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
         },
         async getRoomingSubscriptions() {
+            console.log(this.user)
+
             try {
-                this.roomingSubscriptions = await roomingSubscriptionService.getByTenantId(1);
+                if (this.user.role == 'tenant')
+                this.roomingSubscriptions = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
             } catch (err) {
                 console.log(err)
             }
         },
         async onUpdateSummary() {
             try {
-                if (this.user.gender == "Nam") this.user.gender = "male";
-                else this.user.gender = "female";
-
                 const response = await userService.updateUser(this.user, this.token);
 
                 console.log(this.token, this.user);
@@ -228,12 +230,23 @@ export default {
         },
         async onUpdatePersonalInformation() {
             try {
-                if (this.user.gender == "Nam") this.user.gender = "male";
-                else this.user.gender = "female";
+                this.user.dob = new Date(this.user.dob);
+                this.user.dob = this.formatDate(this.user.dob);
+                if (this.genders = 'Nam') this.user.gender = 'male'; else this.user.gender = 'Nữ'
+                this.userUpdateForm = {
+                    "username": this.user.username,
+                    "refreshToken": this.user.refreshToken,
+                    "email": this.user.email,
+                    "firstName": this.user.firstName,
+                    "lastName": this.user.lastName,
+                    "citizenID": this.user.citizenID,
+                    "dob": this.user.dob,
+                    "gender": this.user.gender,
+                    "address": this.user.address,
+                    "tel": this.user.tel
+                }
+                const response = await userService.updateUser(this.user.id, this.userUpdateForm, this.token);
 
-                const response = await userService.updateUser(this.user, this.token);
-
-                console.log(this.token, this.user);
                 this.buttonDisabled = true;
             } catch (err) {
                 console.log(err)
@@ -256,10 +269,8 @@ export default {
             try {
                 this.token = this.$cookies.get("Token");
                 this.user = await userService.getCurrentUser(this.token);
-
-                if (this.user.gender == "male") this.user.gender = "Nam";
-                else this.user.gender = "Nữ";
-
+                if (this.user.gender == 'male') this.genders = 'Nam'; else this.genders = 'Nữ'
+                
                 this.user.dob = new Date(this.user.dob);
                 this.user.dob = this.formatDate(this.user.dob);
                 this.dobString = this.user.dob.toString();
@@ -272,8 +283,8 @@ export default {
             this.$emit("isShowHeaderAndFooter", true);
         },
     },
-    mounted() {
-        this.checkLogin();
+    async mounted() {
+        await this.checkLogin();
         this.showHeaderAndFooter();
         this.getRoomingSubscriptions();
     }

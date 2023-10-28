@@ -162,7 +162,8 @@ export default {
       roomingSubscription: {},
       room: {},
       user: {},
-      lessor: {}
+      lessor: {},
+      tenant: {}
     };
   },
 
@@ -184,7 +185,7 @@ export default {
       try {
         var tokenBearer = this.$cookies.get("Token");
         this.user = await userService.getCurrentUser(tokenBearer);
-
+        this.tenant = this.user.tenant;
       } catch (error) {
         alert(error);
         this.$router.push({ name: "login" });
@@ -192,20 +193,14 @@ export default {
     },
     async retrieveRoom() {
       try {
-        // var tenant = await userService.getOneTenantByUserId(this.user.id)
-        // if (this.user.role == "tenant") {
-        //   var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(1);  //TODO: Pass real ID
-        //   var roomingSubscription = roomingSubscriptionArr[0];
-        //   console.log(roomingSubscription)
-        //   var myroom = await roomService.getOne(1);  //TODO: Passing real Id
-        // }
-
-        this.room = await roomService.getOne(1);
-        this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
-        this.lessor = this.room.lessor.user
-        // if (myroom.id == roomService.id) {
-        //   this.$router.push("myroom")
-        // }
+        var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.tenant.id);
+        var roomingSubscription = roomingSubscriptionArr[0];
+        if (roomingSubscription.state == 'staying') {
+          var myroom = roomingSubscription.room;
+          this.room = await roomService.getOne(myroom.id);
+          this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
+          this.lessor = this.room.lessor.user
+        }
       } catch (err) {
         console.log(err);
       }

@@ -83,9 +83,16 @@
           </div>
           <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }} m2</div>
           </div>
+          <div class="myroom-fee" v-if="this.user.role == 'lessor'">Trạng thái phòng: <div>{{ room.state }}</div>
+          </div>
           <hr class="hr" v-if="this.user.role == 'tenant'">
-          <button type="button" v-if="this.user.role == 'tenant'" class="btn btn-danger">Đăng ký</button>
-        </div>
+          <button type="button" v-if="user.role == 'tenant'" :disabled="isDisabled" class="btn btn-danger">Đăng
+            ký</button>
+          </div>
+          <button v-if="this.user.role == 'lessor' && this.room.lessor.id == this.lessor.id" type="button"
+                  style="width: 100%; margin-top: 2px; font-weight: bold; background-color: red;"
+                  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                  Thêm người ở</button>
 
         <hr class="hr">
         <div>
@@ -93,7 +100,7 @@
         </div>
       </div>
     </div>
-    
+
     <div id="MyRoom-Information3">
       <hr class="hr">
       <div>
@@ -160,7 +167,8 @@ export default {
       roomingSubscription: {},
       room: {},
       user: {},
-      lessor: {}
+      lessor: {},
+      tenant: {}
     };
   },
 
@@ -169,6 +177,9 @@ export default {
   },
 
   computed: {
+    isDisabled() {
+      return (this.tenant != null && this.tenant.isRegistered) || this.room.state == 'unavailable'
+    },
     getRoom() {
       return this.room;
     },
@@ -191,19 +202,23 @@ export default {
     async retrieveRoom() {
       try {
         // var tenant = await userService.getOneTenantByUserId(this.user.id)
-        // if (this.user.role == "tenant") {
-        //   var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(1);  //TODO: Pass real ID
-        //   var roomingSubscription = roomingSubscriptionArr[0];
-        //   console.log(roomingSubscription)
-        //   var myroom = await roomService.getOne(1);  //TODO: Passing real Id
-        // }
+        if (this.user.role == "tenant") {
+          var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.user.tenant.id); 
+          var roomingSubscription = roomingSubscriptionArr[0];
+          if (roomingSubscription.state == 'staying') {
+            var myroom = roomingSubscription.room;  
+            this.tenant = roomingSubscription.tenant;
+          }
+        }
+
 
         this.room = await roomService.getOne(this.$route.params.id);
         this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
         this.lessor = this.room.lessor.user
-        // if (myroom.id == roomService.id) {
-        //   this.$router.push("myroom")
-        // }
+
+        if (myroom.id == this.room.id) {
+          this.$router.push({ name: "myroom" })
+        }
       } catch (err) {
         console.log(err);
       }
@@ -332,4 +347,5 @@ export default {
 #AppHeader {
   position: static;
   background-color: #0F2C59;
-}</style>
+}
+</style>

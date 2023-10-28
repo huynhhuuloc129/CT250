@@ -6,13 +6,17 @@
                     id="list-home-list {{ roomingHouse.id }}" data-bs-toggle="list" v-bind:href="'#home' + roomingHouse.id"
                     role="tab" aria-controls="home">{{ roomingHouse.name }}</a>
             </div>
+            <button type="button"
+                style="width: 100%; margin-top: 2px; font-weight: bold; background-color: rgb(255, 190, 69);"
+                class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addRoomingHouseModal">+</button>
         </div>
+
         <div class="tab-content">
             <div class="tab-pane fade" v-bind:id="'home' + roomingHouse.id" v-for="(roomingHouse, index) in roomingHouses"
                 role="tabpanel">
                 <div style="display: flex; justify-content: space-between;">
                     <h3>{{ roomingHouse.name }}</h3>
-                    <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)">Xem chi tiết</button>
+                    <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)" style="background-color: #2c5596;">Xem chi tiết</button>
                 </div>
                 <div>
                     <p style="font-weight: bold;">Mô tả:</p> {{ roomingHouse.description }}
@@ -28,7 +32,11 @@
                         Các phòng
                     </a>
                 </p>
-                <div class="collapse" v-bind:id="'collapseExample' + roomingHouse.id" v-for="room in rooms[index]">
+                <button type="button"
+                    style="width: 100%; margin-top: 2px; font-weight: bold; background-color: rgb(255, 190, 69);"
+                    class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                    Thêm phòng</button>
+                <div class="collapse" v-bind:id="'collapseExample' + roomingHouse.id" v-for="room in rooms[index]">   
                     <div class="card card-body">
                         <h3>
                             {{ room.name }}
@@ -59,7 +67,7 @@
                             <div style="margin: 20px;">Giá tiền: <div style="color: red;">{{
                                 room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
                             </div>
-                            <button class="btn btn-primary" style="margin: 20px;" @click="goToRoomInfo(room.id)">Xem chi
+                            <button class="btn btn-primary" style="margin: 20px; background-color: #2c5596;" @click="goToRoomInfo(room.id)">Xem chi
                                 tiết phòng</button>
                         </div>
                     </div>
@@ -68,25 +76,65 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
+        data-backdrop="false">
+        <div class="modal-dialog-centered modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginTitle">Thêm phòng</h5>
+                    <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <addRoomForm />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addRoomingHouseModal" tabindex="-1" aria-labelledby="addRoomingHouseModalLabel"
+        aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog-centered modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginTitle">Thêm trọ</h5>
+                    <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <addRoomingHouseForm />
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import userService from '@/services/user.service';
+import addRoomingHouseForm from '@/components/AddRoomingHouseForm.vue';
+import addRoomForm from '@/components/AddRoomForm.vue';
 import roomingHouseService from '@/services/roomingHouse.service.js';
 import roomService from '@/services/room.service.js';
+import userService from '@/services/user.service';
 export default {
     data() {
         return {
             user: {},
+            lessor: {},
             roomingHouses: [],
             rooms: [[]]
         }
+    },
+    components: {
+        addRoomingHouseForm,
+        addRoomForm
     },
     methods: {
         async checkLogin() {
             try {
                 var tokenBearer = this.$cookies.get("Token");
                 this.user = await userService.getCurrentUser(tokenBearer);
+                this.lessor = user.lessor;
             } catch (error) {
                 alert(error);
                 this.$router.push({ name: "login" });
@@ -94,7 +142,7 @@ export default {
         },
         async retrieveRoomingHouses() {
             try {
-                this.roomingHouses = await roomingHouseService.getByLessorId(this.user.id); //TODO: Using real ID
+                this.roomingHouses = await roomingHouseService.getByLessorId(this.lessor.id);
                 for (var i = 0; i < this.roomingHouses.length; i++) {
                     let roomss = []
                     this.rooms[i] = []
@@ -146,5 +194,4 @@ export default {
 #AppHeader {
     position: static;
     background-color: #0F2C59;
-}
-</style>
+}</style>

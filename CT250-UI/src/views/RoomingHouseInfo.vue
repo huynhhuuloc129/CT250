@@ -52,7 +52,7 @@
                     <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{
                       room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
                     </div>
-                    <button class="btn btn-primary" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
+                    <button class="btn btn-primary" style="background-color: #2c5596;" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
                   </div>
 
                 </div>

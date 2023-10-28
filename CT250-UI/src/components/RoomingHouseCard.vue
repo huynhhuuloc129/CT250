@@ -6,7 +6,7 @@
         <div class="card-body">
           <h5 class="card-title">{{ roomingHouse.name }}</h5>
           <p class="card-text" style="max-height: 10rem;">{{ roomingHouse.description }}</p>
-          <a class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)">Chi tiết</a>
+          <a class="btn btn-primary" style="background-color: #2c5596;" @click="goToRoomingHouseInfo(roomingHouse.id)">Chi tiết</a>
         </div>
       </div>
     </li>

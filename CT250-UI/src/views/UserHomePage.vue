@@ -29,6 +29,7 @@ import roomingHouseService from "@/services/roomingHouse.service";
 export default {
   data() {
     return {
+      user: {},
       rooms: [],
       search: "",
       filteredRoom: [],
@@ -59,19 +60,24 @@ export default {
     async searchByRoom() {
       this.active = 'room'
       document.getElementById('category-room').style.backgroundColor = "rgb(138, 137, 135)"
+      document.getElementById('category-room').style.color = "white"
       document.getElementById('category-rooming-house').style.backgroundColor = ""
+      document.getElementById('category-rooming-house').style.color = "black"
+
 
     },
     async searchByRoomingHouse() {
       this.active = 'rooming house'
+      document.getElementById('category-room').style.color = "black"
       document.getElementById('category-room').style.backgroundColor = ""
       document.getElementById('category-rooming-house').style.backgroundColor = "rgb(138, 137, 135)"
+      document.getElementById('category-rooming-house').style.color = "white"
     },
     async checkLogin() {
       try {
         var tokenBearer = this.$cookies.get("Token");
-        let user = await userService.getCurrentUser(tokenBearer);
-        if (tokenBearer == null) throw new Error('Not login');
+        this.user = await userService.getCurrentUser(tokenBearer);
+        console.log(this.user)
       } catch (error) {
         this.$router.push({ name: "login" });
         alert(error);
@@ -100,6 +106,7 @@ export default {
   },
   mounted() {
     document.getElementById('category-room').style.backgroundColor = "rgb(138, 137, 135)"
+    document.getElementById('category-room').style.color = "white"
     this.showHeaderAndFooter();
     this.checkLogin();
     this.retrieveRooms();
@@ -119,7 +126,8 @@ export default {
 }
 
 #AppHeader {
-  background-color: rgb(138, 137, 135);
+  position: static;
+  background-color: #0F2C59;
 }
 
 #app {
@@ -127,6 +135,7 @@ export default {
 }
 
 .category-icon {
+  background-color: rgb(226, 226, 226);
   text-align: center;
   width: 190px;
   cursor: pointer;
@@ -157,7 +166,6 @@ export default {
 }
 
 #UserHomePage-wallpaper {
-  position: relative;
   width: 100%;
   height: auto;
   z-index: -5;
@@ -168,4 +176,5 @@ export default {
   top: -10vh;
   width: 60%;
   margin: auto;
-}</style>
+}
+</style>

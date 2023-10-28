@@ -35,7 +35,7 @@ class UserService {
     try {
       return (await this.api.get(`/lessors/${id}`)).data;
     } catch (error) {
-      alert(err);
+      console.log(err);
     }
   }
   async getCurrentUser(token) {
@@ -63,16 +63,21 @@ class UserService {
       alert(err);
     }
   }
-  async updateUser(data, token){
-    return await axios.patch("http://localhost:3000/api/users/" + data.id, {
-      headers: {
-        Authorization: token
-      }
-      }).then((res) => {
-          return res.data;
-    }).catch ((err) => {
-      console.log(err)
-    })
+  async updateUser(id, data, token){
+    try {
+    return await this.api.patch("/users/"+id, data);
+    } catch (err) {
+      alert(err);
+    }
+    // return await axios.patch("http://localhost:3000/api/users/" + data.id, {
+    //   headers: {
+    //     Authorization: token
+    //   }
+    //   }).then((res) => {
+    //       return res.data;
+    // }).catch ((err) => {
+    //   console.log(err)
+    // })
   }
 }
 
