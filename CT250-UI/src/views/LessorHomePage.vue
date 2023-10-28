@@ -45,7 +45,7 @@ export default {
 
           if (user.role != "lessor") this.$router.push("home page");
         } catch (error) {
-            alert(error);
+            // alert(error);
             this.$router.push({ name: "login" });
         }
       },

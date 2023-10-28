@@ -1,49 +1,54 @@
 <template>
-<div id="login-session">
-    <div class="login-title container align-self-center">
-        <p id="title">IStay</p>
-        <p id="quote">Find your comfort</p>
-        <button type="button" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
-            Đăng nhập
-        </button>
-        <div id="login-register">Không phải thành viên? <span id="login-register-button" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</span></div>
-    </div>
+    <div id="login-session">
+        <div class="login-title container align-self-center">
+            <p id="title">IStay</p>
+            <p id="quote">Find your comfort</p>
+            <button type="button" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                Đăng nhập
+            </button>
+            <div id="login-register">Không phải thành viên? <span id="login-register-button" data-bs-toggle="modal"
+                    data-bs-target="#registerModal">Đăng ký</span></div>
+        </div>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-backdrop="false">
-        <div class="modal-dialog-centered modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginTitle">Đăng nhập</h5>
-                    <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true"
+            data-backdrop="false">
+            <div class="modal-dialog-centered modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginTitle">Đăng nhập</h5>
+                        <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <loginForm @submit="onLogin" />
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <loginForm @submit="onLogin"/>
+            </div>
+        </div>
+
+        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true"
+            data-backdrop="false">
+            <div class="modal-dialog-centered modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginTitle">Đăng ký</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <registerForm @submit="onSignup" />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true" data-backdrop="false">
-        <div class="modal-dialog-centered modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginTitle">Đăng ký</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <registerForm @submit="onSignup"/>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </template>
 
 <script>
-import loginForm from "@/components/LoginForm.vue"   
-import registerForm from "@/components/RegisterForm.vue" 
+import loginForm from "@/components/LoginForm.vue"
+import registerForm from "@/components/RegisterForm.vue"
 import userService from "@/services/user.service"
 import { useCookies } from "vue3-cookies";
+import Swal from 'sweetalert2'
 
 export default {
     setup() {
@@ -63,13 +68,12 @@ export default {
 
     },
     methods: {
-        async checkLogin(){
+        async checkLogin() {
             try {
-            var tokenBearer = this.$cookies.get("Token");
-            let user = await userService.getCurrentUser(tokenBearer);
-            if (user.role == "tenant" ) 
+                var tokenBearer = this.$cookies.get("Token");
+                let user = await userService.getCurrentUser(tokenBearer);
+                if (user.username.length > 0)
                     this.$router.push({ name: "home_page" });
-            else if (user.role == "lessor" )  this.$router.push({name: "lessor home page"});
             } catch (error) {
                 this.$router.push({ name: "login" });
             }
@@ -81,31 +85,58 @@ export default {
                 this.$cookies.set("Token", 'Bearer ' + loginData.accessToken);
 
                 let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
-                
-                // if (currentUser.role == "tenant" ) 
-                this.$router.push({ name: "home_page" });
-                // else this.$router.push({name: "lessor home page"});
+                if (currentUser.username.length > 0) this.$router.push({ name: "home_page" });
             } catch (err) {
-                alert(err)
-           }
+                this.displayError(err)
+            }
         },
         async onSignup(user, role) {
             try {
+                this.validateSignUpForm(user)
                 if (role == "lessor") {
                     await userService.signUpLessor(user);
                 } else {
                     await userService.signUpTenant(user);
                 }
+                await this.displaySuccess("Đăng ký thành công")
+                await this.sleep(1000)
                 this.$router.go();
             } catch (err) {
-                alert(err)
+                this.displayError(err)
             }
+        },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         },
         hideHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", false);
         },
+        displaySuccess(message) {
+            Swal.fire({
+                // position: 'top-end',
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1000
+            })
+        },
+        displayError(message) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        },
+        validateSignUpForm(user) {
+            if (user.username.length <= 6) throw new Error("Tài khoản phải dài hơn 6 ký tự")
+            if (user.password.length <= 1) throw new Error("Mật khẩu phải dài hơn 6 ký tự")
+            if (user.lastName.length <= 1) throw new Error("Họ phải dài hơn 1 ký tự")
+            if (user.firstName.length <= 1) throw new Error("Tên phải dài hơn 1 ký tự")
+            if (user.citizenID.length <= 8) throw new Error("Căn cước công dân phải dài hơn 8 ký tự")
+        }
     },
-    mounted(){
+    mounted() {
         this.hideHeaderAndFooter();
         this.checkLogin();
     }
@@ -114,49 +145,55 @@ export default {
 
 <style>
 #login-session {
-  overflow: hidden;
-  width: 100%;
-  height: 1000px;
-  background-image: url("../assets/Wallpaper.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+    overflow: hidden;
+    width: 100%;
+    height: 1000px;
+    background-image: url("../assets/Wallpaper.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
-#title{
+
+#title {
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-    font-family: 'Lalezar'; 
+    font-family: 'Lalezar';
     font-size: 60px;
 }
-#loginTitle{
+
+#loginTitle {
     position: relative;
     left: 39%;
 }
-#login-register-button{
+
+#login-register-button {
     cursor: pointer;
     text-decoration: underline;
 }
-#login-register-button:hover{
+
+#login-register-button:hover {
     color: #0F2C59;
 }
-#login-register{
-    font-family: 'inter'; 
+
+#login-register {
+    font-family: 'inter';
     font-style: italic;
 }
-#quote{
-    font-family: 'inter'; 
+
+#quote {
+    font-family: 'inter';
     font-style: italic;
     font-size: 30px;
 }
 
-.login-title{
-    
+.login-title {
+
     color: #FFF0DC;
     position: fixed;
     top: 35%;
     left: 10%;
 }
 
-.login-button{
+.login-button {
     color: #FFF0DC;
     font-size: 30px;
     border-radius: 50px;
@@ -164,10 +201,7 @@ export default {
     background-color: #0F2C59;
 }
 
-.login-button:hover{
+.login-button:hover {
     background-color: #1b3f75;
 }
-
-
-
 </style>

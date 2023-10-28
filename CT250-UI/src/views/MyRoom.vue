@@ -187,7 +187,7 @@ export default {
         this.user = await userService.getCurrentUser(tokenBearer);
         this.tenant = this.user.tenant;
       } catch (error) {
-        alert(error);
+        // alert(error);
         this.$router.push({ name: "login" });
       }
     },

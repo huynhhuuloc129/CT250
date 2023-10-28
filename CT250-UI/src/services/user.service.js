@@ -6,11 +6,11 @@ class UserService {
     this.api = createApiClient(baseUrl);
   }
   async login(data) {
-     try {
-      const resp =  await this.api.post("/auth/login", data);
+    try {
+      const resp = await this.api.post("/auth/login", data);
       return resp.data;
     } catch (err) {
-      alert(err);
+      throw new Error("Sai tên tài khoản hoặc mật khẩu!");
     }
   }
   async getOneTenant(token) {
@@ -28,14 +28,15 @@ class UserService {
     try {
       return (await this.api.get(`/tenants?userId=${userId}`)).data;
     } catch (error) {
-      alert(err);
+      return error;
+
     }
   }
   async getOneLessor(id) {
     try {
       return (await this.api.get(`/lessors/${id}`)).data;
     } catch (error) {
-      console.log(err);
+      return error;
     }
   }
   async getCurrentUser(token) {
@@ -43,32 +44,30 @@ class UserService {
       headers: {
         Authorization: token
       }
-      }).then((res) => {
-          return res.data;
-    }).catch ((err) => {
-     return err
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      return err
     })
   }
   async signUpLessor(data) {
     try {
       return await this.api.post("/auth/signup-lessor", data);
     } catch (err) {
-      console.log(err);
+      throw err
     }
   }
   async signUpTenant(data) {
     try {
       return await this.api.post("/auth/signup-tenant", data);
     } catch (err) {
-      alert(err);
+      return err;
+
     }
   }
-  async updateUser(id, data, token){
-    try {
-    return await this.api.patch("/users/"+id, data);
-    } catch (err) {
-      alert(err);
-    }
+  async updateUser(id, data, token) {
+    return await this.api.patch("/users/" + id, data);
+
     // return await axios.patch("http://localhost:3000/api/users/" + data.id, {
     //   headers: {
     //     Authorization: token

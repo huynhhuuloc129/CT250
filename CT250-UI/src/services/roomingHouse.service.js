@@ -9,7 +9,7 @@ class RoomingHouseService {
       const roomingHouses = (await this.api.get("/rooming-houses")).data;
       return roomingHouses.data;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
   async getOne(id) {
@@ -17,7 +17,7 @@ class RoomingHouseService {
       const roomingHouses = (await this.api.get("/rooming-houses/" + id)).data;
       return roomingHouses;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
   async getByLessorId(id) {
@@ -25,7 +25,7 @@ class RoomingHouseService {
       const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id)).data;
       return roomingHouse.data;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
 }

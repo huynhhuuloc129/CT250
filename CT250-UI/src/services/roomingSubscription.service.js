@@ -9,7 +9,7 @@ class RoomingSubscriptionService {
       const roomingSubscription = (await this.api.get("/rooming-subscriptions/" + id)).data;
       return roomingSubscription;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
   async getByTenantId(id) {
@@ -17,7 +17,7 @@ class RoomingSubscriptionService {
       const roomingSubscription = (await this.api.get("/rooming-subscriptions?tenantId=" + id)).data; //TODO: fix ternant??????
       return roomingSubscription.data;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
 }

@@ -136,7 +136,7 @@ export default {
                 this.user = await userService.getCurrentUser(tokenBearer);
                 this.lessor = user.lessor;
             } catch (error) {
-                alert(error);
+                // alert(error);
                 this.$router.push({ name: "login" });
             }
         },

@@ -9,7 +9,7 @@ class RoomService {
       const rooms = (await this.api.get("/rooms")).data;
       return rooms.data;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
   async getAllByRoomingHouseID(id) {
@@ -17,7 +17,7 @@ class RoomService {
       const rooms = (await this.api.get("/rooming-houses/"+id+"/rooms")).data;
       return rooms.data;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
   async getOne(id) {
@@ -25,7 +25,7 @@ class RoomService {
       const room = (await this.api.get("/rooms/" + id)).data;
       return room;
     } catch (err) {
-      console.log(err);
+      return err;
     }
   }
 }

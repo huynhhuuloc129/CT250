@@ -170,7 +170,7 @@ export default {
             this.$router.push("tenant personal information")
           }
         } catch (error) {
-            alert(error);
+            // alert(error);
             this.$router.push({ name: "login" });
         }
       },

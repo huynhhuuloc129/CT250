@@ -65,7 +65,7 @@ export default {
             var tokenBearer = this.$cookies.get("Token");
             this.user = await userService.getCurrentUser(tokenBearer);
         } catch (error) {
-            alert(error);
+            // alert(error);
             this.$router.push({ name: "login" });
         }
     },

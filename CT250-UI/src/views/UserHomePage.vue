@@ -80,7 +80,7 @@ export default {
         console.log(this.user)
       } catch (error) {
         this.$router.push({ name: "login" });
-        alert(error);
+        // alert(error);
       }
     },
     async retrieveRoomingHouse() {

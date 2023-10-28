@@ -225,7 +225,7 @@ export default {
                 this.buttonDisabled = true;
             } catch (err) {
                 console.log(err)
-                alert(err)
+                // alert(err)
             }
         },
         async onUpdatePersonalInformation() {
@@ -250,7 +250,7 @@ export default {
                 this.buttonDisabled = true;
             } catch (err) {
                 console.log(err)
-                alert(err)
+                // alert(err)
             }
         },
         async onSignup(user, role) {
@@ -262,7 +262,7 @@ export default {
                 }
                 this.$router.go();
             } catch (err) {
-                alert(err)
+                // alert(err)
             }
         },
         async checkLogin() {
@@ -275,7 +275,7 @@ export default {
                 this.user.dob = this.formatDate(this.user.dob);
                 this.dobString = this.user.dob.toString();
             } catch (error) {
-                alert(error);
+                // alert(error);
                 this.$router.push({ name: "login" });
             }
         },
