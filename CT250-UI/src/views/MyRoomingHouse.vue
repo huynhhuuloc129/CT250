@@ -16,7 +16,12 @@
                 role="tabpanel">
                 <div style="display: flex; justify-content: space-between;">
                     <h3>{{ roomingHouse.name }}</h3>
-                    <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)" style="background-color: #2c5596;">Xem chi tiết</button>
+                    <div>
+                        <button class="btn btn-danger" @click="deleteRoomingHouse(roomingHouse.id)"
+                            style="margin-right: 5px;">Xóa</button>
+                        <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)"
+                            style="background-color: #2c5596;">Xem chi tiết</button>
+                    </div>
                 </div>
                 <div>
                     <p style="font-weight: bold;">Mô tả:</p> {{ roomingHouse.description }}
@@ -36,11 +41,15 @@
                     style="width: 100%; margin-top: 2px; font-weight: bold; background-color: rgb(255, 190, 69);"
                     class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
                     Thêm phòng</button>
-                <div class="collapse" v-bind:id="'collapseExample' + roomingHouse.id" v-for="room in rooms[index]">   
+                <div class="collapse" v-bind:id="'collapseExample' + roomingHouse.id" v-for="room in rooms[index]">
                     <div class="card card-body">
-                        <h3>
-                            {{ room.name }}
-                        </h3>
+                        <div style="display: flex; justify-content: space-between;">
+                            <h3>
+                                {{ room.name }}
+                            </h3>
+                            <button class="btn btn-danger" @click="deleteRoom(room.id)"
+                                style="margin-right: 5px;">Xóa</button>
+                        </div>
                         <div>
                             <div class="container mt-4">
                                 <div class="accordion" id="toggleExample">
@@ -67,7 +76,8 @@
                             <div style="margin: 20px;">Giá tiền: <div style="color: red;">{{
                                 room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
                             </div>
-                            <button class="btn btn-primary" style="margin: 20px; background-color: #2c5596;" @click="goToRoomInfo(room.id)">Xem chi
+                            <button class="btn btn-primary" style="margin: 20px; background-color: #2c5596;"
+                                @click="goToRoomInfo(room.id)">Xem chi
                                 tiết phòng</button>
                         </div>
                     </div>
@@ -116,6 +126,8 @@ import addRoomForm from '@/components/AddRoomForm.vue';
 import roomingHouseService from '@/services/roomingHouse.service.js';
 import roomService from '@/services/room.service.js';
 import userService from '@/services/user.service';
+import Swal from 'sweetalert2'
+
 export default {
     data() {
         return {
@@ -168,6 +180,38 @@ export default {
         async goToRoomingHouseInfo(id) {
             this.$router.push({ name: "rooming house info", params: { id: id } })
         },
+        async deleteRoomingHouse(id) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa khu trọ này không?',
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: 'Xóa',
+                denyButtonText: `Hủy`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire('Đã xóa!', '', 'success')
+                } else if (result.isDenied) {
+                    Swal.fire('Đã hủy thao tác xóa', '', 'info')
+                }
+            })
+        },
+        async deleteRoom(id) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa phòng trọ này không?',
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: 'Xóa',
+                denyButtonText: `Hủy`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire('Đã xóa!', '', 'success')
+                } else if (result.isDenied) {
+                    Swal.fire('Đã hủy thao tác xóa', '', 'info')
+                }
+            })
+        },
         showHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", true);
         },
@@ -194,4 +238,5 @@ export default {
 #AppHeader {
     position: static;
     background-color: #0F2C59;
-}</style>
+}
+</style>
