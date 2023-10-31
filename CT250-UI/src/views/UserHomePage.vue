@@ -1,6 +1,17 @@
 <template>
   <img id="UserHomePage-wallpaper" src="../assets/home-page-background.jpg" alt="">
 
+  <div id="slogan1"
+    style="text-align: right; font-family: 'Lalezar'; font-size: 25px;  position: absolute; top: 18%; right: 15px; color: #64451d;">
+    <div style="font-weight: 200; font-family: 'inter'; font-style: italic;">
+      Phòng trọ ước mơ của
+      <br>
+      bạn bắt đầu từ đây
+    </div>
+    <button type="button" class="btn btn-danger" style="padding: 10px 20px; font-size: 25px; margin: 15px;">Tìm kiếm ngay</button>
+  </div>
+
+
   <div class="input-group rounded" id="homePage-search-bar">
     <input type="search" id="search-bar" class="form-control rounded" v-model="search" placeholder="Tìm kiếm trên IStay"
       aria-label="Search" aria-describedby="search-addon" />
@@ -77,10 +88,8 @@ export default {
       try {
         var tokenBearer = this.$cookies.get("Token");
         this.user = await userService.getCurrentUser(tokenBearer);
-        console.log(this.user)
       } catch (error) {
         this.$router.push({ name: "login" });
-        // alert(error);
       }
     },
     async retrieveRoomingHouse() {

@@ -1,4 +1,5 @@
 import createApiClient from "./api.service";
+import axios from 'axios';
 
 class RoomingHouseService {
   constructor(baseUrl = "http://localhost:3000/api") {
@@ -9,7 +10,7 @@ class RoomingHouseService {
       const roomingHouses = (await this.api.get("/rooming-houses")).data;
       return roomingHouses.data;
     } catch (err) {
-      return err;
+      throw err;
     }
   }
   async getOne(id) {
@@ -17,7 +18,7 @@ class RoomingHouseService {
       const roomingHouses = (await this.api.get("/rooming-houses/" + id)).data;
       return roomingHouses;
     } catch (err) {
-      return err;
+      throw err;
     }
   }
   async getByLessorId(id) {
@@ -25,8 +26,21 @@ class RoomingHouseService {
       const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id)).data;
       return roomingHouse.data;
     } catch (err) {
-      return err;
+      throw err;
     }
+  }
+  async create(data, token) {
+    // var header = {
+    // }
+    return await axios.post("http://localhost:3000/api/rooming-houses", data, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
   }
 }
 

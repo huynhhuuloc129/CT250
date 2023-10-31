@@ -82,11 +82,12 @@ export default {
             try {
                 document.getElementById("login-form-close-btn").click();
                 const loginData = await userService.login(user);
-                this.$cookies.set("Token", 'Bearer ' + loginData.accessToken);
+                this.$cookies.set("Token", loginData.accessToken);
 
-                let currentUser = await userService.getCurrentUser('Bearer ' + loginData.accessToken)
+                let currentUser = await userService.getCurrentUser(loginData.accessToken)
                 if (currentUser.username.length > 0) this.$router.push({ name: "home_page" });
             } catch (err) {
+                console.log(err)
                 this.displayError(err)
             }
         },

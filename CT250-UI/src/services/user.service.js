@@ -28,7 +28,7 @@ class UserService {
     try {
       return (await this.api.get(`/tenants?userId=${userId}`)).data;
     } catch (error) {
-      return error;
+      throw error;
 
     }
   }
@@ -42,12 +42,12 @@ class UserService {
   async getCurrentUser(token) {
     return await axios.get("http://localhost:3000/api/users/me", {
       headers: {
-        Authorization: token
+        Authorization: 'Bearer '+token
       }
     }).then((res) => {
       return res.data;
     }).catch((err) => {
-      return err
+      throw err
     })
   }
   async signUpLessor(data) {
@@ -61,8 +61,7 @@ class UserService {
     try {
       return await this.api.post("/auth/signup-tenant", data);
     } catch (err) {
-      return err;
-
+      throw err
     }
   }
   async updateUser(id, data, token) {

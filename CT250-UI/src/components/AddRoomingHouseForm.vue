@@ -2,9 +2,11 @@
   <form id="registerForm">
 
     <div class="form-floating">
-      <input type="text" class="form-control" v-model="category" id="registerCategory"
-        @focus="buttonDisabled = false" placeholder="" required>
-      <label for="registerCategory">Loại hình cho thuê</label>
+      <select class="form-select form-select-sm" v-model="roomingHouseRequest.categoryId" id="floatingSelect"
+        @focus="buttonDisabled = false" aria-label=".form-select-sm role" required>
+        <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+      </select>
+      <label for="floatingSelect">Chọn loại hình cho trọ</label>
     </div>
 
     <div class="form-floating">
@@ -13,11 +15,11 @@
       <label for="registerInputName">Tên trọ</label>
     </div>
 
-    <div class="form-floating">
-      <input type="text" class="form-control" v-model="roomingHouseRequest.description" id="registerInputDescription"
-        @focus="buttonDisabled = false" placeholder="" required>
-      <label for="registerInputDescription">Mô tả</label>
+    <div class="form-group" style="margin-bottom: 20px;">
+      <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Mô tả cho khu trọ" rows="3" v-model="roomingHouseRequest.description" required></textarea>
     </div>
+
+
 
     <div class="form-floating">
       <input type="text" class="form-control" v-model="roomingHouseRequest.address" id="registerInputAddress"
@@ -26,20 +28,23 @@
     </div>
 
     <div class="form-floating">
-      <input type="date" class="form-control" v-model="roomingHouseRequest.paymentExpiresDate" id="registerInputPaymentExpiresDate"
-        @focus="buttonDisabled = false" placeholder="" required>
+      <select class="form-select" aria-label="Default select example" v-model="roomingHouseRequest.paymentExpiresDay" required>
+        <option selected>Chọn ngày</option>
+        <option v-for="i in 31" :value="i">{{ i }}</option>
+      </select>
       <label for="registerInputPaymentExpiresDate">Ngày hết hạn đóng tiền</label>
     </div>
 
-  
+
     <div style="display:flex; align-items:center; justify-content: center; padding: 10px 0 0 0;">
-      <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button" v-on:click="onSignup"
+      <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button" v-on:click="onAddRoomingHouse"
         :disabled="buttonDisabled">Thêm trọ</button>
     </div>
   </form>
 </template>
     
 <script>
+import categoryService from '@/services/category.service';
 export default {
   data() {
     return {
@@ -49,16 +54,27 @@ export default {
         "name": "",
         "description": "",
         "address": "",
-        "paymentExpiresDate": "1000-1-1"
+        "paymentExpiresDay": 0
       },
-      catetgory: ""
+      catetgory: "",
+      categories: []
     }
   },
   methods: {
-    onSignup() {
+    onAddRoomingHouse() {
       this.buttonDisabled = true;
-      this.$emit("submit", this.user, this.role);
-    }
+      this.$emit("submit", this.roomingHouseRequest);
+    },
+    async retrieveCategories() {
+      try {
+        this.categories = await categoryService.getAll();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  },
+  mounted() {
+    this.retrieveCategories();
   }
 }
 

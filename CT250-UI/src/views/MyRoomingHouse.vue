@@ -1,4 +1,5 @@
 <template>
+    <h3 v-if="roomingHouses.length == 0" style="align-items: center; text-align: center; padding-top: 15px;">Hiện tại bạn chưa có phòng trọ nào</h3>
     <div id="MyRoomingHouse">
         <div class="MyRoomingHouse-tabpanel" role="tabpanel">
             <div class="list-group" id="myList" role="tablist">
@@ -113,7 +114,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <addRoomingHouseForm />
+                    <addRoomingHouseForm @submit="onAddingRoomingHouse"/>
                 </div>
             </div>
         </div>
@@ -134,7 +135,7 @@ export default {
             user: {},
             lessor: {},
             roomingHouses: [],
-            rooms: [[]]
+            rooms: [[]],
         }
     },
     components: {
@@ -146,10 +147,25 @@ export default {
             try {
                 var tokenBearer = this.$cookies.get("Token");
                 this.user = await userService.getCurrentUser(tokenBearer);
-                this.lessor = user.lessor;
+                this.lessor = this.user.lessor;
+                // console.log(this.lessor)
+
             } catch (error) {
-                // alert(error);
                 this.$router.push({ name: "login" });
+            }
+        },
+        async onAddingRoomingHouse(addingRoomingHouseRequest) {
+            try {
+                console.log(addingRoomingHouseRequest)
+                var tokenBearer = this.$cookies.get("Token");
+                console.log(tokenBearer)
+                await roomingHouseService.create(addingRoomingHouseRequest, tokenBearer)
+                this.displaySuccess("Đăng ký thành công")
+                await this.sleep(1000)
+                this.$router.go();
+            } catch (err) {
+                console.log(err)
+                this.displayError(err)
             }
         },
         async retrieveRoomingHouses() {
@@ -212,11 +228,32 @@ export default {
                 }
             })
         },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        displaySuccess(message) {
+            Swal.fire({
+                // position: 'top-end',
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1000
+            })
+        },
+        displayError(message) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        },
         showHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", true);
         },
     },
-    mounted() {
+    async mounted() {
+        await this.checkLogin();
         this.showHeaderAndFooter();
         this.retrieveRoomingHouses();
     }

@@ -56,7 +56,6 @@ export default {
   },
   methods: {
     delete_cookie() {
-      console.log("asdfdsafsdafasdf")
       this.$cookies.set('Token', '');
       this.$router.push({ name: "login" });
     },
