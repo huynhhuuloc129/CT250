@@ -31,68 +31,128 @@
     <div id="MyRoom-Information">
       <div id="MyRoom-Information1">
         <div>
-          <h1 style="text-align: center;">{{ room.name }}</h1>
+          <input type="text" v-if="enableEditRoom" class="form-control" v-model="room.name">
+          <h1 v-else style="text-align: center;">{{ room.name }}</h1>
           <hr class="hr">
           <div style="display: flex; flex-direction: column;">
 
-            <div class="roomDes" style="display: flex;"> <!--TODO: using for loop-->
+            <div v-for="roomDescription in room.descriptions" class="roomDes" style="display: flex;">
               <font-awesome-icon icon="wifi" />
               <div>
-                <div class="roomDesTitle">{{ roomDescription[0].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[0].Content }}</div>
+                <div class="roomDesTitle">{{ roomDescription.title }}</div>
+                <div class="roomDesContent">{{ roomDescription.content }}</div>
               </div>
             </div>
 
-            <div class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="kitchen-set" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription[1].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[1].Content }}</div>
-              </div>
-            </div>
-
-            <div class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="shower" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription[2].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[2].Content }}</div>
-              </div>
-            </div>
-
-
+            <button v-if="checkOwner" type="button" style="font-weight: bold;" class="btn btn-light"
+              data-bs-toggle="modal" data-bs-target="#addDescriptionModal">
+              Thêm mô tả ngắn</button>
           </div>
-          <hr class="hr">
+          <hr class="hr" v-if="room.descriptions != null && room.descriptions.length > 0">
           <div>
-            Description:
-            {{ room.summary }}
+            Mô tả:
+            <input v-if="enableEditRoom" v-model="room.summary" type="textarea" class="form-control" style="height: 100%;"
+              rows="100">
+            <span v-else>
+              {{ room.summary }}
+            </span>
           </div>
         </div>
       </div>
 
       <div style=" width: 40%; display: flex; flex-direction: column;">
         <div id="MyRoom-Information2">
-          <div class="myroom-fee" style="font-weight: bold;">Trạng thái phòng: <div>{{ roomingSubscription.state }}</div>
+          <div class="myroom-fee" style="font-weight: bold;">Trạng thái phòng:
+            <div>{{ roomingSubscription.state }}</div>
           </div>
-          <div class="myroom-fee">Giá điện: <div>{{ room.electricityPrice }}</div>
+
+          <div class="myroom-fee">Giá điện:
+            <input type="number" v-if="enableEditRoom" v-model="room.electricityPrice"
+              style="width: 20%; margin-bottom: 5px;">
+            <div v-else>{{ room.electricityPrice }}</div>
           </div>
-          <div class="myroom-fee">Giá nước: <div>{{ room.waterPrice }}</div>
+
+          <div class="myroom-fee">Giá nước:
+            <input type="number" v-if="enableEditRoom" v-model="room.waterPrice" style="width: 20%; margin-bottom: 5px;">
+            <div v-else>{{ room.waterPrice }}</div>
           </div>
-          <div class="myroom-fee">Giá phòng: <div>{{ room.roomPrice }} / tháng</div>
+
+          <div class="myroom-fee">Giá phòng:
+            <input type="number" v-if="enableEditRoom" v-model="room.roomPrice" style="width: 20%; margin-bottom: 5px;">
+            <div v-else>{{ room.roomPrice }} / tháng</div>
           </div>
-          <div class="myroom-fee">Rộng x Dài: <div>{{ room.width }} m x {{ room.height }} m</div>
+
+          <div class="myroom-fee">
+            <div style="width: 30%;">Rộng x Dài:</div>
+            <div v-if="enableEditRoom" style="align-items: right; text-align: right;">
+              <input type="number" v-model="room.width" style="width: 25%; margin-bottom: 5px;">
+              <span> x </span>
+              <input type="number" v-model="room.height" style="width: 25%; margin-bottom: 5px;">
+            </div>
+            <div v-else>{{ room.width }} m x {{ room.height }} m</div>
           </div>
-          <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }} m2</div>
+
+          <div class="myroom-fee">Diện tích:
+            <div>{{ room.dimensions }} m2</div>
           </div>
-          <div class="myroom-fee" v-if="this.user.role == 'lessor'">Trạng thái phòng: <div>{{ room.state }}</div>
+
+          <div class="myroom-fee" v-if="user.role == 'lessor'">Trạng thái phòng: <div>{{ room.state }}</div>
           </div>
-          <hr class="hr" v-if="this.user.role == 'tenant'">
-          <button type="button" v-if="user.role == 'tenant'" :disabled="isDisabled" class="btn btn-danger">Đăng
-            ký</button>
+
+          <div v-if="user.role == 'tenant'" style="display: flex; flex-direction: column;">
+            <hr class="hr">
+            <button type="button"
+              v-if="roomingSubscriptionReq[0] != null && roomingSubscriptionReq[0].state == 'wating_tenant_call'"
+              style="font-weight: bold; color: white;" :disabled=true class="btn btn-info"
+              @click="confirmRegisterRoom()">Đang chờ chủ nhà phản hồi</button> <!-- // used to show only -->
+            <button type="button" v-else :disabled="isDisabled" class="btn btn-danger" @click="confirmRegisterRoom()">Đăng
+              ký</button>
+
           </div>
-          <button v-if="this.user.role == 'lessor' && this.room.lessor.id == this.lessor.id" type="button"
-                  style="width: 100%; margin-top: 2px; font-weight: bold; background-color: red;"
-                  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
-                  Thêm người ở</button>
+        </div>
+
+        <button v-if="checkOwner" type="button"
+          style="width: 100%; margin-top: 2px; font-weight: bold; background-color: red;" class="btn btn-primary"
+          data-bs-toggle="modal">
+          Thêm người ở</button>
+
+        <!-- rooming subscription request  -->
+        <div v-if="checkOwner && room.state != 'unavailable'" class="container mt-5" style="margin-bottom: 20px;">
+          <div class="accordion" id="toggleExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="toggleHeader">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent"
+                  aria-expanded="true" aria-controls="toggleContent">
+                  <div id="listRoomsHeader">Những yêu cầu đăng ký trọ</div>
+                </button>
+              </h2>
+              <div id="toggleContent" class="accordion-collapse collapse show" aria-labelledby="toggleHeader"
+                data-bs-parent="#toggleExample">
+                <div class="accordion-body">
+                  <div class="card card-body room-body" style="margin-bottom: 30px;"
+                    v-for="(tenantOne, index) in tenantReq">
+
+                    <div style="display: flex; justify-content: space-between;">
+                      <div style="display: flex; flex-direction: column;">
+                        <div style="font-weight: bold;">{{ tenantOne.user.fullName }}</div>
+                        <div>{{ tenantOne.user.email }}</div>
+                        <div>{{ tenantOne.user.tel }}</div>
+                      </div>
+                      <div>
+                        <button type="button" style="margin-right: 5px;" class="btn btn-success"
+                          @click="confirmApproveTenant(roomingSubscriptionReq[index].id)">Chấp nhận</button>
+                        <button type="button" class="btn btn-danger"
+                          @click="confirmRejectTenant(roomingSubscriptionReq[index].id)">Từ chối</button>
+
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <hr class="hr">
         <div>
@@ -100,6 +160,13 @@
         </div>
       </div>
     </div>
+    <h2 style="text-align: right; cursor: pointer;" v-if="this.room.lessor.id == this.user.lessor?.id">
+      <button class="btn btn-primary" v-if="enableEditRoom" style="margin-right: 5px;" @click="editRoom()">Cập
+        nhật</button>
+      <button class="btn btn-light" @click="enableEditRoom = !enableEditRoom">
+        <font-awesome-icon icon="pen-to-square" style="font-size: 23px;" />
+      </button>
+    </h2>
 
     <div id="MyRoom-Information3">
       <hr class="hr">
@@ -107,33 +174,77 @@
         <h3>Đánh giá</h3>
         <review />
       </div>
-      <hr class="hr">
-      <div>
-        <h3>Chủ nhà</h3>
-        <div style="display: flex; justify-content: space-around; ">
 
-          <div style="display: flex; width: 30%;">
-            <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt="">
-            <!--TODO: using real avatar--> <!--TODO: add onclick event-->
-            <div style="padding-left: 30px;">
-              <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
-              <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
-              <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
-              <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
+      <div v-if="this.room.lessor.id != this.user.lessor?.id">
+        <hr class="hr">
+        <div>
+          <h3>Chủ nhà</h3>
+          <div style="display: flex; justify-content: space-around; ">
+
+            <div style="display: flex; width: 30%;">
+              <img class="rounded-circle" style="width: 100px;" src="@/assets/avatar.jpg" alt="">
+              <!--TODO: using real avatar--> <!--TODO: add onclick event-->
+              <div style="padding-left: 30px;">
+                <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
+                <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
+                <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
+                <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
+              </div>
+            </div>
+
+            <div style="word-break: break-all; width: 70%;">
+              Tôi xin giới thiệu mình là chủ trọ của khu vực này. Với tinh thần nhiệt tình và lòng nhiệt huyết trong việc
+              quản lý và xây dựng một môi trường sống thoải mái và an lành cho tất cả cư dân, tôi luôn sẵn sàng làm việc
+              chăm sóc và đảm bảo rằng mọi người tại khu này đều có một trải nghiệm sống tốt đẹp. Tôi rất mong được hợp
+              tác
+              với mọi người để tạo nên một cộng đồng thân thiện và đoàn kết, nơi mà mọi người có thể gọi đó là ngôi nhà
+              thứ
+              hai của mình. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào, xin đừng ngần ngại liên hệ với tôi. Cảm ơn bạn đã
+              đến và làm cho khu vực này trở thành một nơi đáng sống!
+            </div>
+            <div>
+
             </div>
           </div>
+        </div>
+      </div>
 
-          <div style="word-break: break-all; width: 70%;">
-            Tôi xin giới thiệu mình là chủ trọ của khu vực này. Với tinh thần nhiệt tình và lòng nhiệt huyết trong việc
-            quản lý và xây dựng một môi trường sống thoải mái và an lành cho tất cả cư dân, tôi luôn sẵn sàng làm việc
-            chăm sóc và đảm bảo rằng mọi người tại khu này đều có một trải nghiệm sống tốt đẹp. Tôi rất mong được hợp tác
-            với mọi người để tạo nên một cộng đồng thân thiện và đoàn kết, nơi mà mọi người có thể gọi đó là ngôi nhà thứ
-            hai của mình. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào, xin đừng ngần ngại liên hệ với tôi. Cảm ơn bạn đã
-            đến và làm cho khu vực này trở thành một nơi đáng sống!
-          </div>
-          <div>
+    </div>
+  </div>
 
-          </div>
+
+  <!-- adding room description form -->
+  <div class="modal fade" id="addDescriptionModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginTitle">Thêm mô tả ngắn</h5>
+          <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input id="form2Example1" class="form-control" @focus="buttonDescriptionDisable = false"
+                v-model="roomDescriptionRequest.title" placeholder="" required />
+              <label class="form-label" for="form2Example1">Tiêu đề</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input id="form2Example2" class="form-control" @focus="buttonDescriptionDisable = false"
+                v-model="roomDescriptionRequest.content" placeholder="" required />
+              <label class="form-label" for="form2Example2">Nội dung</label>
+            </div>
+
+
+            <div class="text-center">
+              <button type="submit" class=" btn btn-primary btn-block mb-4 loginForm-button"
+                v-on:click="onAddingRoomDescription" :disabled="buttonDescriptionDisable">Thêm</button>
+            </div>
+
+          </form>
         </div>
       </div>
     </div>
@@ -141,34 +252,39 @@
 </template>
 
 <script>
+import roomingSubscriptionReqService from "@/services/roomingSubscriptionRequest.service";
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
+import roomDescriptionService from "@/services/roomDescription.service"
+import reviewService from "@/services/review.service"
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
+import Swal from 'sweetalert2'
 
 export default {
   data() {
     return {
-      roomDescription: [
-        {
-          "Title": "Phòng Trọ Sáng Sủa",
-          "Content": "Phòng trọ rộng rãi và thoải mái với ánh sáng tự nhiên và tiện nghi cơ bản."
-        },
-        {
-          "Title": " Vị Trí Tiện Lợi",
-          "Content": "Nằm trong khu vực trung tâm, gần các cửa hàng, giao thông công cộng, và tiện ích hàng ngày."
-        },
-        {
-          "Title": "Giá Phòng Hợp Lý",
-          "Content": "Giá phòng trọ phải chăng, phù hợp với túi tiền và sẵn sàng dọn vào ngay."
-        }
-      ],
+      roomDescriptionRequest: {
+        "roomId": "",
+        "title": "",
+        "content": ""
+      },
+      buttonDescriptionDisable: false,
+      roomingSubscriptionReq: [],
+      tenantReq: [],
       roomingSubscriptionArr: [],
       roomingSubscription: {},
-      room: {},
+      review: [],
+      room: {
+        lessor: {
+          id: 0
+        }
+      },
       user: {},
       lessor: {},
-      tenant: {}
+      tenant: {},
+      owner: {},
+      enableEditRoom: false
     };
   },
 
@@ -177,15 +293,12 @@ export default {
   },
 
   computed: {
+    checkOwner() {
+      return (this.user.role == 'lessor' && this.room.lessor.id == this.user.lessor.id)
+    },
     isDisabled() {
       return (this.tenant != null && this.tenant.isRegistered) || this.room.state == 'unavailable'
     },
-    getRoom() {
-      return this.room;
-    },
-    getRoomingSubscription() {
-      return this.roomingSubscription;
-    }
   },
 
   methods: {
@@ -195,43 +308,174 @@ export default {
         this.user = await userService.getCurrentUser(tokenBearer);
 
       } catch (error) {
-        // alert(error);
         this.$router.push({ name: "login" });
+      }
+    },
+    async onAddingRoomDescription() {
+      try {
+        this.buttonDescriptionDisable = true
+        this.roomDescriptionRequest.roomId = this.room.id + "";
+        var tokenBearer = this.$cookies.get("Token");
+        await roomDescriptionService.create(this.roomDescriptionRequest, tokenBearer)
+        this.displaySuccess("Tạo tiện ích thành công")
+        await this.sleep(1000)
+        this.$router.go();
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     async retrieveRoom() {
       try {
-        // var tenant = await userService.getOneTenantByUserId(this.user.id)
-        if (this.user.role == "tenant") {
-          var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.user.tenant.id); 
-          var roomingSubscription = roomingSubscriptionArr[0];
-          if (roomingSubscription.state == 'staying') {
-            var myroom = roomingSubscription.room;  
-            this.tenant = roomingSubscription.tenant;
-          }
-        }
-
-
         this.room = await roomService.getOne(this.$route.params.id);
         this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
         this.lessor = this.room.lessor.user
 
-        if (myroom.id == this.room.id) {
-          this.$router.push({ name: "myroom" })
+        if (this.user.role == "tenant") {
+          var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
+          var roomingSubscription = roomingSubscriptionArr[0];
+          if (roomingSubscription != null && roomingSubscription.state == 'staying') {
+            var myroom = roomingSubscription.room;
+            this.tenant = roomingSubscription.tenant;
+            if (myroom.id == this.room.id) {
+              this.$router.push({ name: "myroom" })
+            }
+          }
         }
+
+        this.review = await reviewService.getAllByRoomId(this.room.id);
       } catch (err) {
-        console.log(err);
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async editRoom() {
+
+    },
+    async retrieveRoomingSubscriptionReq() {
+      try {
+        this.roomingSubscriptionReq = await roomingSubscriptionReqService.getAllByRoomId(this.room.id);
+        this.roomingSubscriptionReq.forEach(async element => {
+          let oneTenant = await userService.getOneTenant(element.tenantId)
+          this.tenantReq.push(oneTenant)
+        });
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    confirmRegisterRoom() {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn gửi đăng ký đến phòng trọ này không?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Gửi`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) { //revert 2 case for color
+          Swal.fire('Đã hủy thao tác đăng ký', '', 'info')
+        } else if (result.isDenied) {
+          this.registerRoom();
+        }
+      })
+    },
+    async registerRoom() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionReqService.create(this.room.roomingHouse.id, this.room.id, tokenBearer)
+        this.displaySuccess("Đã đăng ký phòng trọ thành công")
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    confirmApproveTenant(requestId) {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn chấp nhận cho thuê phòng trọ này?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Chấp nhận`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) { //revert 2 case for color
+          Swal.fire('Đã hủy thao tác', '', 'info')
+        } else if (result.isDenied) {
+          this.approveTenant(requestId);
+        }
+      })
+    },
+    async approveTenant(requestId) {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionReqService.update(this.room.roomingHouse.id, this.room.id, requestId, "success", tokenBearer)
+        this.displaySuccess("Chấp nhận yêu cầu thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    confirmRejectTenant(requestId) {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn từ chối yêu cầu thuê phòng trọ này?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Từ chối`,
+      }).then((result) => {
+        if (result.isConfirmed) { //revert 2 case for color
+          Swal.fire('Đã hủy thao tác', '', 'info')
+        } else if (result.isDenied) {
+          this.rejectTenant(requestId);
+        }
+      })
+    },
+    async rejectTenant(requestId) {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionReqService.update(this.room.roomingHouse.id, this.room.id, requestId, "reject", tokenBearer)
+        this.displaySuccess("Từ chối yêu cầu thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
       }
     },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
+    },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    displaySuccess(message) {
+      Swal.fire({
+        // position: 'top-end',
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    displayError(message) {
+      Swal.fire({
+        title: 'Lỗi!',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
     },
   },
 
   async mounted() {
     await this.checkLogin();
     this.showHeaderAndFooter();
-    this.retrieveRoom();
+    await this.retrieveRoom();
+    await this.retrieveRoomingSubscriptionReq();
   }
 }
 </script>

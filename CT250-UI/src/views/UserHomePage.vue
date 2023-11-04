@@ -8,9 +8,9 @@
       <br>
       bạn bắt đầu từ đây
     </div>
-    <button type="button" class="btn btn-danger" style="padding: 10px 20px; font-size: 25px; margin: 15px;">Tìm kiếm ngay</button>
+    <button type="button" class="btn btn-danger" style="padding: 10px 20px; font-size: 25px; margin: 15px;">Tìm kiếm
+      ngay</button>
   </div>
-
 
   <div class="input-group rounded" id="homePage-search-bar">
     <input type="search" id="search-bar" class="form-control rounded" v-model="search" placeholder="Tìm kiếm trên IStay"
@@ -18,10 +18,11 @@
   </div>
 
   <div id="UserHomePage-category">
-    <div class="category-icon" id="category-room" @click="searchByRoom()"><font-awesome-icon icon="house-user" /> Phòng
+    <div class="category-icon btn btn-secondary" id="category-room" @click="searchByRoom()"><font-awesome-icon
+        icon="house-user" /> Phòng
       trọ</div>
-    <div class="category-icon" id="category-rooming-house" @click="searchByRoomingHouse()"><font-awesome-icon
-        icon="house" /> Khu trọ</div>
+    <div class="category-icon btn btn-secondary" id="category-rooming-house" @click="searchByRoomingHouse()">
+      <font-awesome-icon icon="house" /> Khu trọ</div>
   </div>
 
   <div id="UserHomePage-listRoom">
@@ -127,6 +128,7 @@ export default {
 <style>
 #category-room,
 #category-rooming-house {
+  font-size: 25px;
   transition-duration: .5s;
 }
 

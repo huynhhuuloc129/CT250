@@ -7,7 +7,7 @@
 
           <hr>
           <div>
-            Description:
+            Mô tả:
             {{ roomingHouse.description }}
           </div>
         </div>
@@ -22,13 +22,13 @@
           </div>
           <div class="myroom-fee">Số phòng còn trống: <div>{{ roomingHouse.availableRoomNumber }}</div>
           </div>
-          <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDate }}</div>
+          <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDay }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="container mt-4" style="margin-bottom: 20px;">
+    <div class="container mt-5" style="margin-bottom: 20px; ">
       <div class="accordion" id="toggleExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="toggleHeader">
@@ -44,19 +44,22 @@
 
                 <img class="rounded-3" style="width: 300px; margin-right: 20px;" src="@/assets/room-info.jpg" alt="">
 
-                <div>
-                  <h4>{{ room.name }}</h4>
-                  <div>{{ room.summary }}</div>
-                  <br>
-                  <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                    <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{
-                      room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
-                    </div>
-                    <button class="btn btn-primary" style="background-color: #2c5596;" @click="goToRoomInfo(room.id)">Xem chi tiết</button>
+                <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <h4>{{ room.name }}</h4>
+                    <div>{{ room.summary }}</div>
                   </div>
-
+                  <div>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                      <div style="font-weight: bold; font-size: large;">Tiền phòng hàng tháng: <div style="color: red;">{{
+                        room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
+                      </div>
+                      <button class="btn btn-primary" style="background-color: #2c5596;"
+                        @click="goToRoomInfo(room.id)">Xem
+                        chi tiết</button>
+                    </div>
+                  </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -64,12 +67,15 @@
       </div>
     </div>
 
+    <hr>
+
     <div>
       <h3>Chủ nhà</h3>
       <div style="display: flex; justify-content: space-around; ">
 
         <div style="display: flex; width: 30%;">
-          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt=""><!-- TODO: using real avatar -->
+          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg"
+            alt=""><!-- TODO: using real avatar -->
           <!-- TODO: add on click event -->
           <div style="padding-left: 30px;">
             <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
@@ -203,4 +209,5 @@ export default {
 #AppHeader {
   position: static;
   background-color: #0F2C59;
-}</style>
+}
+</style>

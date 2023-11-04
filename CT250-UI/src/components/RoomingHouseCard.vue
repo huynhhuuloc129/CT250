@@ -5,7 +5,7 @@
         <img class="card-img-top" src="@/assets/room-info.jpg" alt="Card image cap"> <!--TODO: Fix url-->
         <div class="card-body">
           <h5 class="card-title">{{ roomingHouse.name }}</h5>
-          <p class="card-text" style="max-height: 10rem;">{{ roomingHouse.description }}</p>
+          <p class="card-text overflow-auto" style="height: 6rem;">{{ roomingHouse.description }}</p>
           <a class="btn btn-primary" style="background-color: #2c5596;" @click="goToRoomingHouseInfo(roomingHouse.id)">Chi tiết</a>
         </div>
       </div>

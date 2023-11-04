@@ -1,5 +1,6 @@
 <template>
-    <h3 v-if="roomingHouses.length == 0" style="align-items: center; text-align: center; padding-top: 15px;">Hiện tại bạn chưa có phòng trọ nào</h3>
+    <h3 v-if="roomingHouses.length == 0" style="align-items: center; text-align: center; padding-top: 15px;">Hiện tại bạn
+        chưa có phòng trọ nào</h3>
     <div id="MyRoomingHouse">
         <div class="MyRoomingHouse-tabpanel" role="tabpanel">
             <div class="list-group" id="myList" role="tablist">
@@ -7,9 +8,8 @@
                     id="list-home-list {{ roomingHouse.id }}" data-bs-toggle="list" v-bind:href="'#home' + roomingHouse.id"
                     role="tab" aria-controls="home">{{ roomingHouse.name }}</a>
             </div>
-            <button type="button"
-                style="width: 100%; margin-top: 2px; font-weight: bold; background-color: rgb(255, 190, 69);"
-                class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addRoomingHouseModal">+</button>
+            <button type="button" style="width: 100%; margin-top: 2px; font-weight: bold;" class="btn btn-secondary"
+                data-bs-toggle="modal" data-bs-target="#addRoomingHouseModal">+</button>
         </div>
 
         <div class="tab-content">
@@ -21,16 +21,34 @@
                         <button class="btn btn-danger" @click="deleteRoomingHouse(roomingHouse.id)"
                             style="margin-right: 5px;">Xóa</button>
                         <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)"
-                            style="background-color: #2c5596;">Xem chi tiết</button>
+                            style="background-color: #2c5596; margin-right: 5px;">Xem chi tiết</button>
+                        <button class="btn btn-light" @click="enableEditRoomingHouse = !enableEditRoomingHouse">
+                            <font-awesome-icon icon="pen-to-square" style="font-size: 23px;" />
+                        </button>
                     </div>
                 </div>
                 <div>
-                    <p style="font-weight: bold;">Mô tả:</p> {{ roomingHouse.description }}
+
+                    <p style="font-weight: bold;">Mô tả:</p>
+                    <textarea v-if="enableEditRoomingHouse" v-model="roomingHouse.description" style="width: 50%;"></textarea>
+                    <span v-else>{{ roomingHouse.description }}</span>
                 </div>
-                <div><span style="font-weight: bold;">Địa chỉ:</span> {{ roomingHouse.address }}</div>
-                <div><span style="font-weight: bold;">Số phòng:</span> {{ roomingHouse.totalRoomNumber }}</div>
-                <div><span style="font-weight: bold;">Số phòng còn trống:</span> {{ roomingHouse.availableRoomNumber }}
+
+                <div>
+                    <span style="font-weight: bold;">Địa chỉ: </span>
+                    <input v-if="enableEditRoomingHouse" v-model="roomingHouse.address">
+                    <span v-else>{{ roomingHouse.address }}</span>
                 </div>
+                <div>
+                    <span style="font-weight: bold;">Số phòng:</span>
+                    <span>{{ roomingHouse.totalRoomNumber }}</span>
+                </div>
+                <div>
+                    <span style="font-weight: bold;">Số phòng còn trống:</span>
+                    <span>{{ roomingHouse.availableRoomNumber }}</span>
+                </div>
+
+                <button v-if="enableEditRoomingHouse" @click="editRoomingHouse(roomingHouse)" class="btn btn-primary" style="margin-bottom: 5px;">Cập nhật</button>
 
                 <p>
                     <a class="btn btn-dark" data-bs-toggle="collapse" :href="'#collapseExample' + roomingHouse.id"
@@ -38,9 +56,12 @@
                         Các phòng
                     </a>
                 </p>
-                <button type="button"
-                    style="width: 100%; margin-top: 2px; font-weight: bold; background-color: rgb(255, 190, 69);"
-                    class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                <h3 v-if="rooms[index] != null && rooms[index].length == 0"
+                    style="align-items: center; text-align: center; padding-top: 15px;">
+                    Hiện tại bạn
+                    chưa có phòng trọ nào</h3>
+                <button type="button" style="width: 100%; margin-top: 2px; font-weight: bold;" class="btn btn-secondary"
+                    data-bs-toggle="modal" data-bs-target="#addRoomModal" @click="roomingHouseId = roomingHouse.id">
                     Thêm phòng</button>
                 <div class="collapse" v-bind:id="'collapseExample' + roomingHouse.id" v-for="room in rooms[index]">
                     <div class="card card-body">
@@ -48,8 +69,11 @@
                             <h3>
                                 {{ room.name }}
                             </h3>
-                            <button class="btn btn-danger" @click="deleteRoom(room.id)"
-                                style="margin-right: 5px;">Xóa</button>
+                            <div>
+                                <button class="btn btn-danger" @click="deleteRoom(roomingHouse.id, room.id)">Xóa</button>
+                                <button class="btn btn-primary" style="margin: 5px; background-color: #2c5596;"
+                                    @click="goToRoomInfo(room.id)">Xem chi tiết phòng</button>
+                            </div>
                         </div>
                         <div>
                             <div class="container mt-4">
@@ -77,9 +101,6 @@
                             <div style="margin: 20px;">Giá tiền: <div style="color: red;">{{
                                 room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' }) }}</div>
                             </div>
-                            <button class="btn btn-primary" style="margin: 20px; background-color: #2c5596;"
-                                @click="goToRoomInfo(room.id)">Xem chi
-                                tiết phòng</button>
                         </div>
                     </div>
                 </div>
@@ -98,7 +119,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <addRoomForm />
+                    <addRoomForm @submit="onAddingRoom" />
                 </div>
             </div>
         </div>
@@ -114,7 +135,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <addRoomingHouseForm @submit="onAddingRoomingHouse"/>
+                    <addRoomingHouseForm @submit="onAddingRoomingHouse" />
                 </div>
             </div>
         </div>
@@ -136,6 +157,8 @@ export default {
             lessor: {},
             roomingHouses: [],
             rooms: [[]],
+            roomingHouseId: "",
+            enableEditRoomingHouse: false
         }
     },
     components: {
@@ -156,11 +179,22 @@ export default {
         },
         async onAddingRoomingHouse(addingRoomingHouseRequest) {
             try {
-                console.log(addingRoomingHouseRequest)
                 var tokenBearer = this.$cookies.get("Token");
-                console.log(tokenBearer)
                 await roomingHouseService.create(addingRoomingHouseRequest, tokenBearer)
-                this.displaySuccess("Đăng ký thành công")
+                this.displaySuccess("Tạo trọ thành công")
+                await this.sleep(1000)
+                this.$router.go();
+            } catch (err) {
+                console.log(err)
+                this.displayError(err)
+            }
+        },
+        async onAddingRoom(addingRoomRequest) {
+            try {
+                this.validateAddRoomForm(addingRoomRequest)
+                var tokenBearer = this.$cookies.get("Token");
+                await roomService.create(this.roomingHouseId, addingRoomRequest, tokenBearer)
+                this.displaySuccess("Tạo phòng trọ thành công")
                 await this.sleep(1000)
                 this.$router.go();
             } catch (err) {
@@ -180,14 +214,14 @@ export default {
                     }
                 }
             } catch (err) {
-                console.log(err);
+                this.displayError(err)
             }
         },
         async retrieveRooms(id) {
             try {
                 return await roomService.getAllByRoomingHouseID(id);
             } catch (err) {
-                console.log(err);
+                this.displayError(err)
             }
         },
         async goToRoomInfo(id) {
@@ -201,32 +235,55 @@ export default {
                 title: 'Bạn có chắc chắn muốn xóa khu trọ này không?',
                 showDenyButton: true,
                 showCancelButton: false,
-                confirmButtonText: 'Xóa',
-                denyButtonText: `Hủy`,
+                confirmButtonText: 'Hủy',
+                denyButtonText: `Xóa`,
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    Swal.fire('Đã xóa!', '', 'success')
-                } else if (result.isDenied) {
+                if (result.isConfirmed) { //revert 2 case for color
                     Swal.fire('Đã hủy thao tác xóa', '', 'info')
+                } else if (result.isDenied) {
+                    Swal.fire('Đã xóa!', '', 'success')
+
                 }
             })
         },
-        async deleteRoom(id) {
+        async deleteRoom(roomingHouseId, id) {
             Swal.fire({
                 title: 'Bạn có chắc chắn muốn xóa phòng trọ này không?',
                 showDenyButton: true,
                 showCancelButton: false,
-                confirmButtonText: 'Xóa',
-                denyButtonText: `Hủy`,
+                confirmButtonText: 'Hủy',
+                denyButtonText: `Xóa`,
             }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    Swal.fire('Đã xóa!', '', 'success')
-                } else if (result.isDenied) {
+                if (result.isConfirmed) { //revert 2 function to get the correct color (delete should be red)
                     Swal.fire('Đã hủy thao tác xóa', '', 'info')
+                } else if (result.isDenied) {
+                    this.deleteRoomAPI(roomingHouseId, id)
                 }
             })
+        },
+        async deleteRoomingHouseAPI(roomingHouseId) {
+            try {
+                var tokenBearer = this.$cookies.get("Token");
+                await roomingHouseService.delete(roomingHouseId, tokenBearer)
+                this.displaySuccess("Đã xóa trọ thành công")
+                this.$router.go(0);
+            } catch (err) {
+                this.displayError(err)
+            }
+        },
+        async deleteRoomAPI(roomingHouseId, id) {
+            try {
+                var tokenBearer = this.$cookies.get("Token");
+                await roomService.delete(roomingHouseId, id, tokenBearer)
+                this.displaySuccess("Đã xóa phòng thành công")
+                this.$router.go(0);
+            } catch (err) {
+                this.displayError(err)
+            }
+        },
+        async editRoomingHouse(roomingHouse) {
+            // TODO: add code
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -247,6 +304,15 @@ export default {
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
+        },
+        validateAddRoomForm(req) {
+            if (req.name.length == 0) throw new Error("Tên trọ không được để trống")
+            if (req.width <= 1) throw new Error("Chiều rộng trọ phải lớn hơn 0")
+            if (req.height <= 1) throw new Error("Chiều cao trọ phải lớn hơn 0")
+            if (req.roomPrice <= 1000) throw new Error("Giá trọ phải lớn hơn 1000")
+            if (req.waterPrice <= 1000) throw new Error("Giá nước của trọ phải lớn hơn 1000")
+            if (req.electricityPrice <= 1000) throw new Error("Giá điện của trọ phải lớn hơn 1000")
+            if (req.summary.length <= 8) throw new Error("Mô tả trọ phải có độ dài lớn hơn 8")
         },
         showHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", true);

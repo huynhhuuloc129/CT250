@@ -14,7 +14,7 @@ class RoomingSubscriptionService {
   }
   async getByTenantId(id) {
     try {
-      const roomingSubscription = (await this.api.get("/rooming-subscriptions?tenantId=" + id)).data; //TODO: fix ternant??????
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?tenantId=" + id +"&sortOrder=asc")).data;
       return roomingSubscription.data;
     } catch (err) {
       throw err;

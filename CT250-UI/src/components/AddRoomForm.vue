@@ -37,16 +37,37 @@
       <label for="registerInputElectricityPrice">Giá điện</label>
     </div>
 
-    <div class="form-floating">
-      <input type="textarea" class="form-control" v-model="roomRequest.summary" id="registerInputSummary"
-        @focus="buttonDisabled = false" placeholder="" required>
-      <label for="registerInputSummary">Mô tả tổng quan</label>
+    <div class="form-group" style="margin-bottom: 20px;">
+      <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Mô tả tổng quan" rows="3"
+        v-model="roomRequest.summary" required></textarea>
+    </div>
+
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="checkbox" id="enableDescription" value="enable"
+        @click="enableDescription = !enableDescription" true-value="true" false-value="false">
+      <label class="form-check-label" for="enableDescription">Thêm mô tả chi tiết</label>
+    </div>
+
+    <div v-if="enableDescription">
+      <div id="form-row-add">
+        <div v-for="i in countDes" class="form-row" style="display: flex; flex-direction: row; margin-bottom: 10px;">
+          <div class="col-6">
+            <input type="text" class="form-control" placeholder="Tiêu đề" v-model="roomDescriptions[i - 1].title">
+          </div>
+          <div class="col-6">
+            <input type="text" class="form-control" placeholder="Nội dung" v-model="roomDescriptions[i - 1].content">
+          </div>
+        </div>
+      </div>
+      <button :disabled="disabled" type="button" style="width: 100%;" class="btn btn-secondary"
+        @click.stop.prevent="addRoomDescription">+</button>
     </div>
 
     <div style="display:flex; align-items:center; justify-content: center; padding: 10px 0 0 0;">
-      <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button" v-on:click="onSignup"
+      <button type="submit" id="registerButton" class="btn btn-secondary registerForm-button" v-on:click="onAddRoom"
         :disabled="buttonDisabled">Thêm phòng</button>
     </div>
+
   </form>
 </template>
     
@@ -54,6 +75,8 @@
 export default {
   data() {
     return {
+      disabled: false,
+      enableDescription: false,
       buttonDisabled: false,
       roomRequest: {
         "name": "",
@@ -63,14 +86,37 @@ export default {
         "waterPrice": 0,
         "electricityPrice": 0,
         "summary": "",
+        "descriptions": []
       },
+      roomDescriptions: [
+        {
+          "title": "",
+          "content": ""
+        }
+      ],
+      countDes: 1
     }
   },
   methods: {
-    onSignup() {
+    onAddRoom() {
       this.buttonDisabled = true;
-      this.$emit("submit", this.user, this.role);
-    }
+      if (this.enableDescription) {
+        this.roomRequest.descriptions = this.roomDescriptions
+      }
+      this.$emit("submit", this.roomRequest);
+    },
+
+    addRoomDescription() {
+      this.countDes++;
+      this.roomDescriptions.push(
+        {
+          "title": "",
+          "content": ""
+        }
+      )
+    },
+  },
+  mounted() {
   }
 }
 

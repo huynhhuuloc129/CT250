@@ -48,12 +48,12 @@
     </div>
 
     <div class="form-floating">
-      <select class="form-select form-select-sm" v-model="role" id="floatingSelect" @focus="buttonDisabled = false"
+      <select class="form-select form-select-sm" v-model="role" id="floatingSelectRole" @focus="buttonDisabled = false"
         aria-label=".form-select-sm role" required>
         <option value="lessor">Chủ trọ</option>
         <option value="tenant">Người thuê trọ</option>
       </select>
-      <label for="floatingSelect">Chọn vai trò cần đăng ký</label>
+      <label for="floatingSelectRole">Chọn vai trò cần đăng ký</label>
 
     </div>
     <div style="display:flex; align-items:center; justify-content: center; padding: 10px 0 0 0;">

@@ -10,8 +10,8 @@
 
 
 <script>
-import AppHeader from "./components/AppHeader.vue";
-import AppFooter from "./components/AppFooter.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
 export default {
   components: {
     AppHeader,
@@ -51,18 +51,18 @@ label {
   color: rgb(175, 175, 175);
 }
 
-body::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #F5F5F5;
   border-radius: 10px;
 }
 
-body::-webkit-scrollbar {
+html::-webkit-scrollbar {
   width: 10px;
   background-color: #F5F5F5;
 }
 
-body::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-image: -webkit-gradient(linear,
       left bottom,

@@ -7,7 +7,7 @@ class RoomingHouseService {
   }
   async getAll() {
     try {
-      const roomingHouses = (await this.api.get("/rooming-houses")).data;
+      const roomingHouses = (await this.api.get("/rooming-houses?sortOrder=asc")).data;
       return roomingHouses.data;
     } catch (err) {
       throw err;
@@ -23,7 +23,7 @@ class RoomingHouseService {
   }
   async getByLessorId(id) {
     try {
-      const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id)).data;
+      const roomingHouse = (await this.api.get("/rooming-houses?lessorId=" + id + "&sortOrder=asc")).data;
       return roomingHouse.data;
     } catch (err) {
       throw err;
@@ -33,6 +33,17 @@ class RoomingHouseService {
     // var header = {
     // }
     return await axios.post("http://localhost:3000/api/rooming-houses", data, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
+  }
+  async update(roomingHouseId, data, token) {
+    return await axios.patch(`http://localhost:3000/api/rooming-houses/${roomingHouseId}`, data, {
       headers: {
         Authorization: 'Bearer ' + token
       }

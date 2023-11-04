@@ -71,10 +71,12 @@
                     <h5 class="card-title">Mô tả</h5>
                     <p class="card-text">{{ roomingSubscription.room.summary }}</p>
                     <div style="display: flex; justify-content: space-between;">
-                        <a :href="'http://localhost:3001/rooms/' + roomingSubscription.room.id" style="background-color: #2c5596;" class="btn btn-primary">Xem
+                        <a :href="'http://localhost:3001/rooms/' + roomingSubscription.room.id"
+                            style="background-color: #2c5596;" class="btn btn-primary">Xem
                             chi
                             tiết</a>
-                        <span>Trạng thái: <span style="color: green;">{{ roomingSubscription.state }}</span></span>
+                        <span>Trạng thái: <span v-if="roomingSubscription.state == 'staying'" style="color: green;">Đang ở</span>
+                            <span v-else style="color: red;">Đã từng ở</span></span>
                     </div>
 
                 </div>
@@ -212,7 +214,7 @@ export default {
 
             try {
                 if (this.user.role == 'tenant')
-                this.roomingSubscriptions = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
+                    this.roomingSubscriptions = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
             } catch (err) {
                 console.log(err)
             }
@@ -270,7 +272,7 @@ export default {
                 this.token = this.$cookies.get("Token");
                 this.user = await userService.getCurrentUser(this.token);
                 if (this.user.gender == 'male') this.genders = 'Nam'; else this.genders = 'Nữ'
-                
+
                 this.user.dob = new Date(this.user.dob);
                 this.user.dob = this.formatDate(this.user.dob);
                 this.dobString = this.user.dob.toString();

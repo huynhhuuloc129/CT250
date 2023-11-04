@@ -6,7 +6,7 @@ class CategoryService {
   }
   async getAll() {
     try {
-      const categories = (await this.api.get("/categories"));
+      const categories = (await this.api.get("/categories?sortOrder=asc"));
       return categories.data;
     } catch (err) {
       throw err;
