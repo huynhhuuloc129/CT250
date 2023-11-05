@@ -51,8 +51,8 @@
           <hr class="hr" v-if="room.descriptions != null && room.descriptions.length > 0">
           <div>
             Mô tả:
-            <input v-if="enableEditRoom" v-model="room.summary" type="textarea" class="form-control" style="height: 100%;"
-              rows="100">
+            <textarea v-if="enableEditRoom" v-model="room.summary" type="textarea" class="form-control"
+              style="height: 100px;" rows="100"> </textarea>
             <span v-else>
               {{ room.summary }}
             </span>
@@ -62,23 +62,22 @@
 
       <div style=" width: 40%; display: flex; flex-direction: column;">
         <div id="MyRoom-Information2">
-          <div class="myroom-fee" style="font-weight: bold;">Trạng thái phòng:
-            <div>{{ roomingSubscription.state }}</div>
-          </div>
 
           <div class="myroom-fee">Giá điện:
-            <input type="number" v-if="enableEditRoom" v-model="room.electricityPrice"
+            <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.electricityPrice"
               style="width: 20%; margin-bottom: 5px;">
             <div v-else>{{ room.electricityPrice }}</div>
           </div>
 
           <div class="myroom-fee">Giá nước:
-            <input type="number" v-if="enableEditRoom" v-model="room.waterPrice" style="width: 20%; margin-bottom: 5px;">
+            <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.waterPrice"
+              style="width: 20%; margin-bottom: 5px;">
             <div v-else>{{ room.waterPrice }}</div>
           </div>
 
           <div class="myroom-fee">Giá phòng:
-            <input type="number" v-if="enableEditRoom" v-model="room.roomPrice" style="width: 20%; margin-bottom: 5px;">
+            <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.roomPrice"
+              style="width: 20%; margin-bottom: 5px;">
             <div v-else>{{ room.roomPrice }} / tháng</div>
           </div>
 
@@ -96,7 +95,9 @@
             <div>{{ room.dimensions }} m2</div>
           </div>
 
-          <div class="myroom-fee" v-if="user.role == 'lessor'">Trạng thái phòng: <div>{{ room.state }}</div>
+          <div class="myroom-fee" v-if="user.role == 'lessor'">Trạng thái phòng:
+            <div v-if="room.state == 'available'">Có sẵn</div>
+            <div v-if="room.state != 'available'">Không có sẵn</div>
           </div>
 
           <div v-if="user.role == 'tenant'" style="display: flex; flex-direction: column;">
@@ -115,6 +116,17 @@
           style="width: 100%; margin-top: 2px; font-weight: bold; background-color: red;" class="btn btn-primary"
           data-bs-toggle="modal">
           Thêm người ở</button>
+
+        <div class="card" v-if="tempTenants.length > 0">
+          <div class="card-body">
+            <h5 class="card-title">{{ tempTenants.fullName }}</h5>
+            <p class="card-text">{{ tempTenants.citizenID }}</p>
+            <p class="card-text">{{ tempTenants.startDate }} - <span>{{ tempTenants.endDate }}</span></p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+
+
 
         <!-- rooming subscription request  -->
         <div v-if="checkOwner && room.state != 'unavailable'" class="container mt-5" style="margin-bottom: 20px;">
@@ -157,6 +169,12 @@
         <hr class="hr">
         <div>
           <h4>Nơi này có những gì cho bạn</h4>
+          <div v-for="ulti in room.utilities">
+            <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
+          </div>
+          <button v-if="checkOwner" type="button" style="font-weight: bold; width: 100%;" class="btn btn-light"
+            data-bs-toggle="modal" data-bs-target="#addRoomUtility">
+            Thêm tiện ích</button>
         </div>
       </div>
     </div>
@@ -170,10 +188,16 @@
 
     <div id="MyRoom-Information3">
       <hr class="hr">
-      <div>
+      <h3 style="text-align: center;" v-if="this.room.reviews?.length == 0">Hiện tại phòng chưa có đánh giá nào</h3>
+      <div v-if="this.room.reviews?.length > 0">
         <h3>Đánh giá</h3>
-        <review />
+        <review :reviews="this.room.reviews" />
       </div>
+
+
+      <star-rating v-model="selectedRating" :star-size="36" :border-color="activeColor" :show-border="true"
+        :active-color="activeColor"></star-rating>
+
 
       <div v-if="this.room.lessor.id != this.user.lessor?.id">
         <hr class="hr">
@@ -193,14 +217,7 @@
             </div>
 
             <div style="word-break: break-all; width: 70%;">
-              Tôi xin giới thiệu mình là chủ trọ của khu vực này. Với tinh thần nhiệt tình và lòng nhiệt huyết trong việc
-              quản lý và xây dựng một môi trường sống thoải mái và an lành cho tất cả cư dân, tôi luôn sẵn sàng làm việc
-              chăm sóc và đảm bảo rằng mọi người tại khu này đều có một trải nghiệm sống tốt đẹp. Tôi rất mong được hợp
-              tác
-              với mọi người để tạo nên một cộng đồng thân thiện và đoàn kết, nơi mà mọi người có thể gọi đó là ngôi nhà
-              thứ
-              hai của mình. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào, xin đừng ngần ngại liên hệ với tôi. Cảm ơn bạn đã
-              đến và làm cho khu vực này trở thành một nơi đáng sống!
+              {{ lessor.summary }}
             </div>
             <div>
 
@@ -240,10 +257,43 @@
 
 
             <div class="text-center">
-              <button type="submit" class=" btn btn-primary btn-block mb-4 loginForm-button"
-                v-on:click="onAddingRoomDescription" :disabled="buttonDescriptionDisable">Thêm</button>
+              <button type="submit" class=" btn btn-primary btn-block mb-4" v-on:click="onAddingRoomDescription"
+                :disabled="buttonDescriptionDisable">Thêm</button>
             </div>
 
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- adding room utilities form -->
+  <div class="modal fade" id="addRoomUtility" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginTitle">Thêm tiện ích</h5>
+          <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-Form">
+
+            <div class="form-check" v-for="(utility, index) in utilities">
+              <input class="form-check-input" type="checkbox" :value="utility.id" :id="utility.id"
+                v-model="utilitiesChoosen[index]">
+              <label class="form-check-label" :for="utility.id">
+                {{ utility.name }}
+              </label>
+            </div>
+
+
+            <div class="text-center">
+              <button type="submit" class=" btn btn-primary btn-block mb-4" v-on:click="onAddingUtilityRoom"
+                :disabled="buttonUtilityDisable">Thêm</button>
+            </div>
           </form>
         </div>
       </div>
@@ -254,27 +304,32 @@
 <script>
 import roomingSubscriptionReqService from "@/services/roomingSubscriptionRequest.service";
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
-import roomDescriptionService from "@/services/roomDescription.service"
-import reviewService from "@/services/review.service"
+import roomDescriptionService from "@/services/roomDescription.service";
+import temporaryTenantService from "@/services/temporaryTenant.service"
+import utilityService from "@/services/utility.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
+import StarRating from 'vue-star-rating'
 import Swal from 'sweetalert2'
+
 
 export default {
   data() {
     return {
+      selectedRating: 0,
+      activeColor: 'red',
       roomDescriptionRequest: {
         "roomId": "",
         "title": "",
         "content": ""
       },
+      buttonUtilityDisable: false,
       buttonDescriptionDisable: false,
       roomingSubscriptionReq: [],
       tenantReq: [],
       roomingSubscriptionArr: [],
       roomingSubscription: {},
-      review: [],
       room: {
         lessor: {
           id: 0
@@ -284,12 +339,17 @@ export default {
       lessor: {},
       tenant: {},
       owner: {},
-      enableEditRoom: false
+      enableEditRoom: false,
+      utilitiesChoosen: [],
+      utilities: [],
+      tempTenants: [],
+      paymentRecords: []
     };
   },
 
   components: {
-    review
+    review,
+    StarRating
   },
 
   computed: {
@@ -302,6 +362,7 @@ export default {
   },
 
   methods: {
+
     async checkLogin() {
       try {
         var tokenBearer = this.$cookies.get("Token");
@@ -328,7 +389,7 @@ export default {
     async retrieveRoom() {
       try {
         this.room = await roomService.getOne(this.$route.params.id);
-        this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
+        this.room.roomPrice = this.room.roomPrice
         this.lessor = this.room.lessor.user
 
         if (this.user.role == "tenant") {
@@ -343,14 +404,37 @@ export default {
           }
         }
 
-        this.review = await reviewService.getAllByRoomId(this.room.id);
       } catch (err) {
         console.log(err)
         this.displayError(err);
       }
     },
     async editRoom() {
-
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        var ulReq = [];
+        for (let i = 0; i < this.room.utilities?.length; i++) {
+          if (this.room.utilities[i]) {
+            ulReq.push(this.room.utilities[i].id)
+          }
+        }
+        var roomUpdateReq = {
+          "name": this.room.name,
+          "width": this.room.width,
+          "height": this.room.height,
+          "roomPrice": this.room.roomPrice,
+          "waterPrice": this.room.waterPrice,
+          "electricityPrice": this.room.electricityPrice,
+          "summary": this.room.summary,
+          "utilities": ulReq
+        }
+        await roomService.update(this.room.id, roomUpdateReq, tokenBearer)
+        this.displaySuccess("Đã cập nhật phòng trọ thành công")
+        this.enableEditRoom = false;
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
     },
     async retrieveRoomingSubscriptionReq() {
       try {
@@ -359,6 +443,33 @@ export default {
           let oneTenant = await userService.getOneTenant(element.tenantId)
           this.tenantReq.push(oneTenant)
         });
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async retrieveUtilities() {
+      try {
+        this.utilities = await utilityService.getAll();
+        this.utilities.forEach(element => {
+          var check = false
+          this.room.utilities.forEach(ul => {
+            if (element.id == ul.id) check = true;
+          })
+          this.utilitiesChoosen.push(check);
+        });
+        this.room
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async retrieveTempTenants() {
+      try {
+        this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomId(this.room.id)
+        this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0].id)
+        this.tempTenants = this.roomingSubscription.temporaryTenants
+        this.paymentRecords = this.roomingSubscription.paymentRecords
       } catch (err) {
         console.log(err)
         this.displayError(err);
@@ -446,6 +557,35 @@ export default {
         this.displayError(err);
       }
     },
+    async onAddingUtilityRoom() {
+      try {
+        this.buttonUtilityDisable = true
+        var tokenBearer = this.$cookies.get("Token");
+        var ulReq = [];
+        for (let i = 0; i < this.utilitiesChoosen?.length; i++) {
+          if (this.utilitiesChoosen[i]) {
+            ulReq.push(this.utilities[i].id)
+          }
+        }
+        var roomUpdateReq = {
+          "name": this.room.name,
+          "width": this.room.width,
+          "height": this.room.height,
+          "roomPrice": this.room.roomPrice,
+          "waterPrice": this.room.waterPrice,
+          "electricityPrice": this.room.electricityPrice,
+          "summary": this.room.summary,
+          "utilities": ulReq
+        }
+        await roomService.update(this.room.id, roomUpdateReq, tokenBearer)
+        this.displaySuccess("Đã cập nhật tiện ích cho trọ thành công")
+        await this.sleep(1000)
+        this.$router.go();
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
     },
@@ -476,6 +616,8 @@ export default {
     this.showHeaderAndFooter();
     await this.retrieveRoom();
     await this.retrieveRoomingSubscriptionReq();
+    await this.retrieveUtilities();
+    await this.retrieveTempTenants();
   }
 }
 </script>

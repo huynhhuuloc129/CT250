@@ -20,6 +20,14 @@ class RoomingSubscriptionService {
       throw err;
     }
   }
+  async getByRoomId(id) {
+    try {
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id +"&sortOrder=asc")).data;
+      return roomingSubscription.data;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 export default new RoomingSubscriptionService();

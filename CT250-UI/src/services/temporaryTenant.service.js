@@ -1,14 +1,22 @@
 import createApiClient from "./api.service";
 import axios from 'axios';
 
-class ReviewService {
+class TempTenantService {
     constructor(baseUrl = "http://localhost:3000/api") {
         this.api = createApiClient(baseUrl);
     }
-    async getAllByRoomId(roomId) {
+    async getAll() {
         try {
-            const roomReview = (await this.api.get(`/reviews/rooms/${roomId}`));
-            return roomReview.data;
+            const tempTenants = (await this.api.get(`/temporary-tenants`));
+            return tempTenants.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+    async getAllByRoomingSubscriptionId(id) {
+        try {
+            const tempTenants = (await this.api.get(`/temporary-tenants?roomingSubscriptionId=${id}`));
+            return tempTenants.data;
         } catch (err) {
             throw err;
         }
@@ -26,4 +34,4 @@ class ReviewService {
     }
 }
 
-export default new ReviewService();
+export default new TempTenantService();

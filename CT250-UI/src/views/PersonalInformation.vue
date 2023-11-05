@@ -75,7 +75,8 @@
                             style="background-color: #2c5596;" class="btn btn-primary">Xem
                             chi
                             tiết</a>
-                        <span>Trạng thái: <span v-if="roomingSubscription.state == 'staying'" style="color: green;">Đang ở</span>
+                        <span>Trạng thái: <span v-if="roomingSubscription.state == 'staying'" style="color: green;">Đang
+                                ở</span>
                             <span v-else style="color: red;">Đã từng ở</span></span>
                     </div>
 
@@ -189,6 +190,8 @@
 <script>
 import roomingSubscriptionService from '../services/roomingSubscription.service';
 import userService from '../services/user.service';
+import Swal from 'sweetalert2'
+
 export default {
     data() {
         return {
@@ -221,20 +224,6 @@ export default {
         },
         async onUpdateSummary() {
             try {
-                const response = await userService.updateUser(this.user, this.token);
-
-                console.log(this.token, this.user);
-                this.buttonDisabled = true;
-            } catch (err) {
-                console.log(err)
-                // alert(err)
-            }
-        },
-        async onUpdatePersonalInformation() {
-            try {
-                this.user.dob = new Date(this.user.dob);
-                this.user.dob = this.formatDate(this.user.dob);
-                if (this.genders = 'Nam') this.user.gender = 'male'; else this.user.gender = 'Nữ'
                 this.userUpdateForm = {
                     "username": this.user.username,
                     "refreshToken": this.user.refreshToken,
@@ -245,14 +234,45 @@ export default {
                     "dob": this.user.dob,
                     "gender": this.user.gender,
                     "address": this.user.address,
-                    "tel": this.user.tel
+                    "tel": this.user.tel,
+                    "summary": this.user.summary
                 }
                 const response = await userService.updateUser(this.user.id, this.userUpdateForm, this.token);
-
                 this.buttonDisabled = true;
+                this.displaySuccess("Cập nhật user thành công")
+                document.getElementsByClassName("btn-close-summary")[0].click();
+                await this.sleep(1000)
             } catch (err) {
                 console.log(err)
-                // alert(err)
+                this.displayError(err)
+            }
+        },
+        async onUpdatePersonalInformation() {
+            try {
+                this.user.dob = new Date(this.user.dob);
+                this.user.dob = this.formatDate(this.user.dob);
+                if (this.genders = 'Nam') this.user.gender = 'male'; else this.user.gender = 'female'
+                this.userUpdateForm = {
+                    "username": this.user.username,
+                    "refreshToken": this.user.refreshToken,
+                    "email": this.user.email,
+                    "firstName": this.user.firstName,
+                    "lastName": this.user.lastName,
+                    "citizenID": this.user.citizenID,
+                    "dob": this.user.dob,
+                    "gender": this.user.gender,
+                    "address": this.user.address,
+                    "tel": this.user.tel,
+                    "summary": this.user.summary
+                }
+                const response = await userService.updateUser(this.user.id, this.userUpdateForm, this.token);
+                this.displaySuccess("Cập nhật user thành công")
+                await this.sleep(1000)
+                this.buttonDisabled = true;
+            } catch (err) {
+                alert(err)
+                console.log(err)
+                this.displayError(err)
             }
         },
         async onSignup(user, role) {
@@ -264,7 +284,7 @@ export default {
                 }
                 this.$router.go();
             } catch (err) {
-                // alert(err)
+                console.log(err)
             }
         },
         async checkLogin() {
@@ -277,9 +297,27 @@ export default {
                 this.user.dob = this.formatDate(this.user.dob);
                 this.dobString = this.user.dob.toString();
             } catch (error) {
-                // alert(error);
                 this.$router.push({ name: "login" });
             }
+        },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        displaySuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1000
+            })
+        },
+        displayError(message) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
         },
         showHeaderAndFooter() {
             this.$emit("isShowHeaderAndFooter", true);

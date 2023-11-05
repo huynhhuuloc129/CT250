@@ -22,22 +22,17 @@
                             style="margin-right: 5px;">Xóa</button>
                         <button class="btn btn-primary" @click="goToRoomingHouseInfo(roomingHouse.id)"
                             style="background-color: #2c5596; margin-right: 5px;">Xem chi tiết</button>
-                        <button class="btn btn-light" @click="enableEditRoomingHouse = !enableEditRoomingHouse">
-                            <font-awesome-icon icon="pen-to-square" style="font-size: 23px;" />
-                        </button>
                     </div>
                 </div>
                 <div>
 
                     <p style="font-weight: bold;">Mô tả:</p>
-                    <textarea v-if="enableEditRoomingHouse" v-model="roomingHouse.description" style="width: 50%;"></textarea>
-                    <span v-else>{{ roomingHouse.description }}</span>
+                    <span>{{ roomingHouse.description }}</span>
                 </div>
 
                 <div>
                     <span style="font-weight: bold;">Địa chỉ: </span>
-                    <input v-if="enableEditRoomingHouse" v-model="roomingHouse.address">
-                    <span v-else>{{ roomingHouse.address }}</span>
+                    <span>{{ roomingHouse.address }}</span>
                 </div>
                 <div>
                     <span style="font-weight: bold;">Số phòng:</span>
@@ -48,7 +43,6 @@
                     <span>{{ roomingHouse.availableRoomNumber }}</span>
                 </div>
 
-                <button v-if="enableEditRoomingHouse" @click="editRoomingHouse(roomingHouse)" class="btn btn-primary" style="margin-bottom: 5px;">Cập nhật</button>
 
                 <p>
                     <a class="btn btn-dark" data-bs-toggle="collapse" :href="'#collapseExample' + roomingHouse.id"
@@ -158,7 +152,6 @@ export default {
             roomingHouses: [],
             rooms: [[]],
             roomingHouseId: "",
-            enableEditRoomingHouse: false
         }
     },
     components: {
@@ -281,9 +274,6 @@ export default {
             } catch (err) {
                 this.displayError(err)
             }
-        },
-        async editRoomingHouse(roomingHouse) {
-            // TODO: add code
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));

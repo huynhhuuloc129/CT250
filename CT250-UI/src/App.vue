@@ -47,9 +47,9 @@ body {
   height: 100vh;
 }
 
-label {
+/* label {
   color: rgb(175, 175, 175);
-}
+} */
 
 html::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);

@@ -3,12 +3,17 @@
     <div id="MyRoom-Information">
       <div id="MyRoom-Information1">
         <div>
-          <h1 style="text-align: center;">{{ roomingHouse.name }}</h1>
+          <input type="text" class="form-control" v-model="roomingHouse.name" v-if="enableEditRoomingHouse">
+          <h1 v-else style="text-align: center;">{{ roomingHouse.name }}</h1>
 
           <hr>
           <div>
             Mô tả:
-            {{ roomingHouse.description }}
+            <textarea class="form-control" style="height: 200px;" v-model="roomingHouse.description"
+              v-if="enableEditRoomingHouse"></textarea>
+            <div v-else>
+              {{ roomingHouse.description }}
+            </div>
           </div>
         </div>
         <hr>
@@ -16,13 +21,33 @@
 
       <div style=" width: 40%;">
         <div id="MyRoom-Information2">
-          <div class="myroom-fee">Địa chỉ: <div>{{ roomingHouse.address }}</div>
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              Loại hình khu trọ:
+            </div>
+            <select v-if="enableEditRoomingHouse" style="width: 60%; margin-bottom: 5px;"
+              class="form-select form-select-sm" v-model="categoryChoosen" id="floatingSelect"
+              @focus="buttonDisabled = false" aria-label=".form-select-sm role" required>
+              <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+            </select>
+            <span v-else>{{ roomingHouse.category.name }}</span>
           </div>
-          <div class="myroom-fee">Số phòng: <div>{{ roomingHouse.totalRoomNumber }}</div>
+
+          <div class="myroom-fee">Địa chỉ:
+            <input type="text" style="width: 50%;" class="form-control" v-model="roomingHouse.address"
+              v-if="enableEditRoomingHouse">
+            <div v-else>{{ roomingHouse.address }}</div>
           </div>
-          <div class="myroom-fee">Số phòng còn trống: <div>{{ roomingHouse.availableRoomNumber }}</div>
+          <div class="myroom-fee">Số phòng:
+            <div>{{ roomingHouse.totalRoomNumber }}</div>
           </div>
-          <div class="myroom-fee">Ngày trả tiền hàng tháng: <div>{{ roomingHouse.paymentExpiresDay }}</div>
+          <div class="myroom-fee">Số phòng còn trống:
+            <div>{{ roomingHouse.availableRoomNumber }}</div>
+          </div>
+          <div class="myroom-fee">Ngày trả tiền hàng tháng:
+            <input type="number" style="width: 50%;" class="form-control" v-model="roomingHouse.paymentExpiresDay"
+              v-if="enableEditRoomingHouse">
+            <div v-else>{{ roomingHouse.paymentExpiresDay }}</div>
           </div>
         </div>
       </div>
@@ -47,7 +72,7 @@
                 <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <h4>{{ room.name }}</h4>
-                    <div>{{ room.summary }}</div>
+                    <div style="word-break: break-all;">{{ room.summary }}</div>
                   </div>
                   <div>
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -65,6 +90,15 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div style="text-align: right;">
+      <button class="btn btn-primary" v-if="enableEditRoomingHouse" style="margin-right: 5px;"
+        @click="editRoomingHouse()">Cập
+        nhật</button>
+      <button v-if="checkOwner" class="btn btn-light" @click="enableEditRoomingHouse = !enableEditRoomingHouse">
+        <font-awesome-icon icon="pen-to-square" style="font-size: 23px;" />
+      </button>
     </div>
 
     <hr>
@@ -85,11 +119,8 @@
           </div>
         </div>
 
-        <div style="word-break: normal; width: 60%;"> <!--TODO: remove text-->
-          Tôi, với tư cách là chủ trọ của khu vực này, cam kết tạo ra một môi trường sống an toàn, sạch sẽ và thoải mái
-          cho tất cả cư dân. Chúng tôi luôn lắng nghe ý kiến và phản hồi từ mọi người để cải thiện dịch vụ và điều kiện
-          sống tại đây. Chúng tôi có một đội ngũ quản lý chuyên nghiệp và thân thiện, sẵn sàng hỗ trợ trong mọi tình
-          huống, từ việc bảo trì căn hộ đến giải quyết các vấn đề liên quan đến cuộc sống hàng ngày. </div>
+        <div style="word-break: normal; width: 60%;">
+          {{ lessor.summary }} </div>
         <div>
 
         </div>
@@ -99,19 +130,30 @@
 </template>
 
 <script>
-import review from "@/components/Review.vue";
-
-import roomService from "@/services/room.service";
-import userService from "../services/user.service";
 import roomingHouseService from "@/services/roomingHouse.service";
+import categoryService from '@/services/category.service';
+import userService from "../services/user.service";
+import roomService from "@/services/room.service";
+import review from "@/components/Review.vue";
+import Swal from 'sweetalert2'
 
 export default {
   data() {
     return {
-      roomingHouse: {},
+      roomingHouse: {
+        lessor: {
+          id: 5
+        },
+        category: {
+          id: 9999999
+        }
+      },
       rooms: [],
       user: {},
-      lessor: {}
+      lessor: {},
+      enableEditRoomingHouse: false,
+      categories: [],
+      categoryChoosen: 0,
     };
   },
 
@@ -120,6 +162,9 @@ export default {
   },
 
   computed: {
+    checkOwner() {
+      return (this.user.role == 'lessor' && this.roomingHouse.lessor.id == this.user.lessor?.id)
+    },
   },
 
   methods: {
@@ -137,6 +182,7 @@ export default {
     },
     async retrieveRoomingHouse() {
       try {
+        this.categoryChoosen = this.roomingHouse.category.id
         this.roomingHouse = await roomingHouseService.getOne(this.$route.params.id);
         this.lessor = this.roomingHouse.lessor.user;
         console.log(this.lessor)
@@ -152,15 +198,68 @@ export default {
         console.log(err);
       }
     },
+    async retrieveCategories() {
+      try {
+        this.categories = await categoryService.getAll();
+      } catch (err) {
+        console.log(err);
+      }
+    },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
     },
+    async editRoomingHouse() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        var roomingHouseUpdateReq = {
+          "categoryId": this.categoryChoosen,
+          "name": this.roomingHouse.name,
+          "description": this.roomingHouse.description,
+          "address": this.roomingHouse.address,
+          "paymentExpiresDay": this.roomingHouse.paymentExpiresDay
+        }
+        this.validateEditRoomingHouseReq(roomingHouseUpdateReq)
+        await roomingHouseService.update(this.roomingHouse.id, roomingHouseUpdateReq, tokenBearer)
+        this.displaySuccess("Đã cập nhật khu trọ thành công")
+        this.enableEditRoomingHouse = false;
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    validateEditRoomingHouseReq(req) {
+      if (req.name.length == 0) throw new Error("Tên khu trọ không được để trống")
+      if (req.address.length <= 5) throw new Error("Địa chỉ khu trọ phải dài hơn 5 ký tự")
+      if (req.paymentExpiresDay < 1 || req.paymentExpiresDay > 31) throw new Error("Ngày đóng tiền trọ hàng tháng phải từ 1 đến 31")
+      if (req.description.length <= 8) throw new Error("Mô tả trọ phải có độ dài lớn hơn 8")
+    },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    displaySuccess(message) {
+      Swal.fire({
+        // position: 'top-end',
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    displayError(message) {
+      Swal.fire({
+        title: 'Lỗi!',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
+    },
   },
-
   mounted() {
     this.checkLogin();
     this.showHeaderAndFooter();
     this.retrieveRoomingHouse();
+    this.retrieveCategories();
   }
 }
 </script>

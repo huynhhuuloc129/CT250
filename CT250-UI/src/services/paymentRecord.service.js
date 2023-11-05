@@ -1,14 +1,14 @@
 import createApiClient from "./api.service";
 import axios from 'axios';
 
-class ReviewService {
+class UtilityService {
     constructor(baseUrl = "http://localhost:3000/api") {
         this.api = createApiClient(baseUrl);
     }
-    async getAllByRoomId(roomId) {
+    async getAll() {
         try {
-            const roomReview = (await this.api.get(`/reviews/rooms/${roomId}`));
-            return roomReview.data;
+            const utilities = (await this.api.get(`/payment-records`));
+            return utilities.data;
         } catch (err) {
             throw err;
         }
@@ -26,4 +26,4 @@ class ReviewService {
     }
 }
 
-export default new ReviewService();
+export default new UtilityService();

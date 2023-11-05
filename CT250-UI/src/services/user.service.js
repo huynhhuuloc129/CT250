@@ -62,17 +62,15 @@ class UserService {
     }
   }
   async updateUser(id, data, token) {
-    return await this.api.patch("/users/" + id, data);
-
-    // return await axios.patch("http://localhost:3000/api/users/" + data.id, {
-    //   headers: {
-    //     Authorization: token
-    //   }
-    //   }).then((res) => {
-    //       return res.data;
-    // }).catch ((err) => {
-    //   console.log(err)
-    // })
+    return await axios.patch(`http://localhost:3000/api/users/${id}`, data, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
   }
 }
 
