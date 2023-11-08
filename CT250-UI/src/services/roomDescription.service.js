@@ -24,6 +24,17 @@ class RoomingDescriptionService {
             throw err
         })
     }
+    async update(id, data, token) {
+        return await axios.patch(`http://localhost:3000/api/room-descriptions/${id}`, data, {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }).then((res) => {
+            return res.data;
+        }).catch((err) => {
+            throw err
+        })
+    }
 }
 
 export default new RoomingDescriptionService();

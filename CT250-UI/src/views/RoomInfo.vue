@@ -48,6 +48,18 @@
               data-bs-toggle="modal" data-bs-target="#addDescriptionModal">
               Thêm mô tả ngắn</button>
           </div>
+
+          <hr class="hr">
+          <div>
+            <h4>Nơi này có những gì cho bạn</h4>
+            <div v-for="ulti in room.utilities">
+              <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
+            </div>
+            <button v-if="checkOwner" type="button" style="font-weight: bold; width: 100%;" class="btn btn-light"
+              data-bs-toggle="modal" data-bs-target="#addRoomUtility">
+              Thêm tiện ích</button>
+          </div>
+
           <hr class="hr" v-if="room.descriptions != null && room.descriptions.length > 0">
           <div>
             Mô tả:
@@ -60,8 +72,8 @@
         </div>
       </div>
 
-      <div style=" width: 40%; display: flex; flex-direction: column;">
-        <div id="MyRoom-Information2">
+      <div style=" width: 40%; display: flex; flex-direction: column; ">
+        <div id="MyRoom-Information2" style="border-radius: 15px 15px 0 0;">
 
           <div class="myroom-fee">Giá điện:
             <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.electricityPrice"
@@ -112,21 +124,26 @@
           </div>
         </div>
 
-        <button v-if="checkOwner" type="button"
-          style="width: 100%; margin-top: 2px; font-weight: bold; background-color: red;" class="btn btn-primary"
-          data-bs-toggle="modal">
-          Thêm người ở</button>
+        <button v-if="checkOwner && this.roomingSubscription != null" type="button"
+          style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0;" class="btn btn-danger"
+          data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
+          Thêm người ở tạm thời</button>
 
-        <div class="card" v-if="tempTenants.length > 0">
+        <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants.length > 0 && checkOwner">
           <div class="card-body">
-            <h5 class="card-title">{{ tempTenants.fullName }}</h5>
-            <p class="card-text">{{ tempTenants.citizenID }}</p>
-            <p class="card-text">{{ tempTenants.startDate }} - <span>{{ tempTenants.endDate }}</span></p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+            <ul class="list-group" v-for="tempTenant in tempTenants">
+              <li class="list-group-item  align-items-center">
+                <div style="display: flex; justify-content: space-between;">
+                  <div> Họ tên: {{ tempTenant.fullName }}</div>
+                  <font-awesome-icon icon="trash" style="cursor: pointer" @click="deleteTempTenant(tempTenant.id)" />
+                </div>
+                <div>Căn cước công dân: {{ tempTenant.citizenId }}</div>
+                <div>Ngày vào ở: {{ tempTenant.startDate }}</div>
+                <div v-if="tempTenant.endDate != null">Ngày rời khỏi: {{ tempTenant.startDate }}</div>
+              </li>
+            </ul>
           </div>
         </div>
-
-
 
         <!-- rooming subscription request  -->
         <div v-if="checkOwner && room.state != 'unavailable'" class="container mt-5" style="margin-bottom: 20px;">
@@ -164,17 +181,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <hr class="hr">
-        <div>
-          <h4>Nơi này có những gì cho bạn</h4>
-          <div v-for="ulti in room.utilities">
-            <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
-          </div>
-          <button v-if="checkOwner" type="button" style="font-weight: bold; width: 100%;" class="btn btn-light"
-            data-bs-toggle="modal" data-bs-target="#addRoomUtility">
-            Thêm tiện ích</button>
         </div>
       </div>
     </div>
@@ -257,7 +263,7 @@
 
 
             <div class="text-center">
-              <button type="submit" class=" btn btn-primary btn-block mb-4" v-on:click="onAddingRoomDescription"
+              <button type="submit" class=" btn btn-dark btn-block mb-4" v-on:click="onAddingRoomDescription"
                 :disabled="buttonDescriptionDisable">Thêm</button>
             </div>
 
@@ -267,6 +273,47 @@
     </div>
   </div>
 
+  <!-- adding temporary tenant form -->
+  <div class="modal fade" id="addTempTenantModal" tabindex="-1" aria-labelledby="addTempTenantLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginTitle">Thêm người ở tạm thời</h5>
+          <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input id="form2Example1" class="form-control" @focus="buttonTempTenantDisable = false"
+                v-model="tempTenantReq.fullName" placeholder="" required />
+              <label class="form-label" for="form2Example1">Họ và tên</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input id="form2Example2" class="form-control" @focus="buttonTempTenantDisable = false"
+                v-model="tempTenantReq.citizenId" placeholder="" required />
+              <label class="form-label" for="form2Example2">Số căn cước công dân</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input type="date" id="form2Example2" class="form-control" @focus="buttonTempTenantDisable = false"
+                v-model="tempTenantReq.startDate" placeholder="" required />
+              <label class="form-label" for="form2Example2">Ngày vào ở</label>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class=" btn btn-danger btn-block mb-4" v-on:click="onAddingTempTenant"
+                :disabled="buttonTempTenantDisable">Thêm</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- adding room utilities form -->
   <div class="modal fade" id="addRoomUtility" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
@@ -291,7 +338,7 @@
 
 
             <div class="text-center">
-              <button type="submit" class=" btn btn-primary btn-block mb-4" v-on:click="onAddingUtilityRoom"
+              <button type="submit" class=" btn btn-dark btn-block mb-4" v-on:click="onAddingUtilityRoom"
                 :disabled="buttonUtilityDisable">Thêm</button>
             </div>
           </form>
@@ -324,6 +371,11 @@ export default {
         "title": "",
         "content": ""
       },
+      tempTenantReq: {
+        "fullName": "",
+        "citizenId": "",
+        "startDate": "12/12/2012",
+      },
       buttonUtilityDisable: false,
       buttonDescriptionDisable: false,
       roomingSubscriptionReq: [],
@@ -343,7 +395,8 @@ export default {
       utilitiesChoosen: [],
       utilities: [],
       tempTenants: [],
-      paymentRecords: []
+      paymentRecords: [],
+      buttonTempTenantDisable: false,
     };
   },
 
@@ -458,18 +511,20 @@ export default {
           })
           this.utilitiesChoosen.push(check);
         });
-        this.room
       } catch (err) {
         console.log(err)
         this.displayError(err);
       }
     },
-    async retrieveTempTenants() {
+    async retrieveTempTenantsAndPayment() {
       try {
-        this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomId(this.room.id)
-        this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0].id)
-        this.tempTenants = this.roomingSubscription.temporaryTenants
-        this.paymentRecords = this.roomingSubscription.paymentRecords
+        this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
+        console.log(this.roomingSubscriptionArr)
+        if (this.roomingSubscriptionArr.length > 0) {
+          this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0]?.id)
+          this.tempTenants = this.roomingSubscription.temporaryTenants
+          this.paymentRecords = this.roomingSubscription.paymentRecords
+        }
       } catch (err) {
         console.log(err)
         this.displayError(err);
@@ -586,6 +641,31 @@ export default {
         this.displayError(err);
       }
     },
+    async onAddingTempTenant() {
+      try {
+        this.buttonTempTenantDisable = true
+        var tokenBearer = this.$cookies.get("Token");
+        await temporaryTenantService.create(this.roomingSubscription.id, this.tempTenantReq, tokenBearer)
+        this.displaySuccess("Tạo người ở tạm thời thành công")
+        await this.sleep(1000)
+        this.$router.go();
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async deleteTempTenant(id) {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await temporaryTenantService.delete(id,tokenBearer)
+        this.displaySuccess("Xóa người ở tạm thời thành công")
+        await this.sleep(1000)
+        this.$router.go();
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
     },
@@ -617,7 +697,7 @@ export default {
     await this.retrieveRoom();
     await this.retrieveRoomingSubscriptionReq();
     await this.retrieveUtilities();
-    await this.retrieveTempTenants();
+    await this.retrieveTempTenantsAndPayment();
   }
 }
 </script>

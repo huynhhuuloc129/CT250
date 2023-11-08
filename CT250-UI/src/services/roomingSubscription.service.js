@@ -28,6 +28,14 @@ class RoomingSubscriptionService {
       throw err;
     }
   }
+  async getByRoomIdAndStaying(id) {
+    try {
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id +"&sortOrder=asc&state=staying")).data;
+      return roomingSubscription.data;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 export default new RoomingSubscriptionService();
