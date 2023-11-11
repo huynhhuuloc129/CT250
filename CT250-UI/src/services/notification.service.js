@@ -23,7 +23,7 @@ class NotificationService {
     }
     async getAllByRoomId(roomId) {
         try {
-            const notifications = (await this.api.get("/notifications?sortOrder=desc&roomId=" + roomId));
+            const notifications = (await this.api.get("/notifications?sortOrder=desc&limit=100&roomId=" + roomId));
             return notifications.data;
         } catch (err) {
             throw err;

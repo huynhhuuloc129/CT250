@@ -39,8 +39,9 @@
           <div v-if="checkOwner" class="dropdown dropstart" style="text-align: right;  margin-bottom: 10px;">
             <font-awesome-icon class="btn btn-light" style="font-size: 25px;" icon="bell" id="notifiDropdown"
               data-bs-toggle="dropdown" aria-expanded="false" />
-            <ul style="max-height: 500px; overflow: scroll; overflow-x: hidden;" class="dropdown-menu"
-              aria-labelledby="notifiDropdown">
+            <ul style="max-height: 500px; overflow: scroll; overflow-x: hidden; align-items: center; text-align: center;"
+              class="dropdown-menu" aria-labelledby="notifiDropdown">
+              <button style="width: 90%;" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addNoti">+</button>
               <li v-for="noti in notifications" :key="noti.id"
                 class="dropdown-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
@@ -52,7 +53,6 @@
                   <hr>
                 </div>
               </li>
-
             </ul>
           </div>
           <hr class="hr">
@@ -367,6 +367,42 @@
       </div>
     </div>
   </div>
+
+  <!-- adding notification form -->
+  <div class="modal fade" id="addNoti" tabindex="-1" aria-labelledby="addNotiLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notiTitle">Thêm thông báo cho nhà trọ này</h5>
+          <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input id="titleNoti" class="form-control" @focus="disableAddNoti = false" v-model="notiReq.title"
+                placeholder="" required />
+              <label class="form-label" for="titleNoti">Tiêu đề</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input id="contentNoti" class="form-control" @focus="disableAddNoti = false" v-model="notiReq.content"
+                placeholder="" required />
+              <label class="form-label" for="contentNoti">Nội dung</label>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-dark btn-block mb-4" v-on:click="addNotification"
+                :disabled="disableAddNoti">Thêm</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -398,6 +434,13 @@ export default {
         "citizenId": "",
         "startDate": "12/12/2012",
       },
+      notiReq: {
+        "roomingHouseId": null,
+        "roomId": 0,
+        "title": "",
+        "content": "",
+        "type": "room"
+      },
       buttonUtilityDisable: false,
       buttonDescriptionDisable: false,
       roomingSubscriptionReq: [],
@@ -420,6 +463,7 @@ export default {
       paymentRecords: [],
       buttonTempTenantDisable: false,
       notifications: [],
+      disableAddNoti: false,
     };
   },
 
@@ -559,6 +603,21 @@ export default {
       } catch (err) {
         console.log(err)
         this.displayError(err)
+      }
+    },
+    async addNotification() {
+      try {
+        this.disableAddNoti = true
+        var tokenBearer = this.$cookies.get("Token")
+        this.notiReq.roomId = this.room.id
+        this.notiReq.roomingHouseId = this.room.roomingHouse.id
+        await notificationService.create(this.notiReq, tokenBearer)
+        this.displaySuccess("Đã tạo thông báo thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
       }
     },
     confirmRegisterRoom() {
