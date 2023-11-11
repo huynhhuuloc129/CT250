@@ -65,23 +65,103 @@
         <div v-if="user.role == 'tenant'" class="PersonalInformation-session">
             <h4>Các phòng trọ đã và đang ở: </h4>
             <br>
-            <div class="card" v-for="roomingSubscription in roomingSubscriptions">
+            <div class="card" v-for="(roomingSubscription, index) in roomingSubscriptions">
                 <h5 class="card-header">{{ roomingSubscription.room.name }}</h5>
                 <div class="card-body">
                     <h5 class="card-title">Mô tả</h5>
                     <p class="card-text">{{ roomingSubscription.room.summary }}</p>
                     <div style="display: flex; justify-content: space-between;">
                         <a :href="'http://localhost:3001/rooms/' + roomingSubscription.room.id"
-                            style="background-color: #2c5596;" class="btn btn-primary">Xem
-                            chi
-                            tiết</a>
+                            style="background-color: #2c5596;" class="btn btn-primary">Xem chi tiết</a>
                         <span>Trạng thái: <span v-if="roomingSubscription.state == 'staying'" style="color: green;">Đang
                                 ở</span>
                             <span v-else style="color: red;">Đã từng ở</span></span>
                     </div>
+                    <div style="text-align: right;">
+                        Tổng tiền đã trả:
+                        <span style="color: red; ">{{ totalPriceSpent[index] }}</span>
+                    </div>
+                </div>
+                <div class="container mt-5" style="margin-bottom: 20px;">
+                    <div class="accordion" id="toggleExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="toggleHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#toggleContent" aria-expanded="true" aria-controls="toggleContent">
+                                    <div id="listRoomsHeader">Hóa đơn hàng tháng</div>
+                                </button>
+                            </h2>
+                            <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse show"
+                                aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
+                                <div class="accordion-body">
+                                    <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
+                                        v-for="paymentRecord in roomingSubscription.paymentRecords">
 
+                                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                                            <div style="display: flex; flex-direction: column; width: 100%;">
+                                                <div style="font-weight: bold;">Tháng {{ paymentRecord.month }}, năm {{
+                                                    paymentRecord.year }}
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Giá nước: </span>
+                                                    <span>{{ paymentRecord.monthWaterPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Giá điện: </span>
+                                                    <span>{{ paymentRecord.monthElectricityPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Số nước: </span>
+                                                    <span>{{ paymentRecord.waterAmount }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Số điện: </span>
+                                                    <span>{{ paymentRecord.electricityAmount }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Tiền phòng: </span>
+                                                    <span>{{ paymentRecord.monthRoomPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Tiền nước:</span>
+                                                    <span>{{ paymentRecord.waterPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Tiền điện:</span>
+                                                    <span>{{ paymentRecord.electricityPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Phụ thu:</span>
+                                                    <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge
+                                                    }}</span>
+                                                    <span v-else>0</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Tổng tiền:</span>
+                                                    <span>{{ paymentRecord.monthTotalPrice }}</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <span>Trạng thái:</span>
+                                                    <span v-if="paymentRecord.paidDate == null" style="color: red;">Chưa
+                                                        đóng</span>
+                                                    <span v-else style="color: blue;">Đã đóng</span>
+                                                </div>
+                                                <div v-if="paymentRecord.paidDate != null"
+                                                    style="display: flex; justify-content: space-between;">
+                                                    <span>Ngày đóng:</span>
+                                                    <span>{{ paymentRecord.paidDate }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
 
 
@@ -201,7 +281,8 @@ export default {
             dobString: "",
             roomingSubscriptions: [],
             userUpdateForm: {},
-            genders: "Nam"
+            genders: "Nam",
+            totalPriceSpent: []
         };
     },
     components: {
@@ -213,11 +294,19 @@ export default {
             return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
         },
         async getRoomingSubscriptions() {
-            console.log(this.user)
-
             try {
-                if (this.user.role == 'tenant')
+                if (this.user.role == 'tenant') {
                     this.roomingSubscriptions = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
+                    for (let i = 0; i < this.roomingSubscriptions.length; i++) {
+                        this.roomingSubscriptions[i] = await roomingSubscriptionService.getOne(this.roomingSubscriptions[i].id)
+                        this.totalPriceSpent[i] = 0
+                        this.roomingSubscriptions[i].paymentRecords.forEach(element => {
+                            // if (element.paidDate != null)
+                            this.totalPriceSpent[i] += element.monthTotalPrice
+                        });
+                    }
+                }
+
             } catch (err) {
                 console.log(err)
             }

@@ -128,7 +128,7 @@
             <div>{{ room.dimensions }} m2</div>
           </div>
 
-          <div class="myroom-fee" v-if="user.role == 'lessor'">Trạng thái phòng:
+          <div class="myroom-fee">Trạng thái phòng:
             <div v-if="room.state == 'available'">Có sẵn</div>
             <div v-if="room.state != 'available'">Không có sẵn</div>
           </div>
@@ -163,6 +163,84 @@
                 <div v-if="tempTenant.endDate != null">Ngày rời khỏi: {{ tempTenant.startDate }}</div>
               </li>
             </ul>
+          </div>
+        </div>
+
+        <div class="container mt-5" style="margin-bottom: 20px;">
+          <div class="accordion" id="toggleExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="toggleHeader">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent"
+                  aria-expanded="true" aria-controls="toggleContent">
+                  <div id="listRoomsHeader">Hóa đơn hàng tháng</div>
+                </button>
+              </h2>
+              <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse show"
+                aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
+                <div class="accordion-body">
+                  <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
+                    v-for="paymentRecord in roomingSubscription.paymentRecords">
+
+                    <div style="display: flex; justify-content: space-between; width: 100%;">
+                      <div style="display: flex; flex-direction: column; width: 100%;">
+                        <div style="font-weight: bold;">Tháng {{ paymentRecord.month }}, năm {{
+                          paymentRecord.year }}
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Giá nước: </span>
+                          <span>{{ paymentRecord.monthWaterPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Giá điện: </span>
+                          <span>{{ paymentRecord.monthElectricityPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Số nước: </span>
+                          <span>{{ paymentRecord.waterAmount }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Số điện: </span>
+                          <span>{{ paymentRecord.electricityAmount }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền phòng: </span>
+                          <span>{{ paymentRecord.monthRoomPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền nước:</span>
+                          <span>{{ paymentRecord.waterPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền điện:</span>
+                          <span>{{ paymentRecord.electricityPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Phụ thu:</span>
+                          <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge
+                          }}</span>
+                          <span v-else>0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tổng tiền:</span>
+                          <span>{{ paymentRecord.monthTotalPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Trạng thái:</span>
+                          <span v-if="paymentRecord.paidDate == null" style="color: red;">Chưa
+                            đóng</span>
+                          <span v-else style="color: blue;">Đã đóng</span>
+                        </div>
+                        <div v-if="paymentRecord.paidDate != null" style="display: flex; justify-content: space-between;">
+                          <span>Ngày đóng:</span>
+                          <span>{{ paymentRecord.paidDate }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

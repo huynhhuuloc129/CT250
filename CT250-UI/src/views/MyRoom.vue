@@ -32,52 +32,57 @@
       <div id="MyRoom-Information1">
         <div>
           <h1 style="text-align: center;">{{ room.name }}</h1>
-          <hr class="hr">
-          <div style="display: flex; flex-direction: column;">
+          <!-- notification -->
 
-            <div class="roomDes" style="display: flex;"> <!--TODO: using for loop-->
-              <font-awesome-icon icon="wifi" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription[0].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[0].Content }}</div>
-              </div>
-            </div>
-
-            <div class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="kitchen-set" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription[1].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[1].Content }}</div>
-              </div>
-            </div>
-
-            <div class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="shower" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription[2].Title }}</div>
-                <div class="roomDesContent">{{ roomDescription[2].Content }}</div>
-              </div>
-            </div>
-
-
+          <div class="dropdown dropstart" style="text-align: right;  margin-bottom: 10px;">
+            <font-awesome-icon class="btn btn-light" style="font-size: 25px;" icon="bell" id="notifiDropdown"
+              data-bs-toggle="dropdown" aria-expanded="false" />
+            <ul style="max-height: 500px; overflow: scroll; overflow-x: hidden; align-items: center; text-align: center;"
+              class="dropdown-menu" aria-labelledby="notifiDropdown">
+              <li v-for="noti in notifications" :key="noti.id"
+                class="dropdown-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ noti.title }}</div>
+                  {{ noti.content }}
+                  <p>
+                    Ngày tạo: {{ noti.createdAt }}
+                  </p>
+                  <hr>
+                </div>
+              </li>
+            </ul>
           </div>
           <hr class="hr">
+
+          <!-- room description -->
+          <div style="display: flex; flex-direction: column;">
+            <div v-for="roomDescription in room.descriptions" class="roomDes" style="display: flex;">
+              <font-awesome-icon icon="wifi" />
+              <div>
+                <div class="roomDesTitle">{{ roomDescription.title }}</div>
+                <div class="roomDesContent">{{ roomDescription.content }}</div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="hr">
           <div>
-            Description:
-            {{ room.summary }}
+            <span>Mô tả: </span>
+            <span>{{ room.summary }}</span>
           </div>
 
           <hr class="hr">
           <div>
             <h4>Nơi này có những gì cho bạn</h4>
+            <div v-for="ulti in room.utilities">
+              <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
+            </div>
           </div>
         </div>
       </div>
 
       <div style=" width: 40%; display: flex; flex-direction: column;">
-        <div id="MyRoom-Information2">
-          <div class="myroom-fee" style="font-weight: bold;">Trạng thái phòng: <div>{{ roomingSubscription.state }}</div>
-          </div>
+        <div id="MyRoom-Information2" style="border-radius: 15px 15px 0 0;">
           <div class="myroom-fee">Giá điện: <div>{{ room.electricityPrice }}</div>
           </div>
           <div class="myroom-fee">Giá nước: <div>{{ room.waterPrice }}</div>
@@ -91,6 +96,95 @@
           <hr class="hr">
           <button type="button" class="btn btn-dark">Hủy đăng ký</button>
         </div>
+
+        <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants != null && tempTenants.length > 0">
+          <div class="card-body">
+            <ul class="list-group" v-for="tempTenant in tempTenants">
+              <li class="list-group-item  align-items-center">
+                <div> Họ tên: {{ tempTenant.fullName }}</div>
+                <div>Căn cước công dân: {{ tempTenant.citizenId }}</div>
+                <div>Ngày vào ở: {{ tempTenant.startDate }}</div>
+                <div v-if="tempTenant.endDate != null">Ngày rời khỏi: {{ tempTenant.startDate }}</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="container mt-5" style="margin-bottom: 20px;">
+          <div class="accordion" id="toggleExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="toggleHeader">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent"
+                  aria-expanded="true" aria-controls="toggleContent">
+                  <div id="listRoomsHeader">Hóa đơn hàng tháng</div>
+                </button>
+              </h2>
+              <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse show"
+                aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
+                <div class="accordion-body">
+                  <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
+                    v-for="(paymentRecord, index) in paymentRecords">
+
+                    <div style="display: flex; justify-content: space-between; width: 100%;">
+                      <div style="display: flex; flex-direction: column; width: 100%;">
+                        <div style="font-weight: bold;">Tháng {{ paymentRecord.month }}, năm {{ paymentRecord.year }}
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Giá nước: </span>
+                          <span>{{ paymentRecord.monthWaterPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Giá điện: </span>
+                          <span>{{ paymentRecord.monthElectricityPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Số nước: </span>
+                          <span>{{ paymentRecord.waterAmount }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Số điện: </span>
+                          <span>{{ paymentRecord.electricityAmount }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền phòng: </span>
+                          <span>{{ paymentRecord.monthRoomPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền nước:</span>
+                          <span>{{ paymentRecord.waterPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tiền điện:</span>
+                          <span>{{ paymentRecord.electricityPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Phụ thu:</span>
+                          <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge }}</span>
+                          <span v-else>0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Tổng tiền:</span>
+                          <span>{{ paymentRecord.monthTotalPrice }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                          <span>Trạng thái:</span>
+                          <span v-if="paymentRecord.paidDate == null" style="color: red;">Chưa đóng</span>
+                          <span v-else style="color: blue;">Đã đóng</span>
+                        </div>
+                        <div v-if="paymentRecord.paidDate != null" style="display: flex; justify-content: space-between;">
+                          <span>Ngày đóng:</span>
+                          <span>{{ paymentRecord.paidDate }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -119,12 +213,7 @@
           </div>
 
           <div style="word-break: break-all; width: 70%;">
-            Tôi xin giới thiệu mình là chủ trọ của khu vực này. Với tinh thần nhiệt tình và lòng nhiệt huyết trong việc
-            quản lý và xây dựng một môi trường sống thoải mái và an lành cho tất cả cư dân, tôi luôn sẵn sàng làm việc
-            chăm sóc và đảm bảo rằng mọi người tại khu này đều có một trải nghiệm sống tốt đẹp. Tôi rất mong được hợp tác
-            với mọi người để tạo nên một cộng đồng thân thiện và đoàn kết, nơi mà mọi người có thể gọi đó là ngôi nhà thứ
-            hai của mình. Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào, xin đừng ngần ngại liên hệ với tôi. Cảm ơn bạn đã
-            đến và làm cho khu vực này trở thành một nơi đáng sống!
+            {{ lessor.summary }}
           </div>
           <div>
 
@@ -137,6 +226,8 @@
 
 <script>
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
+import roomDescriptionService from "@/services/roomDescription.service";
+import notificationService from "@/services/notification.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
@@ -163,7 +254,10 @@ export default {
       room: {},
       user: {},
       lessor: {},
-      tenant: {}
+      tenant: {},
+      notifications: [],
+      tempTenants: [],
+      paymentRecords: [],
     };
   },
 
@@ -205,6 +299,28 @@ export default {
         console.log(err);
       }
     },
+    async retrieveTempTenantsAndPayment() {
+      try {
+        this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
+        if (this.roomingSubscriptionArr.length > 0) {
+          this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0]?.id)
+          this.tempTenants = this.roomingSubscription.temporaryTenants
+          this.paymentRecords = this.roomingSubscription.paymentRecords
+        }
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async retrieveNotifications() {
+      try {
+        this.notifications = await notificationService.getAllByRoomId(this.room.id)
+        this.notifications = this.notifications.data
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
+      }
+    },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
     },
@@ -213,7 +329,9 @@ export default {
   async mounted() {
     await this.checkLogin();
     this.showHeaderAndFooter();
-    this.retrieveRoom();
+    await this.retrieveRoom();
+    await this.retrieveNotifications();
+    await this.retrieveTempTenantsAndPayment();
   }
 }
 </script>
