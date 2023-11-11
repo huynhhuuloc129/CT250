@@ -7,7 +7,7 @@ class RoomService {
   }
   async getAll() {
     try {
-      const rooms = (await this.api.get("/rooms?sortOrder=asc")).data;
+      const rooms = (await this.api.get("/rooms?sortOrder=asc&limit=100")).data;
       return rooms.data;
     } catch (err) {
       throw err;
@@ -15,7 +15,7 @@ class RoomService {
   }
   async getAllByRoomingHouseID(id) {
     try {
-      const rooms = (await this.api.get("/rooming-houses/" + id + "/rooms?sortOrder=asc")).data;
+      const rooms = (await this.api.get("/rooming-houses/" + id + "/rooms?sortOrder=asc&limit=100")).data;
       return rooms.data;
     } catch (err) {
       throw err;

@@ -50,8 +50,34 @@
             <div v-else>{{ roomingHouse.paymentExpiresDay }}</div>
           </div>
         </div>
+
+        <!-- notification -->
+        <div v-if="checkOwner" class="card" style="margin-top: 10px; max-height: 500px; overflow-x: hidden;">
+          <div class="card-body">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+              <h4>Thông báo</h4>
+              <button class="btn btn-light" :disabled="disableAddNoti" data-bs-toggle="modal" data-bs-target="#addNoti">
+                <font-awesome-icon icon="plus" />
+              </button>
+            </div>
+            <ul class="list-group ">
+              <li v-for="noti in notifications" :key="noti.id"
+                class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ noti.title }}</div>
+                  {{ noti.content }}
+                  <p>
+                    Ngày tạo: {{ noti.createdAt }}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
+
+
 
     <div class="container mt-5" style="margin-bottom: 20px; ">
       <div class="accordion" id="toggleExample">
@@ -127,10 +153,47 @@
       </div>
     </div>
   </div>
+
+  <!-- adding notification form -->
+  <div class="modal fade" id="addNoti" tabindex="-1" aria-labelledby="addTempTenantLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginTitle">Thêm thông báo cho khu trọ</h5>
+          <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input id="form2Example1" class="form-control" @focus="disableAddNoti = false" v-model="notiReq.title"
+                placeholder="" required />
+              <label class="form-label" for="form2Example1">Tiêu đề</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input id="form2Example2" class="form-control" @focus="disableAddNoti = false" v-model="notiReq.content"
+                placeholder="" required />
+              <label class="form-label" for="form2Example2">Nội dung</label>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class=" btn btn-danger btn-block mb-4" v-on:click="addNotification"
+                :disabled="disableAddNoti">Thêm</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import roomingHouseService from "@/services/roomingHouse.service";
+import notificationService from '@/services/notification.service'
 import categoryService from '@/services/category.service';
 import userService from "../services/user.service";
 import roomService from "@/services/room.service";
@@ -148,12 +211,21 @@ export default {
           id: 9999999
         }
       },
+      notiReq: {
+        "roomingHouseId": 0,
+        "roomId": null,
+        "title": "",
+        "content": "",
+        "type": "rooming_house"
+      },
       rooms: [],
       user: {},
       lessor: {},
       enableEditRoomingHouse: false,
       categories: [],
       categoryChoosen: 0,
+      notifications: {},
+      disableAddNoti: false,
     };
   },
 
@@ -162,6 +234,9 @@ export default {
   },
 
   computed: {
+    getNotifications() {
+      return this.notifications
+    },
     checkOwner() {
       return (this.user.role == 'lessor' && this.roomingHouse.lessor.id == this.user.lessor?.id)
     },
@@ -185,24 +260,49 @@ export default {
         this.categoryChoosen = this.roomingHouse.category.id
         this.roomingHouse = await roomingHouseService.getOne(this.$route.params.id);
         this.lessor = this.roomingHouse.lessor.user;
-        console.log(this.lessor)
         this.retrieveRooms(this.roomingHouse.id)
       } catch (err) {
-        console.log(err);
+        console.log(err)
+        this.displayError(err);
       }
     },
     async retrieveRooms(id) {
       try {
         this.rooms = await roomService.getAllByRoomingHouseID(id);
       } catch (err) {
-        console.log(err);
+        console.log(err)
+        this.displayError(err);
       }
     },
     async retrieveCategories() {
       try {
         this.categories = await categoryService.getAll();
       } catch (err) {
-        console.log(err);
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async retrieveNotifications() {
+      try {
+        this.notifications = await notificationService.getAllByRoomingHouseId(this.roomingHouse.id)
+        this.notifications = this.notifications.data;
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async addNotification() {
+      try {
+        this.disableAddNoti = true
+        var tokenBearer = this.$cookies.get("Token")
+        this.notiReq.roomingHouseId = this.roomingHouse.id
+        await notificationService.create(this.notiReq, tokenBearer)
+        this.displaySuccess("Đã tạo thông báo thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
       }
     },
     showHeaderAndFooter() {
@@ -255,11 +355,12 @@ export default {
       })
     },
   },
-  mounted() {
+  async mounted() {
     this.checkLogin();
     this.showHeaderAndFooter();
-    this.retrieveRoomingHouse();
+    await this.retrieveRoomingHouse();
     this.retrieveCategories();
+    this.retrieveNotifications();
   }
 }
 </script>

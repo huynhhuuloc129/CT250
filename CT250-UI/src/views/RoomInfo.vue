@@ -27,12 +27,34 @@
         </div>
       </div>
 
+
     </div>
     <div id="MyRoom-Information">
       <div id="MyRoom-Information1">
         <div>
           <input type="text" v-if="enableEditRoom" class="form-control" v-model="room.name">
           <h1 v-else style="text-align: center;">{{ room.name }}</h1>
+
+          <!-- notification -->
+          <div v-if="checkOwner" class="dropdown dropstart" style="text-align: right;  margin-bottom: 10px;">
+            <font-awesome-icon class="btn btn-light" style="font-size: 25px;" icon="bell" id="notifiDropdown"
+              data-bs-toggle="dropdown" aria-expanded="false" />
+            <ul style="max-height: 500px; overflow: scroll; overflow-x: hidden;" class="dropdown-menu"
+              aria-labelledby="notifiDropdown">
+              <li v-for="noti in notifications" :key="noti.id"
+                class="dropdown-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ noti.title }}</div>
+                  {{ noti.content }}
+                  <p>
+                    Ngày tạo: {{ noti.createdAt }}
+                  </p>
+                  <hr>
+                </div>
+              </li>
+
+            </ul>
+          </div>
           <hr class="hr">
           <div style="display: flex; flex-direction: column;">
 
@@ -74,7 +96,6 @@
 
       <div style=" width: 40%; display: flex; flex-direction: column; ">
         <div id="MyRoom-Information2" style="border-radius: 15px 15px 0 0;">
-
           <div class="myroom-fee">Giá điện:
             <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.electricityPrice"
               style="width: 20%; margin-bottom: 5px;">
@@ -353,6 +374,7 @@ import roomingSubscriptionReqService from "@/services/roomingSubscriptionRequest
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
 import roomDescriptionService from "@/services/roomDescription.service";
 import temporaryTenantService from "@/services/temporaryTenant.service"
+import notificationService from "@/services/notification.service";
 import utilityService from "@/services/utility.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
@@ -397,6 +419,7 @@ export default {
       tempTenants: [],
       paymentRecords: [],
       buttonTempTenantDisable: false,
+      notifications: [],
     };
   },
 
@@ -519,7 +542,6 @@ export default {
     async retrieveTempTenantsAndPayment() {
       try {
         this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
-        console.log(this.roomingSubscriptionArr)
         if (this.roomingSubscriptionArr.length > 0) {
           this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0]?.id)
           this.tempTenants = this.roomingSubscription.temporaryTenants
@@ -528,6 +550,15 @@ export default {
       } catch (err) {
         console.log(err)
         this.displayError(err);
+      }
+    },
+    async retrieveNotifications() {
+      try {
+        this.notifications = await notificationService.getAllByRoomId(this.room.id)
+        this.notifications = this.notifications.data
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     confirmRegisterRoom() {
@@ -657,7 +688,7 @@ export default {
     async deleteTempTenant(id) {
       try {
         var tokenBearer = this.$cookies.get("Token");
-        await temporaryTenantService.delete(id,tokenBearer)
+        await temporaryTenantService.delete(id, tokenBearer)
         this.displaySuccess("Xóa người ở tạm thời thành công")
         await this.sleep(1000)
         this.$router.go();
@@ -698,6 +729,7 @@ export default {
     await this.retrieveRoomingSubscriptionReq();
     await this.retrieveUtilities();
     await this.retrieveTempTenantsAndPayment();
+    await this.retrieveNotifications();
   }
 }
 </script>
