@@ -143,13 +143,19 @@
               ký</button>
 
           </div>
+          <div v-if="getRoomingSubscriptionWantLeave == true" style="display: flex; justify-content: space-between;">
+            <span style="color: red; font-weight: bold;">Hiện đang có yêu cầu hủy đăng ký trọ</span>
+            <div>
+              <button type="button" style="margin-right: 5px;" class="btn btn-success">Chấp nhận</button>
+              <button type="button" class="btn btn-danger">Từ chối</button>
+            </div>
+          </div>
         </div>
 
         <button v-if="checkOwner && this.roomingSubscription != null" type="button"
           style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0;" class="btn btn-danger"
           data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
           Thêm người ở tạm thời</button>
-
         <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants.length > 0 && checkOwner">
           <div class="card-body">
             <ul class="list-group" v-for="tempTenant in tempTenants">
@@ -293,16 +299,22 @@
 
     <div id="MyRoom-Information3">
       <hr class="hr">
-      <h3 style="text-align: center;" v-if="this.room.reviews?.length == 0">Hiện tại phòng chưa có đánh giá nào</h3>
-      <div v-if="this.room.reviews?.length > 0">
+      <h3 style="text-align: center;" v-if="this.reviews?.length == 0">Hiện tại phòng chưa có đánh giá nào</h3>
+      <div v-if="this.reviews?.length > 0">
         <h3>Đánh giá</h3>
-        <review :reviews="this.room.reviews" />
+        <review :reviews="this.reviews" />
       </div>
 
+      <div v-if="checkStayed">
+        <h4>Đánh giá của tôi</h4>
 
-      <star-rating v-model="selectedRating" :star-size="36" :border-color="activeColor" :show-border="true"
-        :active-color="activeColor"></star-rating>
+        <star-rating v-model:rating="this.myReviewThisRoom.rating" @update:rating="setRating" :star-size="25"
+          :border-color="activeColor" :show-border="true" :active-color="activeColor"></star-rating>
 
+        <textarea class="form-control" v-model="myReviewThisRoom.comment" style="width: 50%; margin: 10px 0 10px 0;"
+          name="" id="" cols="10" rows="5"></textarea>
+        <button class="btn btn-primary" @click="updateReview">Cập nhật</button>
+      </div>
 
       <div v-if="this.room.lessor.id != this.user.lessor?.id">
         <hr class="hr">
@@ -490,6 +502,7 @@ import roomDescriptionService from "@/services/roomDescription.service";
 import temporaryTenantService from "@/services/temporaryTenant.service"
 import notificationService from "@/services/notification.service";
 import utilityService from "@/services/utility.service";
+import reviewService from "@/services/review.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
@@ -501,7 +514,7 @@ export default {
   data() {
     return {
       selectedRating: 0,
-      activeColor: 'red',
+      activeColor: '#0F2C59',
       roomDescriptionRequest: {
         "roomId": "",
         "title": "",
@@ -521,6 +534,7 @@ export default {
       },
       buttonUtilityDisable: false,
       buttonDescriptionDisable: false,
+      roomingSubscriptionRoom: [],
       roomingSubscriptionReq: [],
       tenantReq: [],
       roomingSubscriptionArr: [],
@@ -542,6 +556,10 @@ export default {
       buttonTempTenantDisable: false,
       notifications: [],
       disableAddNoti: false,
+      reviews: [],
+      myReviews: [],
+      myReviewThisRoom: {},
+      currentTenantStay: {}
     };
   },
 
@@ -551,11 +569,17 @@ export default {
   },
 
   computed: {
+    getRoomingSubscriptionWantLeave() {
+      return this.currentTenantStay[0]?.state == 'want_leave'
+    },
     checkOwner() {
       return (this.user.role == 'lessor' && this.room.lessor.id == this.user.lessor.id)
     },
     isDisabled() {
       return (this.tenant != null && this.tenant.isRegistered) || this.room.state == 'unavailable'
+    },
+    checkStayed() {
+      return this.roomingSubscriptionRoom.length > 0
     },
   },
 
@@ -586,10 +610,28 @@ export default {
     },
     async retrieveRoom() {
       try {
+        var tokenBearer = this.$cookies.get("Token");
+
         this.room = await roomService.getOne(this.$route.params.id);
         this.room.roomPrice = this.room.roomPrice
         this.lessor = this.room.lessor.user
 
+        this.myReviews = await reviewService.getMyReview(tokenBearer)
+        this.myReviews.forEach(review => {
+          if (review.room.id == this.room.id && review.tenant.id == this.tenant.id) this.myReviewThisRoom = review
+        });
+        if (this.myReviews.length == 0 && this.user.role == 'tenant') {
+          await reviewService.create(this.room.id, {
+            "rating": 0,
+            "comment": ""
+          }, tokenBearer)
+          this.myReviews = await reviewService.getMyReview(tokenBearer)
+          this.myReviewThisRoom = this.myReviews[0]
+        }
+        this.reviews = await reviewService.getAllByRoomId(this.room.id)
+        this.currentTenantStay = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
+        if (this.currentTenantStay.length == 0) this.currentTenantStay = await roomingSubscriptionService.getByRoomIdAndWantLeave(this.room.id)
+        console.log(this.currentTenantStay)
         if (this.user.role == "tenant") {
           var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.user.tenant.id);
           var roomingSubscription = roomingSubscriptionArr[0];
@@ -601,10 +643,24 @@ export default {
             }
           }
         }
-
       } catch (err) {
         console.log(err)
         this.displayError(err);
+      }
+    },
+    async updateReview() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await reviewService.update(this.myReviewThisRoom.id, {
+          "rating": this.myReviewThisRoom.rating,
+          "comment": this.myReviewThisRoom.comment,
+        }, tokenBearer)
+        this.displaySuccess("Cập nhật đánh giá thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     async editRoom() {
@@ -636,11 +692,13 @@ export default {
     },
     async retrieveRoomingSubscriptionReq() {
       try {
-        this.roomingSubscriptionReq = await roomingSubscriptionReqService.getAllByRoomId(this.room.id);
+        this.roomingSubscriptionReq = await roomingSubscriptionReqService.getAllByRoomIdWaitingTenantCall(this.room.id);
+        console.log(this.roomingSubscriptionReq)
         this.roomingSubscriptionReq.forEach(async element => {
           let oneTenant = await userService.getOneTenant(element.tenantId)
           this.tenantReq.push(oneTenant)
         });
+        if (this.user.role == 'tenant') this.roomingSubscriptionRoom = await roomingSubscriptionService.getByTenantIdAndRoomId(this.user.tenant.id, this.room.id)
       } catch (err) {
         console.log(err)
         this.displayError(err);
@@ -833,6 +891,9 @@ export default {
         console.log(err)
         this.displayError(err);
       }
+    },
+    setRating(rating) {
+      this.myReviewThisRoom.rating = rating
     },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);

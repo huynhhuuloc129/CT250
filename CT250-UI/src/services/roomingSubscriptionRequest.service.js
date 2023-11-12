@@ -21,6 +21,22 @@ class RoomingSubscriptionReqService {
             throw err;
         }
     }
+    async getAllByRoomIdWaitingTenantCall(roomId) {
+        try {
+            const roomingSubscriptionReq = (await this.api.get("/rooming-subcription-requests?sortOrder=asc&state=watting_tenant_call&roomId=" + roomId)).data;
+            return roomingSubscriptionReq.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+    async getAllByRoomIdWaitingTenantAccept(roomId) {
+        try {
+            const roomingSubscriptionReq = (await this.api.get("/rooming-subcription-requests?sortOrder=asc&roomId=" + roomId)).data;
+            return roomingSubscriptionReq.data;
+        } catch (err) {
+            throw err;
+        }
+    }
     async create(roomingHouseId, roomId, token) {
         return await axios.post(`http://localhost:3000/api/rooming-houses/${roomingHouseId}/rooms/${roomId}/rooming-subscription-request`, "", {
             headers: {

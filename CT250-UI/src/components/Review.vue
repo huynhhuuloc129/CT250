@@ -10,34 +10,16 @@
                 <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
                   class="rounded-circle shadow-1-strong" width="100" height="100" />
               </div>
-              <h5 class="font-weight-bold">Teresa May</h5>
-              <h6 class="font-weight-bold my-3">Founder at ET Company</h6>
-              <ul class="list-unstyled d-flex justify-content-center">
-                <li>
-                  <i class="fas fa-star fa-sm text-info"></i>
-                </li>
-                <li>
-                  <i class="fas fa-star fa-sm text-info"></i>
-                </li>
-                <li>
-                  <i class="fas fa-star fa-sm text-info"></i>
-                </li>
-                <li>
-                  <i class="fas fa-star fa-sm text-info"></i>
-                </li>
-                <li>
-                  <i class="fas fa-star-half-alt fa-sm text-info"></i>
-                </li>
-              </ul>
+              <h5 class="font-weight-bold">{{ review.tenant.user.fullName }}</h5>
+              <h6 class="font-weight-bold my-3"><font-awesome-icon icon="star" /> {{ review.rating }}</h6>
               <p class="mb-2">
-                <i class="fas fa-quote-left pe-2"></i>Lorem ipsum dolor sit amet,
-                consectetur adipisicing elit. Quod eos id officiis hic tenetur quae quaerat
-                ad velit ab hic tenetur.
+                <i class="fas fa-quote-left pe-2"></i> {{ review.comment }}
               </p>
             </div>
           </div>
         </div>
       </div>
+      
     </div>
   </section>
 </template>

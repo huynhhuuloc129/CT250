@@ -1,4 +1,5 @@
 import createApiClient from "./api.service";
+import axios from 'axios';
 
 class RoomingSubscriptionService {
   constructor(baseUrl = "http://localhost:3000/api") {
@@ -14,7 +15,7 @@ class RoomingSubscriptionService {
   }
   async getByTenantId(id) {
     try {
-      const roomingSubscription = (await this.api.get("/rooming-subscriptions?tenantId=" + id +"&sortOrder=asc")).data;
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?tenantId=" + id + "&sortOrder=asc")).data;
       return roomingSubscription.data;
     } catch (err) {
       throw err;
@@ -22,7 +23,15 @@ class RoomingSubscriptionService {
   }
   async getByRoomId(id) {
     try {
-      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id +"&sortOrder=asc")).data;
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id + "&sortOrder=asc")).data;
+      return roomingSubscription.data;
+    } catch (err) {
+      throw err;
+    }
+  }
+  async getByTenantIdAndRoomId(tenantId, roomId) {
+    try {
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + roomId + "&tenantId=" + tenantId + "&sortOrder=asc")).data;
       return roomingSubscription.data;
     } catch (err) {
       throw err;
@@ -30,11 +39,30 @@ class RoomingSubscriptionService {
   }
   async getByRoomIdAndStaying(id) {
     try {
-      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id +"&sortOrder=asc&state=staying")).data;
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id + "&sortOrder=asc&state=staying")).data;
       return roomingSubscription.data;
     } catch (err) {
       throw err;
     }
+  }
+  async getByRoomIdAndWantLeave(id) {
+    try {
+      const roomingSubscription = (await this.api.get("/rooming-subscriptions?roomId=" + id + "&sortOrder=asc&state=want_leave")).data;
+      return roomingSubscription.data;
+    } catch (err) {
+      throw err;
+    }
+  }
+  async update(roomingHouseId, roomId, rsId, data, token) {
+    return await axios.patch(`http://localhost:3000/api/rooming-houses/${roomingHouseId}/rooms/${roomId}/rooming-subscription/${rsId}`, data, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
   }
 }
 

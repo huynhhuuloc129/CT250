@@ -94,7 +94,8 @@
           <div class="myroom-fee">Diện tích: <div>{{ room.dimensions }} m2</div>
           </div>
           <hr class="hr">
-          <button type="button" class="btn btn-dark">Hủy đăng ký</button>
+          <button type="button" v-if="getRoomingSubscriptionWantLeave == true" :disabled="true" class="btn btn-dark" >Đã gửi yêu cầu hủy đăng ký</button>
+          <button type="button" v-else class="btn btn-dark" @click="updateRoomingSubscription">Hủy đăng ký</button>
         </div>
 
         <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants != null && tempTenants.length > 0">
@@ -193,8 +194,22 @@
     <div id="MyRoom-Information3">
       <hr class="hr">
       <div>
-        <h3>Đánh giá</h3>
-        <review />
+        <h3 style="text-align: center;" v-if="this.reviews?.length == 0">Hiện tại phòng chưa có đánh giá nào</h3>
+        <div v-if="this.reviews?.length > 0">
+          <h3>Đánh giá</h3>
+          <review :reviews="this.reviews" />
+        </div>
+        <br>
+        <h4>Đánh giá của tôi</h4>
+
+        <div>
+          <star-rating v-model:rating="this.myReviewThisRoom.rating" @update:rating="setRating" :star-size="25"
+            :border-color="activeColor" :show-border="true" :active-color="activeColor"></star-rating>
+
+          <textarea class="form-control" v-model="myReviewThisRoom.comment" style="width: 50%; margin: 10px 0 10px 0;"
+            name="" id="" cols="10" rows="5"></textarea>
+          <button class="btn btn-primary" @click="updateReview">Cập nhật</button>
+        </div>
       </div>
       <hr class="hr">
       <div>
@@ -215,9 +230,6 @@
           <div style="word-break: break-all; width: 70%;">
             {{ lessor.summary }}
           </div>
-          <div>
-
-          </div>
         </div>
       </div>
     </div>
@@ -228,9 +240,12 @@
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
 import roomDescriptionService from "@/services/roomDescription.service";
 import notificationService from "@/services/notification.service";
+import reviewService from "@/services/review.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
+import StarRating from 'vue-star-rating'
+import Swal from 'sweetalert2'
 
 export default {
   data() {
@@ -249,6 +264,7 @@ export default {
           "Content": "Giá phòng trọ phải chăng, phù hợp với túi tiền và sẵn sàng dọn vào ngay."
         }
       ],
+      activeColor: '#0F2C59',
       roomingSubscriptionArr: [],
       roomingSubscription: {},
       room: {},
@@ -258,11 +274,15 @@ export default {
       notifications: [],
       tempTenants: [],
       paymentRecords: [],
+      reviews: [],
+      myReviews: [],
+      myReviewThisRoom: {},
     };
   },
 
   components: {
-    review
+    review,
+    StarRating,
   },
 
   computed: {
@@ -271,7 +291,10 @@ export default {
     },
     getRoomingSubscription() {
       return this.roomingSubscription;
-    }
+    },
+    getRoomingSubscriptionWantLeave(){
+      return this.roomingSubscription.state == 'want_leave'
+    },
   },
 
   methods: {
@@ -287,21 +310,85 @@ export default {
     },
     async retrieveRoom() {
       try {
+        var tokenBearer = this.$cookies.get("Token");
         var roomingSubscriptionArr = await roomingSubscriptionService.getByTenantId(this.tenant.id);
         var roomingSubscription = roomingSubscriptionArr[0];
-        if (roomingSubscription.state == 'staying') {
+        if (roomingSubscription.state == 'staying' || roomingSubscription.state == 'want_leave') {
           var myroom = roomingSubscription.room;
           this.room = await roomService.getOne(myroom.id);
           this.room.roomPrice = this.room.roomPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
           this.lessor = this.room.lessor.user
         }
+
+        this.myReviews = await reviewService.getMyReview(tokenBearer)
+        this.myReviews.forEach(review => {
+          if (review.room.id == this.room.id && review.tenant.id == this.tenant.id) this.myReviewThisRoom = review
+        });
+        if (this.myReviews.length == 0 && this.user.role == 'tenant') {
+
+          await reviewService.create(this.room.id, {
+            "rating": 0,
+            "comment": ""
+          }, tokenBearer)
+          this.myReviews = await reviewService.getMyReview(tokenBearer)
+          this.myReviewThisRoom = this.myReviews[0]
+        }
+        this.reviews = await reviewService.getAllByRoomId(this.room.id)
       } catch (err) {
         console.log(err);
+        this.displayError(err)
+      }
+    },
+    async updateReview() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await reviewService.update(this.myReviewThisRoom.id, {
+          "rating": this.myReviewThisRoom.rating,
+          "comment": this.myReviewThisRoom.comment,
+        }, tokenBearer)
+        this.displaySuccess("Cập nhật đánh giá thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
+      }
+    },
+    async updateRoomingSubscription() {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn gửi yêu cầu hủy đăng ký nhà trọ này không?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Gửi`,
+      }).then((result) => {
+        if (result.isConfirmed) { 
+          Swal.fire('Đã hủy thao tác', '', 'info')
+        } else if (result.isDenied) {
+          this.cancelRequestRoomingSubscription()
+        }
+      })
+    },
+    async cancelRequestRoomingSubscription() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionService.update(this.room.roomingHouse.id, this.room.id, this.roomingSubscription.id, {
+          "startDate": this.roomingSubscription.startDate,
+          "endDate": this.roomingSubscription.endDate,
+          "state": "want_leave",
+        }, tokenBearer)
+        this.displaySuccess("Đã gửi yêu cầu hủy thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     async retrieveTempTenantsAndPayment() {
       try {
         this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
+        if (this.roomingSubscriptionArr == 0) this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndWantLeave(this.room.id)
         if (this.roomingSubscriptionArr.length > 0) {
           this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0]?.id)
           this.tempTenants = this.roomingSubscription.temporaryTenants
@@ -320,6 +407,29 @@ export default {
         console.log(err)
         this.displayError(err)
       }
+    },
+    setRating(rating) {
+      this.myReviewThisRoom.rating = rating
+    },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    displaySuccess(message) {
+      Swal.fire({
+        // position: 'top-end',
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1000
+      })
+    },
+    displayError(message) {
+      Swal.fire({
+        title: 'Lỗi!',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      })
     },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
