@@ -10,7 +10,9 @@
                 <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
                   class="rounded-circle shadow-1-strong" width="100" height="100" />
               </div>
-              <h5 class="font-weight-bold">{{ review.tenant.user.fullName }}</h5>
+              <h5 class="font-weight-bold" style="cursor: pointer; text-decoration: underline;"
+                @click="goToUserInfo(review.tenant.user.id)">{{
+                  review.tenant.user.fullName }}</h5>
               <h6 class="font-weight-bold my-3"><font-awesome-icon icon="star" /> {{ review.rating }}</h6>
               <p class="mb-2">
                 <i class="fas fa-quote-left pe-2"></i> {{ review.comment }}
@@ -19,7 +21,7 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </section>
 </template>
@@ -31,6 +33,9 @@ export default {
 
   },
   methods: {
+    goToUserInfo(id) {
+      this.$router.push({ name: "personal page", params: { id: id } })
+    },
   },
   mounted() {
   }

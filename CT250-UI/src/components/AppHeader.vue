@@ -18,12 +18,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <div class="mx-auto"></div>
           <ul class="navbar-nav">
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a class="nav-link text-white" href="#">Thông tin</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="#">Liên hệ</a>
-            </li>
+            </li> -->
             <li class="nav-item">
               <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,6 +34,7 @@
                   <hr>
                   <li><a class="dropdown-item" v-if="user.role == 'tenant'" href="http://localhost:3001/myroom"><font-awesome-icon icon="bed"/> Phòng của tôi</a></li>
                   <li><a class="dropdown-item" v-if="user.role == 'lessor'" href="http://localhost:3001/my-rooming-house"><font-awesome-icon icon="building-user"/> Trọ của tôi</a></li>
+                  <li><a class="dropdown-item" v-if="user.role == 'admin'" href="http://localhost:3001/my-users"><font-awesome-icon icon="users"/> Tất cả người dùng</a></li>
                   <hr> 
                   <li><a class="dropdown-item" style="cursor: pointer" @click="delete_cookie()"><font-awesome-icon icon="right-from-bracket"/> Đăng xuất</a></li>
                 </ul>

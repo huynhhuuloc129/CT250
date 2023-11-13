@@ -37,11 +37,16 @@ const routes = [
         name: "room info",
         component: () => import("@/views/RoomInfo.vue"),
     },
-    // {
-    //     path: "/rooming-house-info",
-    //     name: "rooming house info",
-    //     // component: () => import("@/views/RoomingHouseInfo.vue"),
-    // },
+    {
+        path: "/personal-page/:id",
+        name: "personal page",
+        component: () => import("@/views/PersonalPage.vue"),
+    },
+    {
+        path: "/admin",
+        name: "admin",
+        component: () => import("@/views/Admin.vue"),
+    },
     {
         path: "/personal-information",
         name: "personal information",

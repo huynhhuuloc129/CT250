@@ -1,7 +1,18 @@
 <template>
     <div id="PersonalInformation-sessions">
         <div class="PersonalInformation-session" id="first-session">
-            <img id="PersonalInformation-avatar" src="../assets/home-page-background.jpg" alt="">
+            <img id="PersonalInformation-avatar" src="../assets/home-page-background.jpg" style="cursor: pointer; border: 1px solid rgb(178, 175, 175);"
+                @click="updatePicture = !updatePicture" alt="">
+
+            <div v-if="updatePicture" class="container col-md-6">
+                <div class="mb-5">
+                    <label for="Image" class="form-label">Cập nhật ảnh đại diện</label>
+                    <input class="form-control" type="file" id="formFile" onchange="preview()">
+                    <button onclick="clearImage()" class="btn btn-primary mt-3">Cập nhật</button>
+                </div>
+                <img id="frame" src="" class="img-fluid" />
+            </div>
+
             <div>
                 <h2>{{ user.fullName }}</h2>
                 <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ user.email }}</div>
@@ -306,7 +317,8 @@ export default {
             roomingSubscriptions: [],
             userUpdateForm: {},
             genders: "Nam",
-            totalPriceSpent: []
+            totalPriceSpent: [],
+            updatePicture: false,
         };
     },
     components: {
@@ -362,8 +374,8 @@ export default {
         },
         async onUpdatePersonalInformation() {
             try {
-                this.user.dob = new Date(this.user.dob);
-                this.user.dob = this.formatDate(this.user.dob);
+                // this.user.dob = new Date(this.user.dob);
+                // this.user.dob
                 if (this.genders = 'Nam') this.user.gender = 'male'; else this.user.gender = 'female'
                 this.userUpdateForm = {
                     "username": this.user.username,
@@ -415,6 +427,13 @@ export default {
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        preview() {
+            frame.src = URL.createObjectURL(event.target.files[0]);
+        },
+        clearImage() {
+            document.getElementById('formFile').value = null;
+            frame.src = "";
         },
         displaySuccess(message) {
             Swal.fire({
@@ -500,4 +519,5 @@ export default {
 .loginForm-button {
     color: #FFF0DC;
     background-color: #0F2C59;
-}</style>
+}
+</style>

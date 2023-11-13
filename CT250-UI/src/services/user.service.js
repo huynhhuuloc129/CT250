@@ -13,6 +13,17 @@ class UserService {
       throw new Error("Sai tên tài khoản hoặc mật khẩu!");
     }
   }
+  async getOneUser(userId, token) {
+    return await axios.get(`http://localhost:3000/api/users/${userId}`, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    }).then((res) => {
+        return res.data;
+    }).catch((err) => {
+        throw err
+    })
+}
   async getOneTenant(tenantId) {
     try {
       const tenant = (await this.api.get("/tenants/" + tenantId)).data;

@@ -161,7 +161,8 @@
             </div>
           </div>
           <br>
-          <div v-if="roomingSubscription != null" class="alert alert-danger" role="alert">
+          <div v-if="(roomingSubscription.state == 'staying' || roomingSubscription.state == 'want_leave') && checkOwner"
+            class="alert alert-danger" role="alert">
             Hủy vai trò của người thuê trọ
             <button v-if="checkOwner" type="button"
               style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0; background-color: red;"
@@ -301,7 +302,9 @@
 
                     <div style="display: flex; justify-content: space-between;">
                       <div style="display: flex; flex-direction: column;">
-                        <div style="font-weight: bold;">{{ tenantOne.user.fullName }}</div>
+                        <div style="font-weight: bold; cursor: pointer; text-decoration: underline;t"
+                          @click="goToUserInfo(tenantOne.user.id)">{{
+                            tenantOne.user.fullName }}</div>
                         <div>{{ tenantOne.user.email }}</div>
                         <div>{{ tenantOne.user.tel }}</div>
                       </div>
@@ -359,7 +362,9 @@
               <img class="rounded-circle" style="width: 100px;" src="@/assets/avatar.jpg" alt="">
               <!--TODO: using real avatar--> <!--TODO: add onclick event-->
               <div style="padding-left: 30px;">
-                <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
+                <div style="font-weight: bold; font-size: larger; cursor: pointer; text-decoration: underline;"
+                  @click="goToUserInfo(lessor.id)">{{
+                    lessor.fullName }}</div>
                 <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
                 <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
                 <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
@@ -991,9 +996,13 @@ export default {
     setRating(rating) {
       this.myReviewThisRoom.rating = rating
     },
+    goToUserInfo(id) {
+      this.$router.push({ name: "personal page", params: { id: id } })
+    },
     showHeaderAndFooter() {
       this.$emit("isShowHeaderAndFooter", true);
     },
+
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
