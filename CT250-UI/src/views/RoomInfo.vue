@@ -94,24 +94,33 @@
         </div>
       </div>
 
-      <div style=" width: 40%; display: flex; flex-direction: column; ">
+      <div v-if="room.electricityPrice != null" style=" width: 40%; display: flex; flex-direction: column; ">
         <div id="MyRoom-Information2" style="border-radius: 15px 15px 0 0;">
           <div class="myroom-fee">Giá điện:
             <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.electricityPrice"
               style="width: 20%; margin-bottom: 5px;">
-            <div v-else>{{ room.electricityPrice }}</div>
+            <div v-else>{{ room.electricityPrice.toLocaleString('vi', {
+              style: 'currency', currency:
+                'VND'
+            }) }}</div>
           </div>
 
           <div class="myroom-fee">Giá nước:
             <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.waterPrice"
               style="width: 20%; margin-bottom: 5px;">
-            <div v-else>{{ room.waterPrice }}</div>
+            <div v-else>{{ room.waterPrice.toLocaleString('vi', {
+              style: 'currency', currency:
+                'VND'
+            }) }}</div>
           </div>
 
           <div class="myroom-fee">Giá phòng:
             <input type="number" class="form-control" v-if="enableEditRoom" v-model="room.roomPrice"
               style="width: 20%; margin-bottom: 5px;">
-            <div v-else>{{ room.roomPrice }} / tháng</div>
+            <div v-else>{{ room.roomPrice.toLocaleString('vi', {
+              style: 'currency', currency:
+                'VND'
+            }) }} / tháng</div>
           </div>
 
           <div class="myroom-fee">
@@ -146,16 +155,25 @@
           <div v-if="getRoomingSubscriptionWantLeave == true" style="display: flex; justify-content: space-between;">
             <span style="color: red; font-weight: bold;">Hiện đang có yêu cầu hủy đăng ký trọ</span>
             <div>
-              <button type="button" style="margin-right: 5px;" class="btn btn-success">Chấp nhận</button>
-              <button type="button" class="btn btn-danger">Từ chối</button>
+              <button type="button" style="margin-right: 5px;" @click="confirmReject" class="btn btn-success">
+                Chấp nhận</button>
+              <button type="button" class="btn btn-danger" @click="rejecting">Từ chối</button>
             </div>
+          </div>
+          <br>
+          <div v-if="roomingSubscription != null" class="alert alert-danger" role="alert">
+            Hủy vai trò của người thuê trọ
+            <button v-if="checkOwner" type="button"
+              style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0; background-color: red;"
+              class="btn btn-danger" @click="confirmRemoveTenant">
+              Hủy vai trò</button>
           </div>
         </div>
 
-        <button v-if="checkOwner && this.roomingSubscription != null" type="button"
-          style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0;" class="btn btn-danger"
-          data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
+        <button v-if="checkOwner" type="button" style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0;"
+          class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
           Thêm người ở tạm thời</button>
+
         <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants.length > 0 && checkOwner">
           <div class="card-body">
             <ul class="list-group" v-for="tempTenant in tempTenants">
@@ -181,7 +199,7 @@
                   <div id="listRoomsHeader">Hóa đơn hàng tháng</div>
                 </button>
               </h2>
-              <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse show"
+              <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse"
                 aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
                 <div class="accordion-body">
                   <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
@@ -194,11 +212,16 @@
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Giá nước: </span>
-                          <span>{{ paymentRecord.monthWaterPrice }}</span>
+                          <span>{{ paymentRecord.monthWaterPrice.toLocaleString('vi', {
+                            style: 'currency', currency: 'VND'
+                          }) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Giá điện: </span>
-                          <span>{{ paymentRecord.monthElectricityPrice }}</span>
+                          <span>{{ paymentRecord.monthElectricityPrice.toLocaleString('vi', {
+                            style: 'currency', currency:
+                              'VND'
+                          }) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Số nước: </span>
@@ -210,25 +233,35 @@
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Tiền phòng: </span>
-                          <span>{{ paymentRecord.monthRoomPrice }}</span>
+                          <span>{{ paymentRecord.monthRoomPrice.toLocaleString('vi', {
+                            style: 'currency', currency: 'VND'
+                          }) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Tiền nước:</span>
-                          <span>{{ paymentRecord.waterPrice }}</span>
+                          <span>{{ paymentRecord.waterPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })
+                          }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Tiền điện:</span>
-                          <span>{{ paymentRecord.electricityPrice }}</span>
+                          <span>{{ paymentRecord.electricityPrice.toLocaleString('vi', {
+                            style: 'currency', currency:
+                              'VND'
+                          }) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Phụ thu:</span>
-                          <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge
+                          <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge.toLocaleString('vi', {
+                            style: 'currency', currency: 'VND'
+                          })
                           }}</span>
                           <span v-else>0</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Tổng tiền:</span>
-                          <span>{{ paymentRecord.monthTotalPrice }}</span>
+                          <span>{{ paymentRecord.monthTotalPrice.toLocaleString('vi', {
+                            style: 'currency', currency: 'VND'
+                          }) }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Trạng thái:</span>
@@ -252,16 +285,16 @@
 
         <!-- rooming subscription request  -->
         <div v-if="checkOwner && room.state != 'unavailable'" class="container mt-5" style="margin-bottom: 20px;">
-          <div class="accordion" id="toggleExample">
+          <div class="accordion" id="toggleExample1">
             <div class="accordion-item">
-              <h2 class="accordion-header" id="toggleHeader">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent"
-                  aria-expanded="true" aria-controls="toggleContent">
-                  <div id="listRoomsHeader">Những yêu cầu đăng ký trọ</div>
+              <h2 class="accordion-header" id="toggleHeader1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#toggleContent1"
+                  aria-expanded="true" aria-controls="toggleContent1">
+                  <div id="listRoomsHeader1">Những yêu cầu đăng ký trọ</div>
                 </button>
               </h2>
-              <div id="toggleContent" class="accordion-collapse collapse show" aria-labelledby="toggleHeader"
-                data-bs-parent="#toggleExample">
+              <div id="toggleContent1" class="accordion-collapse collapse" aria-labelledby="toggleHeader1"
+                data-bs-parent="#toggleExample1">
                 <div class="accordion-body">
                   <div class="card card-body room-body" style="margin-bottom: 30px;"
                     v-for="(tenantOne, index) in tenantReq">
@@ -722,6 +755,7 @@ export default {
     async retrieveTempTenantsAndPayment() {
       try {
         this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
+        if (this.roomingSubscriptionArr == 0) this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndWantLeave(this.room.id)
         if (this.roomingSubscriptionArr.length > 0) {
           this.roomingSubscription = await roomingSubscriptionService.getOne(this.roomingSubscriptionArr[0]?.id)
           this.tempTenants = this.roomingSubscription.temporaryTenants
@@ -804,6 +838,68 @@ export default {
         var tokenBearer = this.$cookies.get("Token");
         await roomingSubscriptionReqService.update(this.room.roomingHouse.id, this.room.id, requestId, "success", tokenBearer)
         this.displaySuccess("Chấp nhận yêu cầu thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    confirmRemoveTenant() {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn thực hiện thao tác này',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Đồng ý`,
+      }).then((result) => {
+        if (result.isConfirmed) { //revert 2 case for color
+          Swal.fire('Đã hủy thao tác', '', 'info')
+        } else if (result.isDenied) {
+          this.rejectRoomingSubscription();
+        }
+      })
+    },
+    confirmReject() {
+      Swal.fire({
+        title: 'Bạn có chắc chắn muốn đồng ý hủy yêu cầu đăng ký trọ?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Hủy',
+        denyButtonText: `Đồng ý`,
+      }).then((result) => {
+        if (result.isConfirmed) { //revert 2 case for color
+          Swal.fire('Đã hủy thao tác', '', 'info')
+        } else if (result.isDenied) {
+          this.rejectRoomingSubscription();
+        }
+      })
+    },
+    async rejecting() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionService.update(this.room.roomingHouse.id, this.room.id, this.roomingSubscription.id, {
+          "startDate": this.roomingSubscription.startDate,
+          "endDate": this.roomingSubscription.endDate,
+          "state": "staying",
+        }, tokenBearer)
+        this.displaySuccess("Từ chối yêu cầu thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
+    async rejectRoomingSubscription() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomingSubscriptionService.update(this.room.roomingHouse.id, this.room.id, this.roomingSubscription.id, {
+          "startDate": this.roomingSubscription.startDate,
+          "endDate": new Date(),
+          "state": "stayed",
+        }, tokenBearer)
+        this.displaySuccess("Từ chối yêu cầu thành công")
         await this.sleep(1000)
         this.$router.go()
       } catch (err) {

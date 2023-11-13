@@ -79,7 +79,10 @@
                     </div>
                     <div style="text-align: right;">
                         Tổng tiền đã trả:
-                        <span style="color: red; ">{{ totalPriceSpent[index] }}</span>
+                        <span style="color: red; ">{{ totalPriceSpent[index].toLocaleString('vi', {
+                            style: 'currency',
+                            currency: 'VND'
+                        }) }}</span>
                     </div>
                 </div>
                 <div class="container mt-5" style="margin-bottom: 20px;">
@@ -104,11 +107,16 @@
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Giá nước: </span>
-                                                    <span>{{ paymentRecord.monthWaterPrice }}</span>
+                                                    <span>{{ paymentRecord.monthWaterPrice.toLocaleString('vi', {
+                                                        style:
+                                                            'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Giá điện: </span>
-                                                    <span>{{ paymentRecord.monthElectricityPrice }}</span>
+                                                    <span>{{ paymentRecord.monthElectricityPrice.toLocaleString('vi', {
+                                                        style: 'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Số nước: </span>
@@ -120,25 +128,41 @@
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Tiền phòng: </span>
-                                                    <span>{{ paymentRecord.monthRoomPrice }}</span>
+                                                    <span>{{ paymentRecord.monthRoomPrice.toLocaleString('vi', {
+                                                        style:
+                                                            'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Tiền nước:</span>
-                                                    <span>{{ paymentRecord.waterPrice }}</span>
+                                                    <span>{{ paymentRecord.waterPrice.toLocaleString('vi', {
+                                                        style:
+                                                            'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Tiền điện:</span>
-                                                    <span>{{ paymentRecord.electricityPrice }}</span>
+                                                    <span>{{ paymentRecord.electricityPrice.toLocaleString('vi', {
+                                                        style:
+                                                            'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Phụ thu:</span>
-                                                    <span v-if="paymentRecord.surcharge != null">{{ paymentRecord.surcharge
+                                                    <span v-if="paymentRecord.surcharge != null">{{
+                                                        paymentRecord.surcharge.toLocaleString('vi', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        })
                                                     }}</span>
                                                     <span v-else>0</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Tổng tiền:</span>
-                                                    <span>{{ paymentRecord.monthTotalPrice }}</span>
+                                                    <span>{{ paymentRecord.monthTotalPrice.toLocaleString('vi', {
+                                                        style:
+                                                            'currency', currency: 'VND'
+                                                    }) }}</span>
                                                 </div>
                                                 <div style="display: flex; justify-content: space-between;">
                                                     <span>Trạng thái:</span>
@@ -476,5 +500,4 @@ export default {
 .loginForm-button {
     color: #FFF0DC;
     background-color: #0F2C59;
-}
-</style>
+}</style>
