@@ -2,31 +2,75 @@
   <div style="width: 80%; align-items: center; margin: auto;">
     <div id="RoomInfo-Pictures">
       <div class="container">
-        <div class="row">
+        <div class="row" v-if="room.photos != null">
           <div class="col-6 column">
-            <img id="img1" class="roomInfoImage" src="../assets/room-info.jpg" alt=""> <!--TODO: using real room images-->
+            <img style="height: 100%;, width: auto;" v-if="room.photos.length > 0 && room.photos[0] != null" id="img1" class="roomInfoImage"
+              data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[0].id"
+              :src="room.photos[0].url" alt="">
           </div>
           <div class="col-6">
             <div class="row">
               <div class="col-6 column">
-                <img id="img2" class="roomInfoImage" src="../assets/room-info.jpg" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 1 && room.photos[1] != null" id="img2" class="roomInfoImage"
+                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[1].id"
+                  :src="room.photos[1].url" alt="">
               </div>
               <div class="col-6 column">
-                <img id="img3" class="roomInfoImage" src="../assets/room-info.jpg" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 2 && room.photos[2] != null" id="img3" class="roomInfoImage"
+                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[2].id"
+                  :src="room.photos[2].url" alt="">
               </div>
             </div>
             <div class="row">
               <div class="col-6 column">
-                <img id="img4" class="roomInfoImage" src="../assets/room-info.jpg" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 3 && room.photos[3] != null" id="img4" class="roomInfoImage"
+                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[3].id"
+                  :src="room.photos[3].url" alt="">
               </div>
               <div class="col-6 column">
-                <img id="img5" class="roomInfoImage" src="../assets/room-info.jpg" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 4 && room.photos[4] != null" id="img5" class="roomInfoImage"
+                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[4].id"
+                  :src="room.photos[4].url" alt="">
               </div>
             </div>
           </div>
         </div>
-      </div>
 
+        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true"
+          data-backdrop="false">
+          <div class="modal-dialog-centered modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="loginTitle">Cập nhật hình ảnh</h5>
+                <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+
+                <div style="width: 100%; text-align: center;" v-if="checkOwner" class="container col-md-6">
+                  <div class="mb-5">
+                    <label for="Image" class="form-label">Thêm hình ảnh</label>
+                    <input class="form-control" type="file" id="formFile" @change="preview">
+                    <button @click="updateImage" class="btn btn-primary mt-3">Cập nhật</button>
+                  </div>
+                  <img id="frame" src="" class="img-fluid" />
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center;" v-if="checkOwner && this.room.photos.length < 6" class="container col-md-6">
+          <div class="mb-5">
+            <label for="Image" class="form-label">Thêm hình ảnh</label>
+            <input class="form-control" type="file" id="formFile" @change="preview">
+            <button @click="updateImage" class="btn btn-primary mt-3">Cập nhật</button>
+          </div>
+          <img id="frame" src="" class="img-fluid" />
+        </div>
+
+      </div>
 
     </div>
     <div id="MyRoom-Information">
@@ -543,6 +587,7 @@ import temporaryTenantService from "@/services/temporaryTenant.service"
 import notificationService from "@/services/notification.service";
 import utilityService from "@/services/utility.service";
 import reviewService from "@/services/review.service";
+import photoService from "@/services/photo.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
@@ -553,6 +598,8 @@ import Swal from 'sweetalert2'
 export default {
   data() {
     return {
+      file: {},
+      selectedImage: 0,
       selectedRating: 0,
       activeColor: '#0F2C59',
       roomDescriptionRequest: {
@@ -993,6 +1040,24 @@ export default {
       } catch (err) {
         console.log(err)
         this.displayError(err);
+      }
+    },
+    preview(event) {
+      this.file = event.target.files[0]
+    },
+    async updateImage() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await photoService.removeRoomPhoto(this.selectedImage, tokenBearer);
+        let data = new FormData();
+        data.append('file', this.file);
+        await photoService.uploadRoomPhoto(this.room.id, data, tokenBearer);
+        this.displaySuccess("Cập nhật hình ảnh thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     setRating(rating) {

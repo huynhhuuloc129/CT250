@@ -17,7 +17,20 @@
           </div>
         </div>
         <hr>
+
+        <div style="text-align: left; width: 100%;" v-if="checkOwner" class="container col-md-6">
+          <div class="mb-5">
+            <label for="Image" class="form-label">Thêm hình ảnh</label>
+            <input class="form-control" type="file" id="formFile" @change="preview">
+            <button @click="updateImage" class="btn btn-primary mt-3">Cập nhật</button>
+          </div>
+          <img id="frame" src="" class="img-fluid" />
+        </div>
+
+        <img style="width: 100%; border-radius: 10px;" v-if="this.roomingHouse.photos?.length > 0" :src="this.roomingHouse.photos[0].url"
+          alt="">
       </div>
+
 
       <div style=" width: 40%;">
         <div id="MyRoom-Information2">
@@ -194,6 +207,7 @@
 import roomingHouseService from "@/services/roomingHouse.service";
 import notificationService from '@/services/notification.service'
 import categoryService from '@/services/category.service';
+import photoService from "../services/photo.service";
 import userService from "../services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
@@ -202,6 +216,7 @@ import Swal from 'sweetalert2'
 export default {
   data() {
     return {
+      file: {},
       roomingHouse: {
         lessor: {
           id: 5
@@ -328,6 +343,24 @@ export default {
       } catch (err) {
         console.log(err)
         this.displayError(err);
+      }
+    },
+    preview(event) {
+      this.file = event.target.files[0]
+    },
+    async updateImage() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        if (this.roomingHouse.photos.length > 0) await photoService.removeRoomingHousePhoto(this.roomingHouse.photos[0].id, tokenBearer);
+        let data = new FormData();
+        data.append('file', this.file);
+        await photoService.uploadRoomingHousePhoto(this.roomingHouse.id, data, tokenBearer);
+        this.displaySuccess("Cập nhật hình ảnh thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
       }
     },
     validateEditRoomingHouseReq(req) {
