@@ -4,33 +4,33 @@
       <div class="container">
         <div class="row" v-if="room.photos != null">
           <div class="col-6 column">
-            <img style="height: 100%;, width: auto;" v-if="room.photos.length > 0 && room.photos[0] != null" id="img1" class="roomInfoImage"
-              data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[0].id"
-              :src="room.photos[0].url" alt="">
+            <img style="height: 100%;, width: auto;" v-if="room.photos.length > 0 && room.photos[0] != null" id="img1"
+              class="roomInfoImage" data-bs-toggle="modal" data-bs-target="#loginModal"
+              @click="selectedImage = room.photos[0].id" :src="room.photos[0].url" alt="">
           </div>
           <div class="col-6">
             <div class="row">
               <div class="col-6 column">
-                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 1 && room.photos[1] != null" id="img2" class="roomInfoImage"
-                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[1].id"
-                  :src="room.photos[1].url" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 1 && room.photos[1] != null" id="img2"
+                  class="roomInfoImage" data-bs-toggle="modal" data-bs-target="#loginModal"
+                  @click="selectedImage = room.photos[1].id" :src="room.photos[1].url" alt="">
               </div>
               <div class="col-6 column">
-                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 2 && room.photos[2] != null" id="img3" class="roomInfoImage"
-                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[2].id"
-                  :src="room.photos[2].url" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 2 && room.photos[2] != null" id="img3"
+                  class="roomInfoImage" data-bs-toggle="modal" data-bs-target="#loginModal"
+                  @click="selectedImage = room.photos[2].id" :src="room.photos[2].url" alt="">
               </div>
             </div>
             <div class="row">
               <div class="col-6 column">
-                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 3 && room.photos[3] != null" id="img4" class="roomInfoImage"
-                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[3].id"
-                  :src="room.photos[3].url" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 3 && room.photos[3] != null" id="img4"
+                  class="roomInfoImage" data-bs-toggle="modal" data-bs-target="#loginModal"
+                  @click="selectedImage = room.photos[3].id" :src="room.photos[3].url" alt="">
               </div>
               <div class="col-6 column">
-                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 4 && room.photos[4] != null" id="img5" class="roomInfoImage"
-                  data-bs-toggle="modal" data-bs-target="#loginModal" @click="selectedImage = room.photos[4].id"
-                  :src="room.photos[4].url" alt="">
+                <img style="height: 100%;, width: auto;" v-if="room.photos.length > 4 && room.photos[4] != null" id="img5"
+                  class="roomInfoImage" data-bs-toggle="modal" data-bs-target="#loginModal"
+                  @click="selectedImage = room.photos[4].id" :src="room.photos[4].url" alt="">
               </div>
             </div>
           </div>
@@ -213,7 +213,36 @@
               class="btn btn-danger" @click="confirmRemoveTenant">
               Hủy vai trò</button>
           </div>
+
+          <div class="card" style="border-radius: 15px" v-if="roomingSubscription != null">
+            <div class="card-body">
+              <h4>Thành viên đang ở</h4>
+              <div>
+                <span>Họ tên: </span>
+                <span style="cursor: pointer; font-weight: bold; text-decoration: underline;"
+                  @click="goToUserInfo(roomingSubscription.tenant.user.id)">
+                  {{ roomingSubscription.tenant.user.fullName }}</span>
+              </div>
+              <div>
+                <span>Số điện thoại: </span>
+                <span> {{ roomingSubscription.tenant.user.tel }}</span>
+              </div>
+              <div v-if="checkOwner">
+                <span>Căn cước công dân: </span>
+                <span> {{ roomingSubscription.tenant.user.citizenID }}</span>
+              </div>
+              <div>
+                <span>Email: </span>
+                <span> {{ roomingSubscription.tenant.user.email }}</span>
+              </div>
+              <div>
+                <span>Ngày vào ở: </span>
+                <span> {{ roomingSubscription.startDate }}</span>
+              </div>
+            </div>
+          </div>
         </div>
+
 
         <button v-if="checkOwner" type="button" style="width: 100%; margin-top: 2px; font-weight: bold; border-radius: 0;"
           class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
