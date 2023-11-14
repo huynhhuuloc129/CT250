@@ -1,7 +1,7 @@
 <template>
     <div id="PersonalInformation-sessions">
         <div class="PersonalInformation-session" id="first-session">
-            <img id="PersonalInformation-avatar" src="../assets/home-page-background.jpg" alt="">
+            <img id="PersonalInformation-avatar" v-if="thatUser.photo != null" :src="thatUser.photo.url" alt="">
             <div>
                 <h2>{{ thatUser.fullName }}</h2>
                 <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ thatUser.email }}</div>

@@ -72,20 +72,25 @@ export default {
             try {
                 var tokenBearer = this.$cookies.get("Token");
                 let user = await userService.getCurrentUser(tokenBearer);
-                if (user.username.length > 0)
-                    this.$router.push({ name: "home_page" });
+                if (user.username.length > 0) {
+                    if (user.role == 'admin') this.$router.push({ name: "admin" });
+                    else this.$router.push({ name: "home_page" });
+                }
             } catch (error) {
                 this.$router.push({ name: "login" });
             }
         },
         async onLogin(user) {
             try {
+                this.$router.push({ name: "admin" });
                 document.getElementById("login-form-close-btn").click();
                 const loginData = await userService.login(user);
                 this.$cookies.set("Token", loginData.accessToken);
-
+                
                 let currentUser = await userService.getCurrentUser(loginData.accessToken)
-                if (currentUser.username.length > 0) this.$router.push({ name: "home_page" });
+                if (currentUser.role == 'admin') {
+                    this.$router.push({ name: "admin" });
+                } else if (currentUser.username.length > 0) this.$router.push({ name: "home_page" });
             } catch (err) {
                 console.log(err)
                 this.displayError(err)

@@ -233,13 +233,13 @@
         <div style="display: flex; justify-content: space-around; ">
 
           <div style="display: flex; width: 30%;">
-            <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg" alt="">
-            <!--TODO: using real avatar--> <!--TODO: add onclick event-->
+            <img class="rounded-circle" v-if="lessor.photo != null" style="width: 100px;" :src="lessor.photo.url" alt="">
             <div style="padding-left: 30px;">
-              <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
-              <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
-              <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
-              <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
+              <div style="font-weight: bold; font-size: larger; text-decoration: underline; cursor: pointer;"
+                @click="goToUserInfo(lessor.id)">{{ lessor.fullName }}</div>
+              <div><font-awesome-icon :icon=" ['far', 'envelope'] " /> {{ lessor.email }}</div>
+              <div><font-awesome-icon :icon=" ['fas', 'phone'] " /> {{ lessor.tel }}</div>
+              <div><font-awesome-icon :icon=" ['fas', 'gift'] " /> {{ lessor.dob }}</div>
             </div>
           </div>
 
@@ -403,6 +403,7 @@ export default {
     },
     async retrieveTempTenantsAndPayment() {
       try {
+        console.log(this.lessor)
         this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndStaying(this.room.id)
         if (this.roomingSubscriptionArr == 0) this.roomingSubscriptionArr = await roomingSubscriptionService.getByRoomIdAndWantLeave(this.room.id)
         if (this.roomingSubscriptionArr.length > 0) {
@@ -423,6 +424,9 @@ export default {
         console.log(err)
         this.displayError(err)
       }
+    },
+    goToUserInfo(id) {
+      this.$router.push({ name: "personal page", params: { id: id } })
     },
     setRating(rating) {
       this.myReviewThisRoom.rating = rating

@@ -134,11 +134,10 @@
       <div style="display: flex; justify-content: space-around; ">
 
         <div style="display: flex; width: 30%;">
-          <img class="rounded-circle" style="width: 100px;" src="../assets/avatar.jpg"
-            alt=""><!-- TODO: using real avatar -->
-          <!-- TODO: add on click event -->
+          <img class="rounded-circle" style="width: 100px;" v-if="lessor.photo != null" :src="lessor.photo.url" alt="">
           <div style="padding-left: 30px;">
-            <div style="font-weight: bold; font-size: larger;">{{ lessor.fullName }}</div>
+            <div style="font-weight: bold; font-size: larger; cursor: pointer; text-decoration: underline;"
+              @click="goToUserInfo(lessor.id)">{{ lessor.fullName }}</div>
             <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
             <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
             <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
@@ -273,6 +272,9 @@ export default {
         console.log(err)
         this.displayError(err);
       }
+    },
+    goToUserInfo(id) {
+      this.$router.push({ name: "personal page", params: { id: id } })
     },
     async retrieveCategories() {
       try {

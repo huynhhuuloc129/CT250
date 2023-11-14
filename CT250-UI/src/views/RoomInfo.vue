@@ -175,13 +175,15 @@
           class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addTempTenantModal">
           Thêm người ở tạm thời</button>
 
-        <div class="card" style="border-radius: 0 0 15px 15px;" v-if="tempTenants.length > 0 && checkOwner">
+        <div class="card" style="border-radius: 0 0 15px 15px;"
+          v-if="tempTenants.length > 0 && (checkOwner || user.role == 'admin')">
           <div class="card-body">
             <ul class="list-group" v-for="tempTenant in tempTenants">
               <li class="list-group-item  align-items-center">
                 <div style="display: flex; justify-content: space-between;">
                   <div> Họ tên: {{ tempTenant.fullName }}</div>
-                  <font-awesome-icon icon="trash" style="cursor: pointer" @click="deleteTempTenant(tempTenant.id)" />
+                  <font-awesome-icon icon="trash" v-if="checkOwner" style="cursor: pointer"
+                    @click="deleteTempTenant(tempTenant.id)" />
                 </div>
                 <div>Căn cước công dân: {{ tempTenant.citizenId }}</div>
                 <div>Ngày vào ở: {{ tempTenant.startDate }}</div>
@@ -191,7 +193,7 @@
           </div>
         </div>
 
-        <div class="container mt-5" style="margin-bottom: 20px;">
+        <div class="container mt-5" v-if="checkOwner || user.role == 'admin'" style="margin-bottom: 20px;">
           <div class="accordion" id="toggleExample">
             <div class="accordion-item">
               <h2 class="accordion-header" id="toggleHeader">
@@ -359,8 +361,8 @@
           <div style="display: flex; justify-content: space-around; ">
 
             <div style="display: flex; width: 30%;">
-              <img class="rounded-circle" style="width: 100px;" src="@/assets/avatar.jpg" alt="">
-              <!--TODO: using real avatar--> <!--TODO: add onclick event-->
+              <img v-if="lessor.photo != null" class="rounded-circle" style="width: 100px;" :src="lessor.photo.url"
+                alt="">
               <div style="padding-left: 30px;">
                 <div style="font-weight: bold; font-size: larger; cursor: pointer; text-decoration: underline;"
                   @click="goToUserInfo(lessor.id)">{{
@@ -1008,7 +1010,6 @@ export default {
     },
     displaySuccess(message) {
       Swal.fire({
-        // position: 'top-end',
         icon: 'success',
         title: message,
         showConfirmButton: false,
