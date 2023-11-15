@@ -68,7 +68,7 @@ class PhotoService {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            throw err
+            if (err.response.status != 404) throw err
         })
     }
     async userUploadPhoto(data, token) {

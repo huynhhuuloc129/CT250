@@ -1,7 +1,10 @@
 <template>
   <nav id="AppHeader" class="navbar fixed-top navbar-expand-lg navbar-dark p-md-3">
     <div class="container" id="AppHeaderContainer">
-      <a class="navbar-brand" href="http://localhost:3001">IStay</a>
+      <a class="navbar-brand" href="http://localhost:3001">
+        <img style="width: 33px; height: 33px;" src="../assets/logo.png" alt="">
+        IStay
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -20,7 +23,8 @@
             <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <font-awesome-icon icon="user" />
+                <img style="width: 30px; height: 30px;" v-if="user != null && user.photo != null" :src="user.photo.url"
+                  alt="">
               </button>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="http://localhost:3001/personal-information"><font-awesome-icon
@@ -35,10 +39,10 @@
                     href="http://localhost:3001/my-users"><font-awesome-icon icon="users" /> Tất cả người dùng</a></li>
                 <hr v-if="user.role == 'admin'">
                 <li><a class="dropdown-item" v-if="user.role == 'admin'"
-                    href="http://localhost:3001/manage"><font-awesome-icon icon="users" /> Quản lý trọ và khu trọ</a></li>
+                    href="http://localhost:3001/manage"><font-awesome-icon icon="building" /> Xem trọ và khu trọ</a></li>
                 <hr>
-                <li><a class="dropdown-item" style="cursor: pointer" @click="delete_cookie()"><font-awesome-icon
-                      icon="right-from-bracket" /> Đăng xuất</a></li>
+                <li><a class="dropdown-item" @click="delete_cookie()"><font-awesome-icon icon="right-from-bracket" /> Đăng
+                    xuất</a></li>
               </ul>
             </div>
           </li>
@@ -99,4 +103,5 @@ hr {
   border-radius: 10px;
 }
 
-/*  */</style>
+/*  */
+</style>

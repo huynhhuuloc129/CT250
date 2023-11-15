@@ -94,6 +94,17 @@ class UserService {
       throw err
     })
   }
+  async deleteUser(id, token) {
+    return await axios.delete(`http://localhost:3000/api/users/${id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
+  }
 }
 
 export default new UserService();

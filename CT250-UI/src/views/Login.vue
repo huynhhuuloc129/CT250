@@ -108,6 +108,13 @@ export default {
                 this.displayError(err)
             }
         },
+        validateSignUpForm(user) {
+            if (user.username.length <= 6) throw new Error("Tài khoản phải dài hơn 6 ký tự")
+            if (user.password.length <= 1) throw new Error("Mật khẩu phải dài hơn 6 ký tự")
+            if (user.lastName.length <= 1) throw new Error("Họ phải dài hơn 1 ký tự")
+            if (user.firstName.length <= 1) throw new Error("Tên phải dài hơn 1 ký tự")
+            if (user.citizenID.length <= 8) throw new Error("Căn cước công dân phải dài hơn 8 ký tự")
+        },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         },
@@ -131,13 +138,6 @@ export default {
                 confirmButtonText: 'OK'
             })
         },
-        validateSignUpForm(user) {
-            if (user.username.length <= 6) throw new Error("Tài khoản phải dài hơn 6 ký tự")
-            if (user.password.length <= 1) throw new Error("Mật khẩu phải dài hơn 6 ký tự")
-            if (user.lastName.length <= 1) throw new Error("Họ phải dài hơn 1 ký tự")
-            if (user.firstName.length <= 1) throw new Error("Tên phải dài hơn 1 ký tự")
-            if (user.citizenID.length <= 8) throw new Error("Căn cước công dân phải dài hơn 8 ký tự")
-        }
     },
     mounted() {
         this.hideHeaderAndFooter();

@@ -13,6 +13,14 @@ class UtilityService {
             throw err;
         }
     }
+    async getOne(id) {
+        try {
+            const utilities = (await this.api.get(`/utility/${id}`));
+            return utilities.data;
+        } catch (err) {
+            throw err;
+        }
+    }
     // async create(roomId, data, token) {
     //     return await axios.post(`http://localhost:3000/api/reviews/rooms/${roomId}/me`, data, {
     //         headers: {

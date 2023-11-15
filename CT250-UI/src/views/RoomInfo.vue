@@ -36,8 +36,8 @@
           </div>
         </div>
 
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true"
-          data-backdrop="false">
+        <div v-if="checkOwner" class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel"
+          aria-hidden="true" data-backdrop="false">
           <div class="modal-dialog-centered modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -61,7 +61,7 @@
           </div>
         </div>
 
-        <div style="text-align: center;" v-if="checkOwner && this.room.photos.length < 6" class="container col-md-6">
+        <div style="text-align: center;" v-if="checkOwner && this.room.photos.length < 5" class="container col-md-6">
           <div class="mb-5">
             <label for="Image" class="form-label">Thêm hình ảnh</label>
             <input class="form-control" type="file" id="formFile" @change="preview">
@@ -103,10 +103,16 @@
           <div style="display: flex; flex-direction: column;">
 
             <div v-for="roomDescription in room.descriptions" class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="wifi" />
-              <div>
-                <div class="roomDesTitle">{{ roomDescription.title }}</div>
-                <div class="roomDesContent">{{ roomDescription.content }}</div>
+              <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div>
+                  <div class="roomDesTitle">{{ roomDescription.title }}</div>
+                  <div class="roomDesContent">{{ roomDescription.content }}</div>
+                </div>
+                <button class="btn btn-light" @click="selectedIdRoomDes = roomDescription.id; editRoomDescriptionRequest.title = roomDescription.title;
+                editRoomDescriptionRequest.content = roomDescription.content" data-bs-toggle="modal"
+                  data-bs-target="#editDescriptionModal">
+                  <font-awesome-icon icon="pen-to-square" />
+                </button>
               </div>
             </div>
 
@@ -118,7 +124,8 @@
           <hr class="hr">
           <div>
             <h4>Nơi này có những gì cho bạn</h4>
-            <div v-for="ulti in room.utilities">
+            <div v-for="ulti in room.utilities" style="display: flex;">
+              <img style=" width: 40px; height: 40px; margin: 0px 20px 20px 0;" :src="ulti.photo.url" alt="">
               <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
             </div>
             <button v-if="checkOwner" type="button" style="font-weight: bold; width: 100%;" class="btn btn-light"
@@ -214,7 +221,8 @@
               Hủy vai trò</button>
           </div>
 
-          <div class="card" style="border-radius: 15px" v-if="roomingSubscription != null">
+          <div class="card" style="border-radius: 15px"
+            v-if="roomingSubscription != null && roomingSubscription.tenant != null">
             <div class="card-body">
               <h4>Thành viên đang ở</h4>
               <div>
@@ -251,6 +259,7 @@
         <div class="card" style="border-radius: 0 0 15px 15px;"
           v-if="tempTenants.length > 0 && (checkOwner || user.role == 'admin')">
           <div class="card-body">
+            <h5>Thành viên ở tạm thời</h5>
             <ul class="list-group" v-for="tempTenant in tempTenants">
               <li class="list-group-item  align-items-center">
                 <div style="display: flex; justify-content: space-between;">
@@ -434,8 +443,8 @@
           <div style="display: flex; justify-content: space-around; ">
 
             <div style="display: flex; width: 30%;">
-              <img v-if="lessor.photo != null" class="rounded-circle" style="width: 100px;" :src="lessor.photo.url"
-                alt="">
+              <img v-if="lessor.photo != null" class="rounded-circle" style="width: 100px; height: 100px;"
+                :src="lessor.photo.url" alt="">
               <div style="padding-left: 30px;">
                 <div style="font-weight: bold; font-size: larger; cursor: pointer; text-decoration: underline;"
                   @click="goToUserInfo(lessor.id)">{{
@@ -459,6 +468,42 @@
     </div>
   </div>
 
+  <!-- edit room description form -->
+  <div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginTitle">Cập nhật mô tả ngắn</h5>
+          <button type="button" id="login-form-close-btn3" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input id="form2Example3" class="form-control" @focus="buttonDescriptionDisable = false"
+                v-model="editRoomDescriptionRequest.title" placeholder="" required />
+              <label class="form-label" for="form2Example3">Tiêu đề</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input id="form2Example3" class="form-control" @focus="buttonDescriptionDisable = false"
+                v-model="editRoomDescriptionRequest.content" placeholder="" required />
+              <label class="form-label" for="form2Example3">Nội dung</label>
+            </div>
+
+
+            <div class="text-center">
+              <button type="button" class=" btn btn-primary btn-block mb-4" @click="editRoomDescription"
+                :disabled="buttonDescriptionDisable">Cập nhật</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- adding room description form -->
   <div class="modal fade" id="addDescriptionModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
@@ -555,8 +600,9 @@
             <div class="form-check" v-for="(utility, index) in utilities">
               <input class="form-check-input" type="checkbox" :value="utility.id" :id="utility.id"
                 v-model="utilitiesChoosen[index]">
-              <label class="form-check-label" :for="utility.id">
-                {{ utility.name }}
+              <label class="form-check-label" :for="utility.id" style="display: flex;">
+                <img style=" width: 20px; height: 20px; margin: 0px 10px 10px 0;" :src="utility.photo.url" alt="">
+                <div style="margin-bottom: 5px;">{{ utility.name }}</div>
               </label>
             </div>
 
@@ -577,7 +623,7 @@
     <div class="modal-dialog-centered modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="notiTitle">Thêm thông báo cho nhà trọ này</h5>
+          <h5 class="modal-title" id="notiTitle">Thêm thông báo cho phòng trọ này</h5>
           <button type="button" id="login-form-close-btn" class="btn-close" data-bs-dismiss="modal"
             aria-label="Close"></button>
         </div>
@@ -633,6 +679,11 @@ export default {
       activeColor: '#0F2C59',
       roomDescriptionRequest: {
         "roomId": "",
+        "title": "",
+        "content": ""
+      },
+      selectedIdRoomDes: 0,
+      editRoomDescriptionRequest: {
         "title": "",
         "content": ""
       },
@@ -822,7 +873,12 @@ export default {
     },
     async retrieveUtilities() {
       try {
-        this.utilities = await utilityService.getAll();
+        var tempUtilities = await utilityService.getAll();
+        tempUtilities.forEach(async (element) => {
+          let tempUli = await utilityService.getOne(element.id)
+          this.utilities.push(tempUli)
+        });
+        await this.sleep(100)
         this.utilities.forEach(element => {
           var check = false
           this.room.utilities.forEach(ul => {
@@ -1082,6 +1138,18 @@ export default {
         data.append('file', this.file);
         await photoService.uploadRoomPhoto(this.room.id, data, tokenBearer);
         this.displaySuccess("Cập nhật hình ảnh thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
+      }
+    },
+    async editRoomDescription() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await roomDescriptionService.update(this.selectedIdRoomDes, this.editRoomDescriptionRequest, tokenBearer)
+        this.displaySuccess("Cập nhật mô tả ngắn thành công")
         await this.sleep(1000)
         this.$router.go()
       } catch (err) {

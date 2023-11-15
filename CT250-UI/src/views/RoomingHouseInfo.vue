@@ -147,7 +147,7 @@
       <div style="display: flex; justify-content: space-around; ">
 
         <div style="display: flex; width: 30%;">
-          <img class="rounded-circle" style="width: 100px;" v-if="lessor.photo != null" :src="lessor.photo.url" alt="">
+          <img class="rounded-circle" style="width: 100px; height: 100px;" v-if="lessor.photo != null" :src="lessor.photo.url" alt="">
           <div style="padding-left: 30px;">
             <div style="font-weight: bold; font-size: larger; cursor: pointer; text-decoration: underline;"
               @click="goToUserInfo(lessor.id)">{{ lessor.fullName }}</div>

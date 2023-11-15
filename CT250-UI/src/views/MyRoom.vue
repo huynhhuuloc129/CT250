@@ -57,7 +57,6 @@
           <!-- room description -->
           <div style="display: flex; flex-direction: column;">
             <div v-for="roomDescription in room.descriptions" class="roomDes" style="display: flex;">
-              <font-awesome-icon icon="wifi" />
               <div>
                 <div class="roomDesTitle">{{ roomDescription.title }}</div>
                 <div class="roomDesContent">{{ roomDescription.content }}</div>
@@ -74,7 +73,8 @@
           <hr class="hr">
           <div>
             <h4>Nơi này có những gì cho bạn</h4>
-            <div v-for="ulti in room.utilities">
+            <div v-for="ulti in utilities" style="display: flex;">
+              <img style="width: 40px; height: 40px; margin: 0px 20px 20px 0;" :src="ulti.photo.url" alt="">
               <div style="font-weight: bold; margin-bottom: 5px;">{{ ulti.name }}</div>
             </div>
           </div>
@@ -233,13 +233,14 @@
         <div style="display: flex; justify-content: space-around; ">
 
           <div style="display: flex; width: 30%;">
-            <img class="rounded-circle" v-if="lessor.photo != null" style="width: 100px;" :src="lessor.photo.url" alt="">
+            <img class="rounded-circle" v-if="lessor.photo != null" style="width: 100px; height: 100px;"
+              :src="lessor.photo.url" alt="">
             <div style="padding-left: 30px;">
               <div style="font-weight: bold; font-size: larger; text-decoration: underline; cursor: pointer;"
                 @click="goToUserInfo(lessor.id)">{{ lessor.fullName }}</div>
-              <div><font-awesome-icon :icon=" ['far', 'envelope'] " /> {{ lessor.email }}</div>
-              <div><font-awesome-icon :icon=" ['fas', 'phone'] " /> {{ lessor.tel }}</div>
-              <div><font-awesome-icon :icon=" ['fas', 'gift'] " /> {{ lessor.dob }}</div>
+              <div><font-awesome-icon :icon="['far', 'envelope']" /> {{ lessor.email }}</div>
+              <div><font-awesome-icon :icon="['fas', 'phone']" /> {{ lessor.tel }}</div>
+              <div><font-awesome-icon :icon="['fas', 'gift']" /> {{ lessor.dob }}</div>
             </div>
           </div>
 
@@ -256,6 +257,7 @@
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
 import roomDescriptionService from "@/services/roomDescription.service";
 import notificationService from "@/services/notification.service";
+import utilityService from "../services/utility.service";
 import reviewService from "@/services/review.service";
 import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
@@ -293,6 +295,7 @@ export default {
       reviews: [],
       myReviews: [],
       myReviewThisRoom: {},
+      utilities: [],
     };
   },
 
@@ -425,6 +428,18 @@ export default {
         this.displayError(err)
       }
     },
+    async retrieveUtilities() {
+      try {
+        this.room.utilities.forEach(async (utility) => {
+          let tempUti = await utilityService.getOne(utility.id)
+          this.utilities.push(tempUti)
+        });
+        console.log(this.utilities)
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
+      }
+    },
     goToUserInfo(id) {
       this.$router.push({ name: "personal page", params: { id: id } })
     },
@@ -462,6 +477,7 @@ export default {
     await this.retrieveRoom();
     await this.retrieveNotifications();
     await this.retrieveTempTenantsAndPayment();
+    await this.retrieveUtilities();
   }
 }
 </script>
