@@ -302,8 +302,9 @@
               </h2>
               <div id="toggleContent" style="width: 100%;" class="accordion-collapse collapse"
                 aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
-                <div class="accordion-body">
-                  <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
+                <button class="btn btn-success" style="width: 100%;" @click="exportToPDF">Xuất hóa đơn</button>
+                <div class="accordion-body" ref="content" style="text-align: center;">
+                  <div class="card card-body room-body" style="margin-bottom: 30px;  width: 440px;"
                     v-for="(paymentRecord, index) in roomingSubscription.paymentRecords">
 
                     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -315,8 +316,9 @@
                             </div>
                           </div>
                           <div class="form-check form-switch">
-                            <input style="cursor: pointer" class="form-check-input" v-model="checkPaid[index]" type="checkbox"
-                              id="flexSwitchCheckDefault" @click="updatePaymentRecord(paymentRecord, index)">
+                            <input style="cursor: pointer" class="form-check-input" v-model="checkPaid[index]"
+                              type="checkbox" id="flexSwitchCheckDefault"
+                              @click="updatePaymentRecord(paymentRecord, index)">
                           </div>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
@@ -740,6 +742,7 @@ import userService from "@/services/user.service";
 import roomService from "@/services/room.service";
 import review from "@/components/Review.vue";
 import StarRating from 'vue-star-rating'
+import { jsPDF } from "jspdf";
 import Swal from 'sweetalert2'
 
 
@@ -1283,6 +1286,15 @@ export default {
         this.displayError(err)
       }
     },
+    async exportToPDF() {
+      const doc = new jsPDF('p', 'pt', 'a4');
+      doc.html(this.$refs.content.innerHTML, {
+        callback: function (doc) {
+          doc.setFont("inter");
+          doc.save('export.pdf');
+        },
+      })
+    },
     setRating(rating) {
       this.myReviewThisRoom.rating = rating
     },
@@ -1327,6 +1339,17 @@ export default {
 </script>
 
 <style>
+@media print {
+
+  body,
+  html {
+    width: 100%;
+    margin-top: 0%;
+    display: block;
+    height: 100%;
+  }
+}
+
 .hr {
   margin-top: 50px;
 }

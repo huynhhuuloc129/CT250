@@ -53,6 +53,17 @@ class RoomingHouseService {
       throw err
     })
   }
+  async delete(roomingHouseId, token) {
+    return await axios.delete(`http://localhost:3000/api/rooming-houses/${roomingHouseId}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then((res) => {
+      return res.data;
+    }).catch((err) => {
+      throw err
+    })
+  }
 }
 
 export default new RoomingHouseService();

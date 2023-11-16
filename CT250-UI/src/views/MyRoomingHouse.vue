@@ -103,6 +103,37 @@
         </div>
     </div>
 
+    <hr>
+    <!-- rooming subscriptions -->
+    <h2 style="text-align: center;">Các thành viên đã và đang ở</h2>
+    <div class="input-group rounded" id="homePage-search-bar" style="width: 70%; margin: auto; margin-bottom: 20px;">
+        <input type="search" v-model="search" id="search-bar" class="form-control rounded" style="text-align: center; 
+             margin: auto;" placeholder="Tìm kiếm thành viên" aria-label="Search" aria-describedby="search-addon" />
+    </div>
+    <div style="display: flex; justify-content: space-evenly;">
+        <div class="card" style="width: 18rem;" v-for="roomingSubscription in filteredUsers">
+            <div style="height: 220px; align-items: center; text-align: center; width: 100%;">
+                <img style="width: 200px; height: 200px; margin: 20px;" v-if="roomingSubscription.tenant.user.photo != null"
+                    :src="roomingSubscription.tenant.user.photo.url" class="card-img-top" alt="...">
+            </div>
+            <hr>
+            <!-- body -->
+            <div class="card-body">
+                <h5 class="card-title" style="cursor: pointer; text-decoration: underline;"
+                    @click="goToUserInfo(roomingSubscription.tenant.user.id)">{{
+                        roomingSubscription.tenant.user.fullName }}</h5>
+                <p style="height: 75px; overflow-y: scroll;" class="card-text">{{ roomingSubscription.tenant.user.summary }}
+                </p>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Trọ gần nhất đã ở: </span>
+                    <span style="cursor: pointer; text-decoration: underline;"
+                        @click="goToRoomInfo(roomingSubscription.room.id)">{{ roomingSubscription.room.name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
     <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true"
         data-backdrop="false">
         <div class="modal-dialog-centered modal-dialog">
@@ -134,14 +165,13 @@
             </div>
         </div>
     </div>
-
-  
 </template>
 
 <script>
+import roomingSubscriptionService from '@/services/roomingSubscription.service'
 import addRoomingHouseForm from '@/components/AddRoomingHouseForm.vue';
-import addRoomForm from '@/components/AddRoomForm.vue';
 import roomingHouseService from '@/services/roomingHouse.service.js';
+import addRoomForm from '@/components/AddRoomForm.vue';
 import roomService from '@/services/room.service.js';
 import userService from '@/services/user.service';
 import Swal from 'sweetalert2'
@@ -153,8 +183,18 @@ export default {
             lessor: {},
             roomingHouses: [],
             rooms: [[]],
+            roomingSubscriptions: [],
             roomingHouseId: "",
+            search: "",
+
         }
+    },
+    computed: {
+        filteredUsers() {
+            return this.roomingSubscriptions.filter(p => {
+                return p.tenant.user.fullName.toLowerCase().indexOf(this.search.toLowerCase()) != -1;
+            });
+        },
     },
     components: {
         addRoomingHouseForm,
@@ -166,8 +206,6 @@ export default {
                 var tokenBearer = this.$cookies.get("Token");
                 this.user = await userService.getCurrentUser(tokenBearer);
                 this.lessor = this.user.lessor;
-                // console.log(this.lessor)
-
             } catch (error) {
                 this.$router.push({ name: "login" });
             }
@@ -205,9 +243,17 @@ export default {
                     this.rooms[i] = []
                     roomss = await this.retrieveRooms(this.roomingHouses[i].id)
                     for (var j = 0; j < roomss.length; j++) {
+                        let roomingSubscriptionss = []
+                        roomingSubscriptionss = await this.retrieveRoomingSubscriptionByRoomId(roomss[j].id)
+                        roomingSubscriptionss.forEach(roomingSubscription => {
+                            this.roomingSubscriptions.push(JSON.parse(JSON.stringify(roomingSubscription)))
+                        });
+                    }
+                    for (var j = 0; j < roomss.length; j++) {
                         this.rooms[i][j] = roomss[j]
                     }
                 }
+                console.log(this.roomingSubscriptions)
             } catch (err) {
                 this.displayError(err)
             }
@@ -215,6 +261,13 @@ export default {
         async retrieveRooms(id) {
             try {
                 return await roomService.getAllByRoomingHouseID(id);
+            } catch (err) {
+                this.displayError(err)
+            }
+        },
+        async retrieveRoomingSubscriptionByRoomId(roomId) {
+            try {
+                return await roomingSubscriptionService.getByRoomId(roomId);
             } catch (err) {
                 this.displayError(err)
             }
@@ -238,7 +291,7 @@ export default {
                     Swal.fire('Đã hủy thao tác xóa', '', 'info')
                 } else if (result.isDenied) {
                     Swal.fire('Đã xóa!', '', 'success')
-
+                    this.deleteRoomingHouseAPI(id)
                 }
             })
         },
@@ -276,6 +329,12 @@ export default {
             } catch (err) {
                 this.displayError(err)
             }
+        },
+        goToUserInfo(id) {
+            this.$router.push({ name: "personal page", params: { id: id } })
+        },
+        goToRoomInfo(id) {
+            this.$router.push({ name: "room info", params: { id: id } })
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
