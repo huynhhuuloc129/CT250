@@ -271,8 +271,8 @@ export default {
     },
     async retrieveRoomingHouse() {
       try {
-        this.categoryChoosen = this.roomingHouse.category.id
         this.roomingHouse = await roomingHouseService.getOne(this.$route.params.id);
+        this.categoryChoosen = this.roomingHouse.category.id
         this.lessor = this.roomingHouse.lessor.user;
         this.retrieveRooms(this.roomingHouse.id)
       } catch (err) {

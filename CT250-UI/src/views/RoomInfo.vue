@@ -137,7 +137,7 @@
           <div>
             Mô tả:
             <textarea v-if="enableEditRoom" v-model="room.summary" type="textarea" class="form-control"
-              style="height: 100px;" rows="100"> </textarea>
+              style="height: 300px;" rows="1000"> </textarea>
             <span v-else>
               {{ room.summary }}
             </span>
@@ -225,11 +225,13 @@
             v-if="roomingSubscription != null && roomingSubscription.tenant != null">
             <div class="card-body">
               <h4>Thành viên đang ở</h4>
-              <div>
-                <span>Họ tên: </span>
-                <span style="cursor: pointer; font-weight: bold; text-decoration: underline;"
-                  @click="goToUserInfo(roomingSubscription.tenant.user.id)">
-                  {{ roomingSubscription.tenant.user.fullName }}</span>
+              <div style="display: flex; justify-content: space-between;">
+                <div>
+                  <span>Họ tên: </span>
+                  <span style="cursor: pointer; font-weight: bold; text-decoration: underline;"
+                    @click="goToUserInfo(roomingSubscription.tenant.user.id)">
+                    {{ roomingSubscription.tenant.user.fullName }}</span>
+                </div>
               </div>
               <div>
                 <span>Số điện thoại: </span>
@@ -264,12 +266,26 @@
               <li class="list-group-item  align-items-center">
                 <div style="display: flex; justify-content: space-between;">
                   <div> Họ tên: {{ tempTenant.fullName }}</div>
+                  <button class="btn-light btn">
+                    <font-awesome-icon icon="pen-to-square" v-if="checkOwner" data-bs-toggle="modal"
+                      data-bs-target="#editTempTenantModal" @click="selectedIdTempTenant = tempTenant.id;
+                      editTempTenantRequest.fullName = tempTenant.fullName;
+                      editTempTenantRequest.citizenId = tempTenant.citizenId;
+                      editTempTenantRequest.startDate = tempTenant.startDate;
+                      editTempTenantRequest.endDate = tempTenant.endDate;" />
+                  </button>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div>Căn cước công dân: {{ tempTenant.citizenId }}</div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div>
+                    Ngày vào ở: {{ tempTenant.startDate }}
+                  </div>
                   <font-awesome-icon icon="trash" v-if="checkOwner" style="cursor: pointer"
                     @click="deleteTempTenant(tempTenant.id)" />
                 </div>
-                <div>Căn cước công dân: {{ tempTenant.citizenId }}</div>
-                <div>Ngày vào ở: {{ tempTenant.startDate }}</div>
-                <div v-if="tempTenant.endDate != null">Ngày rời khỏi: {{ tempTenant.startDate }}</div>
+                <div v-if="tempTenant.endDate != null">Ngày rời khỏi: {{ tempTenant.endDate }}</div>
               </li>
             </ul>
           </div>
@@ -288,12 +304,20 @@
                 aria-labelledby="toggleHeader" data-bs-parent="#toggleExample">
                 <div class="accordion-body">
                   <div class="card card-body room-body" style="margin-bottom: 30px;  width: 100%;"
-                    v-for="paymentRecord in roomingSubscription.paymentRecords">
+                    v-for="(paymentRecord, index) in roomingSubscription.paymentRecords">
 
                     <div style="display: flex; justify-content: space-between; width: 100%;">
                       <div style="display: flex; flex-direction: column; width: 100%;">
-                        <div style="font-weight: bold;">Tháng {{ paymentRecord.month }}, năm {{
-                          paymentRecord.year }}
+                        <div style="display: flex; justify-content: space-between">
+                          <div style="font-weight: bold;">
+                            <div>
+                              Tháng {{ paymentRecord.month }}, năm {{ paymentRecord.year }}
+                            </div>
+                          </div>
+                          <div class="form-check form-switch">
+                            <input style="cursor: pointer" class="form-check-input" v-model="checkPaid[index]" type="checkbox"
+                              id="flexSwitchCheckDefault" @click="updatePaymentRecord(paymentRecord, index)">
+                          </div>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                           <span>Giá nước: </span>
@@ -412,9 +436,7 @@
     <h2 style="text-align: right; cursor: pointer;" v-if="this.room.lessor.id == this.user.lessor?.id">
       <button class="btn btn-primary" v-if="enableEditRoom" style="margin-right: 5px;" @click="editRoom()">Cập
         nhật</button>
-      <button class="btn btn-light" @click="enableEditRoom = !enableEditRoom">
-        <font-awesome-icon icon="pen-to-square" style="font-size: 23px;" />
-      </button>
+      <font-awesome-icon @click="enableEditRoom = !enableEditRoom" icon="pen-to-square" />
     </h2>
 
     <div id="MyRoom-Information3">
@@ -465,6 +487,56 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- edit temp tenant form -->
+  <div class="modal fade" id="editTempTenantModal" tabindex="-1" aria-labelledby="editTempTenantModal" aria-hidden="true"
+    data-backdrop="false">
+    <div class="modal-dialog-centered modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editTempTenantTitle">Cập nhật người ở tạm thời</h5>
+          <button type="button" id="login-form-close-btn4" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+
+            <div class="form-floating mb-4">
+              <input type="text" id="form2Example4" class="form-control" @focus="buttonTempTenantDisable = false"
+                v-model="editTempTenantRequest.fullName" placeholder="" required />
+              <label class="form-label" for="form2Example4">Họ tên</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <input type="text" id="form2Example4" class="form-control" @focus="buttonTempTenantDisable = false"
+                v-model="editTempTenantRequest.citizenId" placeholder="" required />
+              <label class="form-label" for="form2Example4">Căn cước công dân</label>
+            </div>
+
+            <div class="form-floating form-element">
+              <input type="date" class="form-control" id="registerInputdob1" placeholder=""
+                v-model="editTempTenantRequest.startDate" style="margin-bottom: 20px"
+                @focus="buttonTempTenantDisable = false" required>
+              <label for="registerInputdob1">Ngày bắt đầu</label>
+            </div>
+
+            <div class="form-floating form-element">
+              <input type="date" class="form-control" id="registerInputdob2" placeholder=""
+                v-model="editTempTenantRequest.endDate" style="margin-bottom: 20px"
+                @focus="buttonTempTenantDisable = false" required>
+              <label for="registerInputdob2">Ngày kết thúc</label>
+            </div>
+
+            <div class="text-center">
+              <button type="button" class=" btn btn-primary btn-block mb-4" @click="editTempTenant"
+                :disabled="buttonTempTenantDisable">Cập nhật</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -659,6 +731,7 @@ import roomingSubscriptionReqService from "@/services/roomingSubscriptionRequest
 import roomingSubscriptionService from "@/services/roomingSubscription.service";
 import roomDescriptionService from "@/services/roomDescription.service";
 import temporaryTenantService from "@/services/temporaryTenant.service"
+import paymentRecordService from "@/services/paymentRecord.service";
 import notificationService from "@/services/notification.service";
 import utilityService from "@/services/utility.service";
 import reviewService from "@/services/review.service";
@@ -674,6 +747,7 @@ export default {
   data() {
     return {
       file: {},
+      buttonTempTenantDisable: false,
       selectedImage: 0,
       selectedRating: 0,
       activeColor: '#0F2C59',
@@ -683,6 +757,13 @@ export default {
         "content": ""
       },
       selectedIdRoomDes: 0,
+      selectedIdTempTenant: 0,
+      editTempTenantRequest: {
+        "fullName": "0",
+        "citizenId": "0",
+        "startDate": "12/12/2012",
+        "endDate": "12/12/2012"
+      },
       editRoomDescriptionRequest: {
         "title": "",
         "content": ""
@@ -699,6 +780,7 @@ export default {
         "content": "",
         "type": "room"
       },
+      checkPaid: [],
       buttonUtilityDisable: false,
       buttonDescriptionDisable: false,
       roomingSubscriptionRoom: [],
@@ -830,6 +912,19 @@ export default {
         this.displayError(err)
       }
     },
+    async editTempTenant() {
+      try {
+        var tokenBearer = this.$cookies.get("Token");
+        await temporaryTenantService.update(this.selectedIdTempTenant, this.editTempTenantRequest, tokenBearer)
+        this.displaySuccess("Cập nhật người ở tạm thời thành công")
+        await this.sleep(1000)
+        this.$router.go()
+        buttonTempTenantDisable = true
+      } catch (err) {
+        console.log(err)
+        this.displayError(err);
+      }
+    },
     async editRoom() {
       try {
         var tokenBearer = this.$cookies.get("Token");
@@ -900,6 +995,12 @@ export default {
           this.tempTenants = this.roomingSubscription.temporaryTenants
           this.paymentRecords = this.roomingSubscription.paymentRecords
         }
+        if (this.paymentRecords != null)
+          for (let i = 0; i < this.paymentRecords.length; i++) {
+            if (this.paymentRecords[i].paidDate != null) this.checkPaid.push(true)
+            else this.checkPaid.push(false)
+          }
+
       } catch (err) {
         console.log(err)
         this.displayError(err);
@@ -1150,6 +1251,31 @@ export default {
         var tokenBearer = this.$cookies.get("Token");
         await roomDescriptionService.update(this.selectedIdRoomDes, this.editRoomDescriptionRequest, tokenBearer)
         this.displaySuccess("Cập nhật mô tả ngắn thành công")
+        await this.sleep(1000)
+        this.$router.go()
+      } catch (err) {
+        console.log(err)
+        this.displayError(err)
+      }
+    },
+    async updatePaymentRecord(paymentRecord, index) {
+      try {
+        this.checkPaid[index] = !this.checkPaid[index]
+        var tokenBearer = this.$cookies.get("Token");
+        if (this.checkPaid[index] == true) {
+          await paymentRecordService.update(paymentRecord.id, {
+            "surcharge": paymentRecord.surcharge,
+            "paidDate": new Date(),
+            "state": paymentRecord.state
+          }, tokenBearer)
+        } else {
+          await paymentRecordService.update(paymentRecord.id, {
+            "surcharge": paymentRecord.surcharge,
+            "paidDate": null,
+            "state": paymentRecord.state
+          }, tokenBearer)
+        }
+        this.displaySuccess("Cập nhật chi phí thành công")
         await this.sleep(1000)
         this.$router.go()
       } catch (err) {
